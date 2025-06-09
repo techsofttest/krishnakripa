@@ -76,9 +76,9 @@ $query_builder = TRUE;
 $db['default'] = array(
 	'dsn'	=> '',
     'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => '',
-	'database' => 'krishnakripa',
+	'username' => 'krishc4h_demouser',
+	'password' => 'Gb1,rV-_Vo4A',
+	'database' => 'krishc4h_demo',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => 'krishna_',
 	'pconnect' => FALSE,
@@ -94,5 +94,3 @@ $db['default'] = array(
 	'failover' => array(),
 	'save_queries' => TRUE
 );
-
-
