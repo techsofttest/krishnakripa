@@ -336,7 +336,7 @@ function BookNow()
 
 			$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
 
-			$this->session->userdata('b_id',$bid);
+			$this->session->set_userdata('b_id',$bid);
 					
 			$this->session->set_flashdata('success', 'Booking added successfully.');
 
