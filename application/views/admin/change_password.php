@@ -73,4 +73,46 @@
 	</section><!-- /.content -->
   </div><!-- /.content-wrapper -->
   <?php $this->load->view('admin/includes/footer');?>
+
+<script src="<?php echo base_url(); ?>assets/admin/js/jquery.validationEngine-en.js"></script> 
+
+<script src="<?php echo base_url();?>assets/admin/js/jquery.validationEngine.js" type="text/javascript"></script> 
+<script>
+$(".formValidation").validationEngine({
+        onkeyup: true,
+        maxErrorsPerField: 1,
+        promptPosition : "topRight:-85"
+});
+
+
+// password updation
+
+        $("#passsubmit").click(function(){
+			if(!$("#form-password").validationEngine('validate')){
+            return false;
+            }else{
+				var newpass = $("#password-value").val();
+				var checkVal = $("#password-check").val();
+				
+				    if ($("#result").text()=="Good" || $("#result").text()=="Strong" ) {
+                       
+								$.ajax({
+									type: "POST",
+									url: base_url+"admin/change_password/update_password",
+									data: {newpass:newpass},
+									success: function(){
+										 alertify.success("Password Updated Successfully.");
+										 $('span#result').text('');
+										 $('#form-password')[0].reset();
+										}
+									});
+						  }else{
+							alertify.error("Please Enter Good Password");
+						  }
+					  
+			}
+         });
+
+</script>
+  
  

@@ -29,12 +29,14 @@
 
             <div class="col-xs-12" style="margin:10px 0px;">
 
+                <form action="" method="get">
+
                 <div class="row">
 
                     <div class="col-sm-3">
                       <label>Date Filter</label>
-                      <select class="form-control" id="dateFilter" name="">
-                        <option value="day">Date</option>
+                      <select class="form-control" id="dateFilter" name="date">
+                        <option value="">Date</option>
                         <option value="week">Weekly</option>
                         <option value="month">Monthly</option>
                       </select>
@@ -42,12 +44,12 @@
 
                     <div class="col-sm-3">
                       <label>Date From</label>
-                      <input class="form-control" type="date" id="dateFrom" onclick="this.showPicker()">
+                      <input class="form-control" type="date" value="<?php if(!empty($this->input->get('date_from'))) { echo $this->input->get('date_from'); } ?>" name="date_from" id="dateFrom" onclick="this.showPicker()">
                     </div>
 
                     <div class="col-sm-3">
                       <label>Date To</label>
-                      <input class="form-control" type="date" id="dateTo" onclick="this.showPicker()">
+                      <input class="form-control" type="date" value="<?php if(!empty($this->input->get('date_from'))) { echo $this->input->get('date_to'); } ?>" name="date_to" id="dateTo" onclick="this.showPicker()">
                     </div>
 
                     <script>
@@ -95,11 +97,15 @@
 
                       <label>Payment</label>
 
-                      <select class="form-control" name="">
+                      <select class="form-control" name="payment_status">
 
-                        <option value="day">Paid</option>
+                        <option value="" selected>Select Payment Status</option>
 
-                        <option value="day">Unpaid</option>
+                        <option value="2" <?php if($this->input->get('payment_status') == 2) { echo "selected"; } ?>>Paid</option>
+
+                        <option value="1" <?php if($this->input->get('payment_status') == 1) { echo "selected"; } ?>>Partially Paid</option>
+
+                        <option value="0" <?php if($this->input->get('payment_status') == 0) { echo "selected"; } ?>>Unpaid</option>
 
                       </select>
 
@@ -114,22 +120,32 @@
                  <div class="row" style="">
                     <div class="col-sm-3" style="">
                     <label>Customer</label>
-                      <select class="form-control" id="" name="">
-                        <option value="day">John</option>
-                        <option value="week">Doe</option>
-                        <option value="month">Paul</option>
+                      <select class="form-control"  name="customer">
+                        <option value="" selected>Select Customer</option>
+                       
+                        <?php foreach($customers as $cus){ ?>
+
+                          <option value="<?= $cus->cus_id ?>" <?php if((!empty($_GET['customer'])) && $cus->cus_id==$_GET['customer']) { echo "selected"; } ?>><?= $cus->first_name ?> <?= $cus->last_name ?></option>
+
+                        <?php } ?>
+
                       </select>
                   
                     </div>
 
                     <div class="col-sm-3" style="">
                     <label>Room</label>
-                      <select class="form-control" id="" name="">
-                        <option value="day">Suit Room With Bath Tub</option>
-                        <option value="week">	Delux Double Room</option>
-                        <option value="month">Standard Double Room</option>
+                      <select class="form-control" id="" name="room">
+                         <option value="" selected>Select Room</option>
+
+                        <?php foreach($rooms as $room){ ?>
+
+                          <option value="<?= $room->roomid ?>" <?php if((!empty($_GET['room'])) && $room->roomid==$_GET['room']) { echo "selected"; } ?>><?= $room->name ?></option>
+
+                        <?php } ?>
+                      
+
                       </select>
-                  
                     </div>
                   
                 </div>
@@ -140,13 +156,18 @@
                 <div class="row" style="margin:10px 0px;">
               
                     <div class="col-sm-12" style="text-align:center">
-                      <button class="btn btn-success">Filter</button>
-                      <button class="btn btn-warning">Print</button>
-                      <button class="btn btn-danger">Reset</button>
+                      <button type="submit" class="btn btn-success">Filter</button>
+                      <a class="btn btn-warning" href="<?= base_url(); ?>admin/Reports/Print<?php '?' . $_SERVER['QUERY_STRING']; ?>" target="_blank">Print</a>
+                      <a href="<?= base_url(); ?>admin/Reports/View" class="btn btn-danger">Reset</a>
                     </div>
 
                 
                 </div>
+
+
+
+
+                  </form>
 
 
 
@@ -181,24 +202,23 @@
                         
                             <div class="loader">
                   			
+                           
+
+
                             <table id="datatable" class="table table-bordered table-striped delTable" style="display:none;">
                     			<thead>
                                     <tr>
-                                        <th class="no-sort">Sl no</th>
-                                        
-                                         <th>Check In</th>    
+                                         <th>Id</th>    
                                      
-                                         <th>Check Out</th>
+                                         <th>Period</th>
 
                                          <th>Room</th>
 
-                                         <th>Name</th>
+                                         <th>Customer</th>
 
-                                         <th>Phone</th>
+                                         <th>Amount</th>
 
-                                         <th>Pending</th>
-
-                                         <th>Status</th>
+                                         <th>Booking Status</th>
 
                                          <th>Actions</th>
                                        
@@ -215,23 +235,29 @@
 									      foreach($bookings as $item=>$val):?>
 
                         <tr>
-                       			
-                        <td class=""><?= $i ?></td>
                                         
-                        <td><?= date('d M Y',strtotime($val->check_in_date)) ?></td>    
+                        <td><?= $val->uid; ?></td>    
                     
-                        <td><?= date('d M Y',strtotime($val->check_out_date)) ?></td>
+                        <td>
+
+                        <?= date('d M Y',strtotime($val->check_in_date)) ?> <br>To<br> <?= date('d M Y',strtotime($val->check_out_date)) ?>
+                      
+                        </td>
 
                         <td><?= $val->name ?></td>
 
-                        <td><?= $val->first_name ?> <?= $val->last_name ?></td>
-
-                        <td><?= $val->phone_number ?></td>
-
-                        <td><b style="color:red;"><?= $val->total_amount-$val->paid_amount; ?></b></td>
+                        <td>
+                        <?= $val->first_name ?> <?= $val->last_name ?><br>
+                        <?= $val->phone_number ?>
+                        </td>
+                      
+                        <td class="text-right">
+                        <b style="font-size:20px"><?= $val->total_amount; ?></b><br>
+                        <b style="color:green;font-size:20px"><?= $val->paid_amount; ?></b><br>
+                        <b style="color:red;font-size:20px"><?= format_currency($val->total_amount-$val->paid_amount); ?></b>
+                        </td>
 
                         <td>
-
                         <?php
                         if($val->booking_status=="pending"){
                         ?>
@@ -250,9 +276,12 @@
                         ?>
                         
                         </td>
+                       
 
                         <td>
-                        <a class="btn btn-primary"><i class="fa fa-file-text"></i> Invoice</a>
+                        
+                          <a class="btn btn-primary" href="<?= base_url(); ?>admin/Bookings/View/<?= $val->booking_id; ?>"><i class="fa fa-eye"></i> </a>
+
                         </td>
 
                         </tr>
@@ -264,8 +293,11 @@
                                     
                       </tbody> 
                    				
-                                <input type="hidden" id="alert-notification" value="Are you sure you want to delete this banner record?">
+                                
                   	</table>
+
+
+
                             
                              </div>
                 			

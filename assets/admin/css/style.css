@@ -618,6 +618,7 @@ object-fit: cover;
 /** sony **/
 
 @media (max-width: 1519px) and (min-width: 992px)
+{
 .overview-item {
     padding-left: 15px;
     padding-right: 15px;
@@ -658,6 +659,8 @@ object-fit: cover;
     background-image: -webkit-linear-gradient(90deg, #45b649 0%, #dce35b 100%);
     background-image: -ms-linear-gradient(90deg, #45b649 0%, #dce35b 100%);
 }
+}
+
 
 .showradio,.showradio1
 {

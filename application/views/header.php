@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="x-ua-compatible" content="ie=edge">
-<title><?php echo $seo_data['m_title']?></title>
+<title><?php echo $seo_data['m_title'] ?? "Krishnakripa Residency" ?></title>
 <meta name="author" content="">
-<meta name="description" content="<?php echo $seo_data['m_dis']?>">
-<meta name="keywords" content="<?php echo $seo_data['m_key']?>">
+<meta name="description" content="<?php echo $seo_data['m_dis'] ?? "" ?>">
+<meta name="keywords" content="<?php echo $seo_data['m_key'] ?? "" ?>  ">
 
 <!-- Mobile Specific Metas -->
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -54,6 +54,10 @@ height:100px !important;
 .swal2-toast-shown .swal2-container {
  width:fit-content !important;
 }
+
+
+
+
 
 </style>
 

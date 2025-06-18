@@ -5,6 +5,86 @@ class Admin_model extends CI_model {
 	public function __construct() { 
 		parent::__construct();
 	}
+
+
+
+	/* Datatable ajax start */
+
+	public function get_total_records($table, $column, $order, $cond = "")
+	{
+		$this->db->select($column);
+		$this->db->from($table);
+
+		if ($cond != "") {
+			$this->db->where($cond);
+		}
+
+		return $this->db->count_all_results();
+	}
+
+	public function get_total_record_with_filter($table, $column, $searchValue, $searchColumn,$joins,$cond = "")
+	{
+		$this->db->select($column);
+		$this->db->from($table);
+
+		if (!empty($joins)) {
+			foreach ($joins as $join) {
+				$this->db->join($join['table'], $join['table'] . '.' . $join['pk'] . ' = ' . $table . '.' . $join['fk'], 'left');
+			}
+		}
+
+		if (!empty($searchColumn)) {
+			$this->db->group_start();
+			foreach ($searchColumn as $col) {
+				$this->db->or_like($col, $searchValue);
+			}
+			$this->db->group_end();
+		}
+
+		if ($cond != "") {
+			$this->db->where($cond);
+		}
+
+		return $this->db->count_all_results();
+	}
+
+	public function get_record($table, $column, $searchValue, $searchColumn, $columnName, $joins, $rowperpage, $start, $cond = "")
+	{
+		$this->db->select('*');
+		$this->db->from($table);
+
+		if (!empty($searchColumn)) {
+			$this->db->group_start();
+			foreach ($searchColumn as $col) {
+				$this->db->or_like($col, $searchValue);
+			}
+			$this->db->group_end();
+		}
+
+		if ($columnName != "" && $columnSortOrder != "") {
+			$this->db->order_by($columnName, $columnSortOrder);
+		}
+
+		if (!empty($joins)) {
+			foreach ($joins as $join) {
+				$this->db->join($join['table'], $join['table'] . '.' . $join['pk'] . ' = ' . $table . '.' . $join['fk'], 'left');
+			}
+		}
+
+		if ($cond != "") {
+			$this->db->where($cond);
+		}
+
+		$this->db->limit($rowperpage, $start);
+
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+
+	/* Datatable Ajax end */
+
+
 	
 	
 public function get_profile_details($id)

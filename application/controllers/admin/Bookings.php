@@ -7,7 +7,7 @@ class Bookings extends MY_Controller {
 				parent::__construct();
 				$this->load->database();
                 $this->load->library('form_validation');
-				$this->load->helper(array('form', 'url', 'text'));
+				$this->load->helper(array('form', 'url', 'text','number'));
                 $this->load->model("Admin_model");
 				$this->load->model("BookingModel");
 				
@@ -21,6 +21,94 @@ class Bookings extends MY_Controller {
 				}	
 				//get user details
         }
+
+
+
+
+
+		public function FetchData()
+    	{
+
+			/*pagination start*/
+			$request = service('request');
+			$postData = $request->getPost();
+			$dtpostData = $postData['data'];
+			$response = array();
+	
+			## Read value
+			$draw = $dtpostData['draw'];
+			$start = $dtpostData['start'];
+			$rowperpage = $dtpostData['length']; // Rows display per page
+			$columnIndex = $dtpostData['order'][0]['column']; // Column index
+			$columnName = $dtpostData['columns'][$columnIndex]['data']; // Column name
+			$columnSortOrder = $dtpostData['order'][0]['dir']; // asc or desc
+			$searchValue = $dtpostData['search']['value']; // Search value
+
+			// Check if the current sort order is 'asc', then set it to 'desc'
+			if ($columnSortOrder === 'asc') {
+				$columnSortOrder = 'desc';
+			} 
+
+	
+			## Total number of records without filtering
+		
+			$totalRecords = $this->common_model->GetTotalRecords('hr_payrolls','pr_id','DESC');
+	
+			## Total number of records with filtering
+		
+			$searchColumns = array('pr_id');
+
+			$totalRecordwithFilter = $this->common_model->GetTotalRecordwithFilter('hr_payrolls','pr_id',$searchValue,$searchColumns);
+		
+			##Joins if any //Pass Joins as Multi dim array
+			$joins = array();
+			## Fetch records
+			$records = $this->common_model->GetRecord('hr_payrolls','pr_id',$searchValue,$searchColumns,$columnName,$columnSortOrder,$joins,$rowperpage,$start);
+		
+			$data = array();
+
+			$i=1;
+
+			foreach($records as $record ){
+
+			//$action = '<a  href="javascript:void(0)" class="edit edit-color view_btn" data-toggle="tooltip" data-placement="top" title="edit"  data-id="'.$record->pr_id.'" data-original-title="Edit"><i class="ri-eye-fill"></i> View</a> <a  href="javascript:void(0)" class="edit edit-color edit_btn" data-toggle="tooltip" data-placement="top" title="edit"  data-id="'.$record->ts_id.'" data-original-title="Edit"><i class="ri-pencil-fill"></i> Edit</a> <a href="javascript:void(0)" class="delete delete-color delete_btn" data-toggle="tooltip" data-id="'.$record->ts_id.'"  data-placement="top" title="Delete"><i  class="ri-delete-bin-fill"></i> Delete</a>';
+			
+			$action='<a  href="javascript:void(0)" class="edit edit-color view_btn" data-toggle="tooltip" data-placement="top" title="edit"  data-id="'.$record->pr_id.'" data-original-title="Edit"><i class="ri-eye-fill"></i> </a> 
+			<a href="javascript:void(0);" data-id="'.$record->pr_id.'" class="print_color" title="Print"><i class="ri-file-pdf-2-line " aria-hidden="true"></i> </a>
+			<a href="javascript:void(0)" class="delete delete-color delete_btn" data-toggle="tooltip" data-id="'.$record->pr_id.'"  data-placement="top" title="Delete"><i  class="ri-delete-bin-fill"></i> </a>';
+
+			$data[] = array( 
+				"pr_id"=>$i,
+				"pr_month" => date('M Y',strtotime("1-{$record->pr_month}-{$record->pr_year}")),
+				"total_salary" => format_currency($record->pr_total_salary),
+				"action" =>$action,
+			);
+
+			$i++; 
+
+			}
+	
+			## Response
+			$response = array(
+			"draw" => intval($draw),
+			"iTotalRecords" => $totalRecords,
+			"iTotalDisplayRecords" => $totalRecordwithFilter,
+			"aaData" => $data,
+			"token" => csrf_hash() // New token hash
+			);
+	
+			//return $this->response->setJSON($response);
+
+			echo json_encode($response);
+
+			exit;
+
+			/*pagination end*/
+		} 
+
+
+
+
 		
 		
 		 public function index()
@@ -41,7 +129,7 @@ class Bookings extends MY_Controller {
 		{
 			
 			
-			$data['seo_title'] 	= 	" Add Bookings | ".$this->data['admin_title'].""; 
+			$data['seo_title'] 	= 	"Add Bookings | ".$this->data['admin_title'].""; 
 
 			$data['room_types']	=	$this->Admin_model->fetch_all_order('categories','cat_title','asc');	
 			
@@ -49,8 +137,6 @@ class Bookings extends MY_Controller {
 			 
 			$booking_data  	= 	array(
 
-			'uid' => date('ymdhis'),
-			 
 		    'check_in_date'  => date('Y-m-d',strtotime($this->input->post('check_in'))),
 		
 		    'check_out_date' => date('Y-m-d',strtotime($this->input->post('check_out'))),
@@ -75,7 +161,7 @@ class Bookings extends MY_Controller {
 
 			'booking_status'=>$this->input->post('booking_status'),
 		
-		 );
+		 	);
 		
 
 			//Customer Data 
@@ -123,12 +209,33 @@ class Bookings extends MY_Controller {
 			);
 			$update_booking_cond = array('booking_id' => $bid);
 
+
 			$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
 
 			}
 
 
+			$payment_data = array(
+			'bp_booking' => $bid,
+			'bp_pay_method' => $this->input->post('payment_method'),
+			'bp_paid_on' => date('Y-m-d'),
+			'bp_notes' => $this->input->post('payment_notes'),
+			'bp_amount' => $this->input->post('current_payment'),
+			'bp_type' => 'credit',
+			);
 
+			$pay_id = $this->Admin_model->insertsection('booking_payments',$payment_data);
+
+
+
+			$booking_uid = 'KK' . str_pad($bid, 5, '0', STR_PAD_LEFT);
+
+			$update_booking_data = array(
+				'uid' => $booking_uid,
+			);
+			$update_booking_cond = array('booking_id' => $bid);
+
+			$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
 
 					
 			$this->session->set_flashdata('success', 'Booking Added Successfully.'); 
@@ -221,6 +328,7 @@ class Bookings extends MY_Controller {
 			$check_in = $this->input->post('check_in');
 			$check_out = $this->input->post('check_out');
 			$room_type = $this->input->post('room_type');
+			$room_count = $this->input->post('room_count');
 
 			$data['html'] ="";
 			
@@ -228,7 +336,7 @@ class Bookings extends MY_Controller {
 			{
 				$data['status'] = 1;
 
-				$available_rooms = $this->BookingModel->get_available_rooms($check_in, $check_out,$room_type);
+				$available_rooms = $this->BookingModel->get_available_rooms($room_count,$check_in, $check_out,$room_type);
 
 				if(!empty($available_rooms))
 				{
@@ -273,121 +381,484 @@ class Bookings extends MY_Controller {
 			}	
 
 		}
-		
-		
-				
-		
-	 public function EditAttractions($nid)
+
+
+
+
+		public function View($id)
 		{
-			
-			
-			$news_cond = array('att_id' => $nid); 
- 			
-			$data['Attractions'] = $this->Admin_model->fetch_one_row('attractions',$news_cond);
-			
-			$data['seo_title'] 	= 	"Edit Attractions | ".$this->data['admin_title'].""; 
-			
-						
-			if($_POST):
-			
-			$att_data  	= 	array(
-			 
-			'att_title'  =>$this->input->post('title'),
-			
-			'att_desc' => $this->input->post('desc'),
-	 	
-			'meta_title'=>$this->input->post('meta_title'),
-			
-			'meta_keyword'=>$this->input->post('meta_key'),
-			
-			'meta_description'=>$this->input->post('meta_desc'),
-			
-			'att_slug' =>  $this->Admin_model->change_slug($this->input->post('title'),'att_slug',$nid,'att_id','attractions'), 
+
+		$data['booking'] = $this->BookingModel->ViewBookingById($id);
+
+		$data['payments'] = $this->BookingModel->ViewPaymentsByBookingId($id,"credit"); 
+
+		$data['refunds'] = $this->BookingModel->ViewPaymentsByBookingId($id,"debit");
+
+		$this->load->view('admin/view_booking_single',$data);
+ 
+		}
+
+
+
+
+		public function GetPending()
+		{
+
+		$booking_id = $this->input->post('bid');
+		if(empty($booking_id))
+		{
+			echo json_encode(['status' => 'error', 'message' => 'Booking ID is missing']);
+			return;
+		}
+
+		$booking = $this->BookingModel->ViewBookingById($booking_id);
+
+		$total_amount = $booking['total_amount'];
+
+		$total_paid = $this->BookingModel->CheckPending($booking_id);
 		
-		 );
-		
-		$cond	= array('att_id' => $nid);
-		
-		$edit	=	$this->Admin_model->update_all($att_data,$cond,'attractions');
-		
-		$this->session->set_flashdata('success','Attractions Updated Succesfully');
-			
-					
-				
-				if(!empty($_FILES["image"]["name"]))
-							
-							{
-								
-								for ($i = 0; $i < count($_FILES['image']['name']); $i++) 
-								  {
-										if($_FILES["image"]["name"][$i]!='')
-										{				
-										
-							@unlink('uploads/Attractions/'.$data['attractions']['attractions']);			
-										
-												
-					$filename2 	= 	basename($_FILES["image"]["name"][$i]);
-					$ext2 		= 	@end(explode('.', $filename2));
-					$ext2 		= 	strtolower($ext2);			
-					$gallery2    = 	"att_".rand().'.'.$ext2;			
-					$uploadfile2 = 	"uploads/Attractions";
-					move_uploaded_file($_FILES["image"]["tmp_name"][$i],  $uploadfile2."/".$gallery2);
-					
-				   $configer =  array(
-                   'image_library'   => 'gd2',
-                   'source_image'    =>  $uploadfile2."/".$gallery2,
-                   'maintain_ratio'  =>  TRUE,
-                   'width'           =>  425,
-                   'height'          =>  300,
-                   );
-                   $this->image_lib->clear();
-                   $this->image_lib->initialize($configer);
-                   $this->image_lib->resize();
-				
-					
-					
-					$image  	= 	array( 'att_image'  => $gallery2);
-					$cond		= 	array('att_id' 	=>	$nid);
-					$add_img2	=	$this->Admin_model->update_all($image,$cond,'attractions');
-						
-				}}}
-				
-					
-			
-				$this->session->set_flashdata('success', 'Attractions Updated Successfully.'); 
-				redirect(base_url().'admin/Attractions/EditAttractions/'.$nid);
-				
-				endif;
-			
-				$this->load->view('admin/edit_attractions', $data);
-			
-        }
-		
-			
-		
-		
-		public function DeleteAttractions($nid)
-		   
-		   {
-			
-			
-			$cond=array('att_id' => $nid);
-			
-			$data['attractions'] 	= 	$this->Admin_model->fetch_one_row('attractions',$cond);
-			
-			@unlink('uploads/Attractions/'.$data['attractions']['att_image']);	
-			
-			$this->db->where('att_id',$nid);
-			
-			$this->db->delete('attractions');
-			
-			$this->session->set_flashdata('success', 'Attractions Deleted Successfully.'); 
-			
-			redirect(base_url().'admin/Attractions');
-			
+
+		$pending = $total_amount-$total_paid;
+
+		echo json_encode(['status' => 'success', 'pending' => $pending,'total_paid' => $total_paid]);
+
+		return;
+
+		}
+
+
+
+		public function AddPayment()
+		{
+
+		$booking_id = $this->input->post('booking_id');
+		if(empty($booking_id))
+		{
+			echo json_encode(['status' => 'error', 'message' => 'Booking ID is missing']);
+			return;
+		}
+		// Validate the payment date
+		$payment_date = $this->input->post('payment_date');
+		if (empty($payment_date) || !DateTime::createFromFormat('Y-m-d', $payment_date)) {
+			echo json_encode(['status' => 'error', 'message' => 'Invalid payment date']);
+			return;
+		}
+		// Validate the amount
+		$amount = $this->input->post('amount');
+		if (empty($amount) || !is_numeric($amount) || $amount <= 0) {
+			echo json_encode(['status' => 'error', 'message' => 'Invalid amount']);
+			return;
+		}
+		// Validate the payment method
+		$payment_method = $this->input->post('payment_method');
+		if (empty($payment_method)) {
+			echo json_encode(['status' => 'error', 'message' => 'Payment method is required']);
+			return;
+		}
+
+		// Validate the payment method
+		$payment_type = $this->input->post('payment_type');
+		if (empty($payment_method)) {
+			echo json_encode(['status' => 'error', 'message' => 'Something went wrong, Please try again']);
+			return;
+		}
+	
+		$payment_data = array(
+			'bp_booking' => $booking_id,
+			'bp_pay_method' => $this->input->post('payment_method'),
+			'bp_paid_on' => date('Y-m-d', strtotime($this->input->post('payment_date'))),
+			'bp_notes' => $this->input->post('payment_notes'),
+			'bp_amount' => $this->input->post('amount'),
+			'bp_type' => $this->input->post('payment_type')
+		);
+
+		$pay_id = $this->Admin_model->insertsection('booking_payments',$payment_data);
+
+		if($pay_id)
+		{
+			// Update the booking with the new payment amount
+
+			if($payment_type=="credit")
+			{
+			$booking = $this->BookingModel->ViewBookingById($booking_id);
+			$new_paid_amount = $booking['paid_amount'] + $this->input->post('amount');
+			$update_booking_data = array(
+				'paid_amount' => $new_paid_amount
+			);
+			$update_booking_cond = array('booking_id' => $booking_id);
+			$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
+			}
+
+			echo json_encode(['status' => 'success', 'message' => 'Payment added successfully']);
+		}
+		else
+		{
+			echo json_encode(['status' => 'error', 'message' => 'Failed to add payment']);
+		}
+
+
+		}
+
+
+
+
+		public function Status()
+		{
+
+		if(!empty($this->input->post()))
+		{
+
+			$booking_id = $this->input->post('booking_id');
+			if(empty($booking_id))
+			{
+				$this->session->set_flashdata('error', 'Booking ID is missing');
+				redirect(base_url().'admin/Bookings');
+			}
+
+			$update_data = array(
+				'booking_status' => $booking_status = $this->input->post('booking_status')
+			);
+
+			if($booking_status=="checked_in")
+			{
+
+			$update_data['actual_check_in_date'] = date('Y-m-d H:i:s',strtotime($this->input->post('status_date') . ' ' . $this->input->post('status_time')));
+
+			}
+
+
+			if($booking_status=="checked_out")
+			{
+
+			$update_data['actual_check_out_date'] = date('Y-m-d H:i:s',strtotime($this->input->post('status_date') . ' ' . $this->input->post('status_time')));
+
+			}
+
+			$update_cond = array('booking_id' => $booking_id);
+
+			$this->Admin_model->update_all($update_data,$update_cond,'bookings');
+
+			$this->session->set_flashdata('success', 'Booking status updated successfully');
+
+			redirect(base_url().'admin/Bookings');
+		}
+
+
+		}
+
+
+
+
+
+
+
+		public function CheckIn()
+		{
+
+		if(!empty($this->input->post()))
+		{
+
+			$booking_id = $this->input->post('booking_id');
+			if(empty($booking_id))
+			{
+				$this->session->set_flashdata('error', 'Booking ID is missing');
+				redirect(base_url().'admin/Bookings');
+			}
+
+			// Validate the check-in date and time
+			$check_in_date = $this->input->post('check_in_date');
+			$check_in_time = $this->input->post('check_in_time');
+			if (empty($check_in_date) || !DateTime::createFromFormat('Y-m-d', $check_in_date)) {
+				$this->session->set_flashdata('error', 'Invalid check-in date');
+				redirect(base_url().'admin/Bookings');
+			}
+			if (empty($check_in_time) || !DateTime::createFromFormat('H:i', $check_in_time)) {
+				$this->session->set_flashdata('error', 'Invalid check-in time');
+				redirect(base_url().'admin/Bookings');
+			}
+
+			$update_data = array(
+				'check_in_status' => $this->input->post('check_in_status'),
+				'actual_check_in_date' => date(
+					'Y-m-d H:i:s',
+					strtotime(
+						$this->input->post('check_in_date') . ' ' . $this->input->post('check_in_time')
+					)
+				)
+			);
+
+			$update_cond = array('booking_id' => $booking_id);
+
+			$this->Admin_model->update_all($update_data,$update_cond,'bookings');
+
+			$this->session->set_flashdata('success', 'Check-in successful');
+
+			redirect(base_url().'admin/Bookings');
+
+		}
+
+		}
+
+
+
+
+		public function CheckOut()
+		{
+
+		if(!empty($this->input->post()))
+		{
+
+			$booking_id = $this->input->post('booking_id');
+			if(empty($booking_id))
+			{
+				$this->session->set_flashdata('error', 'Booking ID is missing');
+				redirect(base_url().'admin/Bookings');
+			}
+
+			// Validate the check-in date and time
+			$check_out_date = $this->input->post('check_out_date');
+			$check_out_time = $this->input->post('check_out_time');
+			if (empty($check_out_date) || !DateTime::createFromFormat('Y-m-d', $check_out_date)) {
+				$this->session->set_flashdata('error', 'Invalid check-in date');
+				redirect(base_url().'admin/Bookings');
+			}
+			if (empty($check_out_time) || !DateTime::createFromFormat('H:i', $check_out_time)) {
+				$this->session->set_flashdata('error', 'Invalid check-in time');
+				redirect(base_url().'admin/Bookings');
+			}
+
+			$update_data = array(
+				'check_out_status' => $this->input->post('check_out_status'),
+				'actual_check_out_date' => date(
+					'Y-m-d H:i:s',
+					strtotime(
+						$this->input->post('check_out_date') . ' ' . $this->input->post('check_out_time')
+					)
+				)
+			);
+
+			$update_cond = array('booking_id' => $booking_id);
+
+			$this->Admin_model->update_all($update_data,$update_cond,'bookings');
+
+			$this->session->set_flashdata('success', 'Check Out successful');
+
+			redirect(base_url().'admin/Bookings');
+
+		}
+
 		}
 		
 		
+			
+		public function Invoice($id)	
+			{
+			
+				$booking = $this->BookingModel->ViewBookingById($id);
+
+				$this->load->library('Pdf');
+				$pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
+				// set document information
+				$pdf->SetCreator(PDF_CREATOR);
+				$pdf->SetAuthor('Krishnakripa');
+				$pdf->SetTitle('');
+				$pdf->SetSubject('Booking Invoice');
+				
+				// set default header data
+
+				//$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 006', PDF_HEADER_STRING);
+
+				// set header and footer fonts 
+				// $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+				// $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+				// set default monospaced font
+				$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+				// set margins
+				//$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+				//$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+				//$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+				// set auto page breaks
+				$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+				// set image scale factor
+				$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+				// ---------------------------------------------------------
+
+				// set font
+				$pdf->SetFont('dejavusans', '', 10);
+
+				// add a page
+				$pdf->AddPage();
+
+
+				$html = '
+
+				<style>
+				
+				table
+				{
+				line-height: 1.5;
+				font-size:10px;
+				}
+
+				</style>
+
+				<table cellpadding="10">
+
+
+				<tr>
+				
+				<th width="50%" align="left">
+					
+				<img style="height:80px;" src="'.base_url().'assets/img/logo1.png">
+
+				</th>
+
+				<th width="50%" align="right">
+				<b>Krishnakripa Residency</b><br>
+				Ambalamedu PO<br>
+				Kakkanadu,Ernakulam<br>
+				Pin : 682303<br>
+				+91 8086100803<br>
+				+91 8086100885<br>
+				krishnakriparesidency@gmail.com
+				</th>
+
+
+				</tr>
+
+
+				<tr>
+				
+				<td colspan="2"><b style="text-align:center;font-size:20px;">INVOICE</b></td>
+
+				</tr>
+
+			
+
+				</table>
+				
+
+
+				<table cellpadding="5">
+
+				<tr>
+
+				<td width="50%" align="left">
+				To<br>
+				<b>'.$booking['first_name'].' '.$booking['last_name'].'<br>
+				'.$booking['address'].'<br>
+				'.$booking['phone_number'].'<br>
+				'.$booking['email_address'].'
+				</b>
+				</td>
+				
+				<td width="50%" align="right">
+				Booking ID : <b>'.$booking['uid'].'</b><br>
+				Invoice Date : <b>'.date('d-M-Y',strtotime($booking['created_at'])).'</b><br>
+				Check In : <b>'.date('d-M-Y',strtotime($booking['check_in_date'])).'</b><br>
+				Check Out : <b>'.date('d-M-Y',strtotime($booking['check_out_date'])) .'</b>
+				</td>
+
+				
+				</tr>
+
+				</table>
+
+				';
+
+
+				$html .='
+
+				<table cellpadding="10" style="border-top:.5px solid black;">
+
+
+				
+				<tr >
+
+				<td align="center"></td>
+
+				<td align="center"></td>
+			  
+			  </tr>
+
+
+
+				<tr >
+
+				<td align="center"></td>
+
+				<td align="center"></td>
+			  
+			  </tr>
+
+				</table>
+				
+			';
+
+
+				$item_sec="";
+		
+				$item_sec .="
+				
+				<tr>
+
+				<td>{$booking['name']}</td>
+
+				<td>".date('d-M-Y',strtotime($booking['check_in_date']))."</td>
+				
+				<td>".date('d-M-Y',strtotime($booking['check_out_date']))."</td>
+
+				<td align=\"right\">Rs. ".$booking['total_amount']."</td>
+				
+				</tr>
+				
+				";
+
+
+				$html .='
+
+					<table cellpadding="10" border="1">
+
+					<tr style="">
+						
+						<th width="40%"><b>Room</b></th>
+
+						<th width="20%"><b>From</b></th>
+
+						<th width="20%"><b>To</b></th>
+
+						<th width="20%"><b>Price</b></th>
+					
+					</tr>
+					
+
+					'.$item_sec.'
+
+
+					<tr>
+					<td align="right" colspan="3" style="font-size:16px;"><b>Grand Total</b></td>
+					<td align="right" style="font-size:16px;"><b>Rs. '.$booking['total_amount'].'</b></td>
+					</tr>
+
+				</table>
+
+				';
+
+			// output the HTML content
+			$pdf->writeHTML($html, true, false, true, false, '');
+
+			$pdf->Output("{$booking['uid']}.pdf", "I");
+
+
+			}
+		
+
+
 		
 		
 	

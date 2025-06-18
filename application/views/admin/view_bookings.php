@@ -1,11 +1,33 @@
 <?php $this->load->view('admin/includes/header');?>
       <!-- Left side column. contains the logo and sidebar -->
       <aside class="main-sidebar">
-        <!-- sidebar: style can be found in sidebar.less -->
+      <!-- sidebar: style can be found in sidebar.less -->
        <?php $this->load->view('admin/includes/sidebar');?>
       </aside>
       
     
+
+      <style>
+      
+        .btn-primary
+        {
+          margin:5px 5px;
+        }
+
+
+        div.dataTables_filter
+        {
+        display:none;
+        }
+        
+          
+        
+        #datatable_filter
+        {
+        display:none;	
+        }
+
+      </style>
         
       
 
@@ -26,6 +48,27 @@
           <div class="row">
             <div class="col-xs-12">  
             
+
+
+                      <div class="row" style="margin:10px 0px;">
+                      <div class="col-lg-3"></div>
+                       
+                       
+                       <div class="col-lg-6">
+                       
+                       <label class="text-center" style="width:100%;">Enter Search Keyword</label>
+                       
+                       <input id="custom_search" type="text" class="form-control" value="" placeholder="Booking ID,Phone,Customer Name etc"/>
+                       
+                       </div>
+                       
+                       
+                       
+                       <div class="col-lg-3"></div>
+                       
+                       </div>
+
+
             
             
             
@@ -55,21 +98,17 @@
                             <table id="datatable" class="table table-bordered table-striped delTable" style="display:none;">
                     			<thead>
                                     <tr>
-                                        <th class="no-sort">Sl no</th>
-                                        
-                                         <th>Check In</th>    
+                                         <th>Id</th>    
                                      
-                                         <th>Check Out</th>
+                                         <th>Period</th>
 
                                          <th>Room</th>
 
-                                         <th>Name</th>
+                                         <th>Customer</th>
 
-                                         <th>Phone</th>
+                                         <th>Amount</th>
 
-                                         <th>Pending</th>
-
-                                         <th>Status</th>
+                                         <th>Booking Status</th>
 
                                          <th>Actions</th>
                                        
@@ -86,44 +125,72 @@
 									      foreach($bookings as $item=>$val):?>
 
                         <tr>
-                       			
-                        <td class=""><?= $i ?></td>
                                         
-                        <td><?= date('d M Y',strtotime($val->check_in_date)) ?></td>    
+                        <td><?= $val->uid; ?></td>    
                     
-                        <td><?= date('d M Y',strtotime($val->check_out_date)) ?></td>
+                        <td>
+
+                        <?= date('d M Y',strtotime($val->check_in_date)) ?> <br>To<br> <?= date('d M Y',strtotime($val->check_out_date)) ?>
+                      
+                        </td>
 
                         <td><?= $val->name ?></td>
 
-                        <td><?= $val->first_name ?> <?= $val->last_name ?></td>
-
-                        <td><?= $val->phone_number ?></td>
-
-                        <td><b style="color:red;"><?= $val->total_amount-$val->paid_amount; ?></b></td>
+                        <td>
+                        <?= $val->first_name ?> <?= $val->last_name ?><br>
+                        <?= $val->phone_number ?>
+                        </td>
+                      
+                        <td class="text-right">
+                        <b style="font-size:20px"><?= $val->total_amount; ?></b><br>
+                        <b style="color:green;font-size:20px"><?= $val->paid_amount; ?></b><br>
+                        <b style="color:red;font-size:20px"><?= format_currency($val->total_amount-$val->paid_amount); ?></b>
+                        </td>
 
                         <td>
-
                         <?php
                         if($val->booking_status=="pending"){
                         ?>
-                        <span class="btn btn-warning">Pending</span>
+                        <span class="btn btn-warning status_btn" data-id="<?= $val->booking_id ?>">Pending</span>
                         <?php 
                         }
                         else if($val->booking_status=="confirmed"){
                         ?>
-                        <span class="btn btn-success">Confirmed</span>
+                        <span class="btn btn-success status_btn" data-id="<?= $val->booking_id ?>">Confirmed</span>
                         <?php 
-                        } else {
+                        } else if($val->booking_status=="cancelled"){
                         ?>
-                        <span class="btn btn-danger">Cancelled</span>
+                        <span class="btn btn-danger status_btn" data-id="<?= $val->booking_id ?>">Cancelled</span>
                         <?php
                         }
+                        else if($val->booking_status=="checked_in"){
                         ?>
-                        
+                        <span class="btn btn-success status_btn" data-id="<?= $val->booking_id ?>">Checked In</span>
+                        <br><b><?= !empty($val->actual_check_in_date) ? date('d-m-Y', strtotime($val->actual_check_in_date)) : '' ?></b>
+                        <br><b><?= !empty($val->actual_check_in_date) ? date('h:i a', strtotime($val->actual_check_in_date)) : '' ?></b>
+                        <?php } 
+                        else if($val->booking_status=="checked_out") { ?>
+                        <span class="btn btn-success status_btn" data-id="<?= $val->booking_id ?>">Checked Out</span>
+                        <br><b><?= !empty($val->actual_check_out_date) ? date('d-m-Y', strtotime($val->actual_check_out_date)) : '' ?></b>
+                        <br><b><?= !empty($val->actual_check_out_date) ? date('h:i a', strtotime($val->actual_check_out_date)) : '' ?></b>
+                        <?php } ?>
+
                         </td>
 
                         <td>
-                          <a class="btn btn-primary"><i class="fa fa-file-text"></i> Invoice</a>
+                          
+                          <a class="btn btn-primary" href="<?= base_url(); ?>admin/Bookings/Invoice/<?= $val->booking_id; ?>" target="_blank" title="Print Invoice"><i class="fa fa-file-text"></i> </a>
+
+                          <a class="btn btn-primary" href="<?= base_url(); ?>admin/Bookings/View/<?= $val->booking_id; ?>" title="View Booking Details"><i class="fa fa-eye" ></i> </a>
+
+                          <?php if($val->booking_status!="cancelled"){ ?>
+                          <a class="btn btn-primary add_payment_btn" data-type="credit" data-id="<?= $val->booking_id;?>" data-toggle="modal" data-target="#payModal" title="Add Payment To Booking"><i class="fa fa-money"></i> </a>
+                          <?php } ?>
+
+                          <?php if($val->booking_status=="cancelled"){ ?>
+                          <a class="btn btn-warning add_refund_btn" data-type="debit" data-id="<?= $val->booking_id;?>" data-toggle="modal" data-target="#payModal" title="Add Refund To Booking"><i class="fa fa-reply"></i> </a>
+                          <?php } ?>
+
                         </td>
 
                         </tr>
@@ -135,7 +202,7 @@
                                     
                       </tbody> 
                    				
-                                <input type="hidden" id="alert-notification" value="Are you sure you want to delete this banner record?">
+                                
                   	</table>
                             
                              </div>
@@ -155,6 +222,120 @@
         
         <!-- /.content -->
       </div><!-- /.content-wrapper -->
+
+
+
+
+      <!-- Payment Modal Start -->
+
+
+
+      <!-- Modal -->
+  <div class="modal fade" id="payModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+          <form id="payment_form" method="post">
+          <input type="hidden" id="pay_booking_id" name="booking_id" value="">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Payment To Booking <span></span></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <h4 style="text-align:center" id="">Pending : <span style="color:red;" id="pending_amount"></span></h4>
+          <label>Enter Amount</label>
+          <input type="number" class="form-control" placeholder="Enter Amount" name="amount" id="amount" required>
+
+          <label>Payment Method</label>
+          <select class="form-control" name="payment_method" id="payment_method" required>
+            <option value="">Select Payment Method</option>
+            <option value="cash">Cash</option>
+            <option value="card">Card</option>
+            <option value="upi">UPI</option>
+            <option value="online">Online</option>
+          </select>
+
+          <label>Payment Date</label>
+          <input type="date" class="form-control" name="payment_date" onclick="this.showPicker();" id="payment_date" required>
+
+          <label>Payment Notes</label>
+          <textarea class="form-control" placeholder="Enter any notes" name="payment_notes" id="payment_notes"></textarea>
+
+          <input type="hidden" id="payment_type" name="payment_type" value="">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" onclick="return confirm('Add Payment?')">Add</button>
+      </div>
+    </div>
+      </form>
+  </div>
+</div>
+
+    <!-- Payment Modal End -->
+
+
+
+
+
+    <!-- Status Modal Start -->  
+
+  <div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+          <form id="status_form" method="post" action="<?= base_url(); ?>admin/Bookings/Status">
+          <input type="hidden" id="status_booking_id" name="booking_id" value="">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Check Out <span></span></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+          <label>Booking Status</label>
+          <select class="form-control" name="booking_status" id="booking_status" required>
+            <option value="">Select Booking Status</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="checked_in">Checked In</option>
+            <option value="checked_out">Checked Out</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+            
+          <div class="status_datetime">
+          <label>Date</label>
+          <input onclick="this.showPicker();" value="<?= date('Y-m-d') ?>" type="date" class="form-control" name="status_date" id="status_date" required>
+          </div>
+
+          <div class="status_datetime">
+          <label>Time</label>
+          <input onclick="this.showPicker();" value="<?= date('H:i') ?>" type="time" class="form-control" name="status_time" id="status_time" required>
+          </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" onclick="return confirm('Confirm Booking Status?')">Update</button>
+      </div>
+    </div>
+      </form>
+  </div>
+</div>
+
+    
+    <!-- Status Modal End -->
+
+
+
+
+
+
+
+
+
  <?php $this->load->view('admin/includes/footer');?>
  
  <script>
@@ -165,6 +346,153 @@
     $('.loader').removeClass("loader");
    
 	});
+
+
+    $('body').on('click', '.status_btn', function() {
+
+      var bookingId = $(this).data('id');
+
+      $('#status_form')[0].reset();
+
+      $('.status_datetime').hide();
+
+      $('#status_booking_id').val(bookingId);
+
+      $('#statusModal').modal('show');
+
+    });
+
+
+
+    $('body').on('change', '#booking_status', function() {
+
+    var status = $(this).val();
+
+    if(status == 'checked_in' || status == 'checked_out'){
+
+      $('.status_datetime').show();
+
+    } else {
+
+      $('.status_datetime').hide();
+    }
+
+
+    });
+
+
+
+
+
+      
+
+
+  $('body').on('click', '.add_payment_btn,.add_refund_btn', function() {
+    
+    var bookingId = $(this).data('id');
+
+    var paymentType = $(this).data('type');
+
+    $('#payment_form')[0].reset();
+
+    $('#payment_type').val(paymentType);
+
+    $('#pay_booking_id').val(bookingId);
+
+    $.ajax({
+    url : base_url + 'admin/Bookings/GetPending',
+    type : 'POST',
+    data : {bid: bookingId},  
+    success : function(response){
+    
+    response = JSON.parse(response);
+
+    if(response.status == 'success'){
+
+      if(paymentType == 'credit'){
+        
+        $('#payment_form').find('h5.modal-title').text('Add Payment To Booking');
+
+        $('#payModal .modal-title span').text(bookingId);
+
+        $('#pending_amount').text(response.pending);
+
+        $('#amount').attr('max', response.pending);
+
+        $('#amount').val(0);
+
+      } else {
+
+        $('#payment_form').find('h5.modal-title').text('Refund To Customer');
+
+        $('#payModal .modal-title span').text(bookingId);
+
+        $('#pending_amount').text(response.total_paid);
+
+        $('#amount').attr('max', response.total_paid);
+
+        $('#amount').val(response.total_paid);
+
+      }
+     
+      
+    } else {
+      alertify.error(response.message);
+    }
+
+    }
+
+    });
+    //$('#payModal').modal('show');
+  });
+
+
+  $('#payment_form').submit(function(e){
+
+  e.preventDefault();
+
+  //$(form).serialize()
+
+  $.ajax({
+
+    url : base_url + 'admin/Bookings/AddPayment',
+    type : 'POST',
+    data : $(this).serialize(),
+
+    success : function(response){
+
+      var response = JSON.parse(response);
+
+      if(response.status == 'success'){
+
+        alertify.success(response.message);
+
+        $('#payModal').modal('hide');
+        //location.reload();
+
+      } else {
+
+        alertify.error(response.message);
+
+      }
+
+    },
+
+  });
+
+  
+
+  });
+
+
+$( document ).ready(function() {
+      oTable = $('#datatable').DataTable(); 
+      $('#custom_search').keyup(function(){
+      oTable.search($(this).val()).draw() ;
+})
+});
+
+
 	
  	</script>
    

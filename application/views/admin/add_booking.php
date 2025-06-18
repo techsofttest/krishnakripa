@@ -50,7 +50,7 @@
             
             
             
-						<?php echo form_open('',array('method'=>"POST",'enctype'=>"multipart/form-data",'id'=>"add_gallery"))?>
+						<?php echo form_open(base_url().'admin/Bookings/Add',array('method'=>"POST",'enctype'=>"multipart/form-data",'id'=>"add_gallery"))?>
 			
 				   <!-- Form Element sizes -->
 				    <div class="box box-success">				
@@ -503,11 +503,12 @@
                     //$('.type_select').val()('change');
                     var check_in_date = $('input[name="check_in"]').val();
                     var check_out_date = $('input[name="check_out"]').val();
+                    var room_count = $('#no_of_rooms').val();
                     // Fetch and display available rooms based on the selected room type
                     $.ajax({
                         url: '<?php echo base_url("admin/Bookings/GetRoomsAvailable"); ?>',
                         type: 'POST',
-                        data: { room_type: selectedType,check_in: check_in_date, check_out: check_out_date },
+                        data: {room_count:room_count, room_type: selectedType,check_in: check_in_date, check_out: check_out_date },
                         success: function(response) {
                            var data = JSON.parse(response)
                            if(data.status==1)
@@ -547,7 +548,7 @@
                            $('.email_input').val(data.data.email_address);
                            $('.f_name_input').val(data.data.first_name);
                            $('.l_name_input').val(data.data.last_name);
-                           $('.address_input').val(data.data.address_input);
+                           $('.address_input').val(data.data.address);
                            $('#phone_status_icon').removeClass();
                            $('#phone_status_icon').addClass('fa fa-check text-success');
                            }

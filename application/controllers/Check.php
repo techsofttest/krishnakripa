@@ -5,20 +5,20 @@ class Check extends MY_Controller {
 	{
 		        parent::__construct();
 				$this->load->database();
-    $this->load->library('form_validation');
+    			$this->load->library('form_validation');
 				$this->load->helper(array('form', 'url', 'text'));
-    $this->load->model("Admin_model");
+    			$this->load->model("Admin_model");
+	 			$this->load->model("BookingModel");
 				$this->load->library('pagination');
 				$this->load->library('session');				
 			}
 			
+	
 			
     public function Book(){
-        
- $cond=array('seoid' => 7);
- $data['seo_data'] 	= 	$this->Admin_model->fetch_one_row('seopage',$cond);
+ 	$cond=array('seoid' => 7);
+ 	$data['seo_data'] 	= 	$this->Admin_model->fetch_one_row('seopage',$cond);
 	$this->load->view("bookonline",$data);
-
 	}
 	
 	public function index()
@@ -26,29 +26,31 @@ class Check extends MY_Controller {
 		$startdate =  $_GET['checkindate']; 
 		$enddate   =  $_GET['checkoutdate'];		
 		$startdate1         =  date('Y-m-d', strtotime($startdate)); 
-	 $enddate1           =  date('Y-m-d', strtotime($enddate)); 
-	 $diff               =  strtotime($startdate) - strtotime($enddate); 
-  $data['datediff']   =  abs(round($diff / 86400)); 			
-		$hotel             =  $_GET['hotel'];
-		$roomf = $_GET['room'];
+	 	$enddate1           =  date('Y-m-d', strtotime($enddate)); 
+	 	$diff               =  strtotime($startdate) - strtotime($enddate); 
+ 	 	$data['datediff']   =  abs(round($diff / 86400)); 			
+		//$hotel             =  $_GET['hotel'];
+		//$roomf 				=  $_GET['room'];
 		$adults             =  $_GET['adults'];
 		$children           =  $_GET['children'];
 		$rooms_count        =  $_GET['rooms_count'];
 		$total_room = $rooms_count;			
 
-$data['available_rooms'] = $this->Admin_model->check_availability($startdate1,$enddate1,$total_room,$hotel,$roomf);	
+		//$data['available_rooms'] = $this->Admin_model->check_availability($startdate1,$enddate1,$total_room,$hotel,$roomf);	
 
-$data['roomdet'] = $this->Admin_model->fetch_one_row('room',array('roomid'=>$roomf));
-		$rate = $data['roomdet']['rate'];
-		$tot = $rate*$data['datediff'];
-		$data['total_rate'] = $tot*$rooms_count;
-		$data['room_gst'] = $data['roomdet']['tax'];
-		$gstr = ($data['total_rate']*$data['roomdet']['tax'])/100;
-		$data['grand_rate'] = $data['total_rate']+$gstr;
+		$data['available_rooms'] = $this->BookingModel->get_available_rooms($total_room, $startdate1, $enddate1, $category=0);
+
+		//$data['roomdet'] = $this->Admin_model->fetch_one_row('room',array('roomid'=>$roomf));
+		//$rate = $data['roomdet']['rate'];
+		//$tot = $rate*$data['datediff'];
+		//$data['total_rate'] = $tot*$rooms_count;
+		//$data['room_gst'] = $data['roomdet']['tax'];
+		//$gstr = ($data['total_rate']*$data['roomdet']['tax'])/100;
+		//$data['grand_rate'] = $data['total_rate']+$gstr;
 
 
-if($_POST && isset($_POST['roomid']))
-{
+	if($_POST && isset($_POST['roomid']))
+	{
 
 	if(!isset($_POST['roomid']))
 	{
@@ -137,8 +139,219 @@ redirect(base_url().'Payment');
 
 $this->load->view('check_room',$data);
 
+}
+
+
+
+
+function GetRoomPrice()
+{
+
+if(empty($room_id=$this->input->post('room_id')))
+{
+echo json_encode(array('status' => 'error', 'message' => 'Room ID is required.'));
+return;
+}
+
+if(empty($checkin=$this->input->post('check_in')))
+{
+echo json_encode(array('status' => 'error', 'message' => 'Check-in date is required.'));
+return;
+}
+
+if(empty($checkout=$this->input->post('check_out')))
+{	
+echo json_encode(array('status' => 'error', 'message' => 'Check-out date is required.'));
+return;
+}
+
+if(empty($room_count=$this->input->post('room_count')))
+{	
+echo json_encode(array('status' => 'error', 'message' => 'No of rooms is required.'));
+return;
+}
+
+$room_cond = array('roomid' => $room_id);
+$room_data = $this->Admin_model->fetch_one_row('room', $room_cond);
+
+//No of days calculation
+$checkin_date = date("Y-m-d", strtotime($checkin));
+$checkout_date = date("Y-m-d", strtotime($checkout));
+$start_date = new DateTime($checkin_date);
+$end_date = new DateTime($checkout_date);
+$interval = $start_date->diff($end_date);
+$no_of_days = $interval->days;
+
+if($no_of_days <= 0) {
+	echo json_encode(array('status' => 'error', 'message' => 'Check-out date must be after check-in date.'));
+	return;
+}
+
+$total_price = $room_data['rate'] * $no_of_days * $room_count;	
+//$gst = ($total_price * $room_data['tax']) / 100;
+$gst  = 0;
+echo json_encode(array(
+	'status' => 'success',
+	'room_name' => $room_data['name'],
+	'room_rate' => $room_data['rate'],
+	'no_of_rooms' => $room_count,
+	'no_of_days' => $no_of_days,
+	'total_price' => $total_price,
+	'gst' => $gst,
+	'grand_total' => $total_price + $gst
+));
+
+//
 
 }
+
+
+
+
+function BookNow()
+{
+
+	if(!empty($this->input->post()))
+
+	{
+
+	$checkin = $this->input->post('check_in');
+
+	$checkout = $this->input->post('check_out');
+
+	$room_cond = array('roomid' => $this->input->post('room_id'));
+	$room_data = $this->Admin_model->fetch_one_row('room', $room_cond);
+
+	//No of days calculation
+	$checkin_date = date("Y-m-d", strtotime($checkin));
+
+	$checkout_date = date("Y-m-d", strtotime($checkout));
+
+	$room_count = $this->input->post('no_of_rooms');
+
+	$start_date = new DateTime($checkin_date);
+
+	$end_date = new DateTime($checkout_date);
+
+	$interval = $start_date->diff($end_date);
+
+	$no_of_days = $interval->days;
+
+	$total_price = $room_data['rate'] * $no_of_days * $room_count;
+
+	$booking_data  	= 	array(
+
+		    'check_in_date'  => date('Y-m-d',strtotime($this->input->post('check_in'))),
+		
+		    'check_out_date' => date('Y-m-d',strtotime($this->input->post('check_out'))),
+
+			'booking_room_id' => $this->input->post('room_id'),
+
+		    'adults'=>$this->input->post('adults'),
+		    
+			'children'=> $this->input->post('childrens') ?? 0,
+		    
+			'no_of_rooms'=>$this->input->post('no_of_rooms'),
+
+			'total_amount' => $total_price,
+
+			'payment_notes'=> "-",
+
+			'booking_notes'=>$this->input->post('notes'),
+
+			'booking_status'=> "pending",
+		
+		 	);
+		
+
+			//Customer Data 
+
+			$phone_number = trim($this->input->post('mobile'));
+
+			$check_customer = $this->Admin_model->fetch_one_row('customers',array('phone_number' => $phone_number));
+
+			if(empty($check_customer))
+			{
+
+			$cus_data = array(
+
+				'first_name' => $this->input->post('fname'),
+
+				'last_name' => $this->input->post('lname'),
+
+				'email_address' => $this->input->post('email'),
+
+				'phone_number' => trim($this->input->post('mobile')),
+
+				'address' => $this->input->post('address'),
+			);
+
+			$cus_id = $this->Admin_model->insertsection('customers',$cus_data);
+
+			$bid =  $this->Admin_model->insertsection('bookings',$booking_data);
+
+			$update_booking_data = array(
+				'booking_customer_id' => $cus_id,
+			);
+			$update_booking_cond = array('booking_id' => $bid);
+
+			$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
+
+			}
+
+			else
+			{
+
+			$bid =  $this->Admin_model->insertsection('bookings',$booking_data);
+
+			$update_booking_data = array(
+				'booking_customer_id' => $check_customer['cus_id'],
+			);
+			$update_booking_cond = array('booking_id' => $bid);
+
+
+			$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
+
+			}
+
+			/*
+			$payment_data = array(
+			'bp_booking' => $bid,
+			'bp_pay_method' => $this->input->post('payment_method'),
+			'bp_paid_on' => date('Y-m-d'),
+			'bp_notes' => $this->input->post('payment_notes'),
+			'bp_amount' => $this->input->post('current_payment'),
+			'bp_type' => 'credit',
+			);
+
+			$pay_id = $this->Admin_model->insertsection('booking_payments',$payment_data);
+			*/
+
+			$booking_uid = 'KK' . str_pad($bid, 5, '0', STR_PAD_LEFT);
+
+			$update_booking_data = array(
+				'uid' => $booking_uid,
+			);
+			$update_booking_cond = array('booking_id' => $bid);
+
+			$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
+
+			$this->session->userdata('b_id',$bid);
+					
+			$this->session->set_flashdata('success', 'Booking added successfully.');
+
+			redirect(base_url().'Booking/Summary');	
+
+
+		}
+
+
+}
+
+
+
+
+
 
 function Enquiry()	{   
 

@@ -7,7 +7,7 @@ class Payments extends MY_Controller {
 		parent::__construct();
 		$this->load->database();
         $this->load->library('form_validation');
-		$this->load->helper(array('form', 'url', 'text'));
+		$this->load->helper(array('form', 'url', 'text','number'));
         $this->load->model("Admin_model");	
 		$this->load->model("BookingModel");			
 		$this->load->library('session');		
@@ -23,7 +23,30 @@ class Payments extends MY_Controller {
 		
 		{ 
 
-    	$data['bookings']	=	$this->BookingModel->ViewBookings();	
+		$date_from = "";
+		$date_to = "";
+		$customer = "";
+	
+
+		if(!empty($this->input->get('date_from')))
+		{
+			$date_from = $this->input->get('date_from');
+		}
+
+		if(!empty($this->input->get('date_to')))
+		{
+			$date_to = $this->input->get('date_to');
+		}
+
+		if(!empty($this->input->get('customer')))
+		{
+			$customer = $this->input->get('customer');
+		}
+
+
+		$data['customers'] = $this->Admin_model->fetch_where_order('customers',array(),'first_name','asc');
+
+    	$data['payments']  =  $this->BookingModel->ViewPayments($date_from,$date_to,$customer);	
 
     	$data['seo_title'] = "View Payments | ".$this->data['admin_title'].""; 
 

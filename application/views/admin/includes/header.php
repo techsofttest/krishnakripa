@@ -112,6 +112,19 @@
 		max-height:250px;
 		max-width:250px;
 		}
+
+
+      /* Action Buttons Start*/
+
+      .action-button
+      {
+         padding: 5px;
+         border-radius: 10px;
+         font-size: 10px;
+         margin: 10px 0px;
+      }
+
+      /* Action Buttons End */
 	
 
 </style>
@@ -145,7 +158,7 @@
 
       <link href="<?php echo base_url();?>assets/admin/js/alertify/alertify.core.css" rel="stylesheet" type="text/css" />
       <link href="<?php echo base_url();?>assets/admin/js/alertify/alertify.default.css" rel="stylesheet" type="text/css" />
-      <!--    folder instead of downloading all of them to reduce the load. -->
+       folder instead of downloading all of them to reduce the load. -->
       <?php /*?><link href="<?php echo base_url();?>assets/admin/css/skins/_all-skins.min.css" rel="stylesheet" type="text/css" /><?php */?>
       <link href="<?PHP echo base_url();?>assets/admin/js/fancybox/jquery.fancybox.css" rel="stylesheet">
 
@@ -207,8 +220,15 @@
             </li>
             </ul>
           </div>
-  </nav>
+      </nav>
       </header>
-<script type="text/javascript">
+
+     <script type="text/javascript">
 	  var base_url  ="<?php echo base_url();?>";
 	  </script>
+
+
+<style>
+
+
+</style>

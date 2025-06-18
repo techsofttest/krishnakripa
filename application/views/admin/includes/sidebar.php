@@ -94,10 +94,8 @@
       
       <ul class="treeview-menu">
          
-      <li class="<?php if($this->uri->segment(3)=="Paid"):echo 'active'; endif; ?>" > <a href="<?php echo base_url();?>admin/Payments/Paid"> <i class="fa fa-plus-square"></i><span>Paid</span></a> </li>
+      <li class="<?php if($this->uri->segment(3)=="Paid"):echo 'active'; endif; ?>" > <a href="<?php echo base_url();?>admin/Payments/Paid"> <i class="fa fa-plus-square"></i><span>View All</span></a> </li>
 
-      <li class="<?php if($this->uri->segment(3)=="Pending"):echo 'active'; endif; ?>" > <a href="<?php echo base_url();?>admin/Payments/Pending"> <i class="fa fa-plus-square"></i><span>Pending</span></a> </li>
-         
       </ul>
 
       </li>

@@ -4,37 +4,13 @@ $(function () {
          $("#datatable_filter label").hide(); $("#datatable_length").append("<br>"+$("#sort").html());
      }
 },100);		
-	$(".fancybox-media").fancybox();
-	$(".contactcomment").fancybox();
-	$('#date').datetimepicker({
+	/*$('#date').datetimepicker({
 		format: 'dd-mm-yyyy hh:ii:ss',
 		autoclose: true,
         todayBtn: true,
         pickerPosition: "bottom-left"
-	});
-
-     $(".formValidation").validationEngine({
-          onkeyup: true,
-          maxErrorsPerField: 1,
-          promptPosition : "topRight:-85"
-        });
-
-    $("#add_banner").validationEngine();   
-    $("#add_tesimonial").validationEngine();
-	$("#add_page").validationEngine();
-	$("#edit_page").validationEngine();
-	$("#add_download").validationEngine();
-	$("#add_news_events").validationEngine();
-	$("#add_career").validationEngine();
-	$("#add_service").validationEngine();
-	$("#add_certification").validationEngine();
-	$("#add_project").validationEngine();
-	$("#add_award").validationEngine();
-	$(".formValidation").validationEngine();
-	$("#add_faq").validationEngine();
-	$("#add_project_plan").validationEngine();
-	$(".validation").validationEngine();
-	$('.btn-bulk-delete').attr( 'title','delete')// change attribute for bulk delete button
+	});*/
+	
 	
 });	
 
@@ -167,7 +143,7 @@ $(function () {
 	});
 	$('#datatable thead tr th:first-child').removeClass('sorting_asc');
     
-    $("#add_banner").validationEngine();   
+    //$("#add_banner").validationEngine();   
     
 		
 });	
@@ -176,6 +152,7 @@ $(function () {
 $(document).ready(function()
 {
 
+	/*
  	tinymce.init({
 		selector: "textarea.tinymce",
 		theme: "textareas",
@@ -193,8 +170,6 @@ $(document).ready(function()
      valid_children : "+a[figure|div|h1|h2|h3|h4|h5|h6|p|#text]",
      valid_elements : '*[*]',
 	   convert_urls: false,
-
-
 	   
 		toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link  jbimages",
 		toolbar2: "print preview media | forecolor backcolor emoticons  |  code",
@@ -203,35 +178,8 @@ $(document).ready(function()
 		file_browser_callback: myFileBrowser,
 		file_browser_callback_types: 'image'
 	
-	   
-	  
-	
 	});
-	
-	function myFileBrowser (field_name, url, type, win) {
-	
-		var w = window,
-		d = document,
-		e = d.documentElement,
-		g = d.getElementsByTagName('body')[0],
-		x = w.innerWidth || e.clientWidth || g.clientWidth,
-		y = w.innerHeight|| e.clientHeight|| g.clientHeight;
-		
-	
-		var cmsURL = base_url+'assets/admin/js/tinymce/filemanager/dialog.php?field_id='+field_name;
-	
-	
-		$.fancybox.open({
-			padding : 0,
-			minHeight   : 500,
-            fitToView   : false,
-            autoSize    : true,
-			href:cmsURL,
-			type: 'iframe'
-		});
-	
-		return false;
-	}
+	*/
 	
 	
     //tinymce.init({selector:'textarea'});
@@ -684,33 +632,7 @@ $( "#order" ).keyup(function() {
 	   
   });
  
-  // password updation
-
-        $("#passsubmit").click(function(){
-			if(!$("#form-password").validationEngine('validate')){
-            return false;
-            }else{
-				var newpass = $("#password-value").val();
-				var checkVal = $("#password-check").val();
-				
-				    if ($("#result").text()=="Good" || $("#result").text()=="Strong" ) {
-                       
-								$.ajax({
-									type: "POST",
-									url: base_url+"admin/change_password/update_password",
-									data: {newpass:newpass},
-									success: function(){
-										 alertify.success("Password Updated Successfully.");
-										 $('span#result').text('');
-										 $('#form-password')[0].reset();
-										}
-									});
-						  }else{
-							alertify.error("Please Enter Good Password");
-						  }
-					  
-			}
-         });
+  
 		
 // multiple delete
 $(".change_status").click(function(){

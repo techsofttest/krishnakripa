@@ -78,6 +78,7 @@ $rooms_count = $_GET['rooms_count'];
           <i class="fas fa-calendar-alt"></i> </div>
       </div>
 
+      <?php /*
       <div class="booking-box">
         <div class="contact-field">
         <select id="hotel_search" class="form-select" name="hotel" required>
@@ -88,7 +89,9 @@ $rooms_count = $_GET['rooms_count'];
            </select>
         </div>
       </div>
+      */?>
       
+      <?php /*
       <div class="booking-box">
         <div class="contact-field">
         <select class="form-select" id="RoomAvl" name="room" required>
@@ -97,6 +100,7 @@ $rooms_count = $_GET['rooms_count'];
            
         </div>
       </div>
+      */ ?>
       
       
       <div class="booking-box">

@@ -1,7 +1,4 @@
-
-
 <?php $this->load->view('header');?>
-
 
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <style>
@@ -191,7 +188,7 @@ TELSTRA CHECKBOX STYLES
     border: 2px solid lightblue;
     cursor:pointer;
     margin: 2px 0; 
-    opacity: 0.7;
+    opacity: 0.8;
     border: 1px solid #bdbdbd;
     transition: all .3s ease;
     transform: scale(0.99);
@@ -199,7 +196,8 @@ TELSTRA CHECKBOX STYLES
 }
 
 .radio.selected{
-    border-color: #ef7c00 !important;
+    border: 5px solid;
+    border-color: #ff0000 !important;
     opacity: 1;
     transform: scale(1);
     transition: all .3s ease;
@@ -257,7 +255,66 @@ TELSTRA CHECKBOX STYLES
 
 
 
+
+/* New Room Card STart */
+
+.room-card
+{
+  box-shadow: 0px 0px 3px 1px #bababa;
+  border-radius: 10px;
+  margin: 15px 0px;
+}
+
+
+.room-image img
+{
+    height: 220px;
+    width: 100%;
+    object-fit: cover;
+}
+
+.room-name h3
+{
+  font-size: 18px;
+  margin: 10px 0px 0px 0px;
+  padding: 10px 0px 0px 0px;
+  text-align: center;
+}
+
+.room-details p
+{
+text-align:center;
+margin: 0;
+padding:5px;
+}
+
+
+.room-price p
+{
+    text-align: center;
+    font-size: 13px;
+}
+
+.room-price span
+{
+    font-size: 19px;
+    font-weight: 600;
+    color:red;
+}
+
+
+/* New Room Card End */
+
+textarea.form-control, textarea {
+    min-height: 65px;
+}
+
+
+
 </style>
+
+
+
 <div class="breadcumb-wrapper " data-bg-src="<?php echo base_url()?>assets/img/attraction-banner.jpg">
     <div class="container">
         <div class="breadcumb-content">
@@ -294,11 +351,11 @@ TELSTRA CHECKBOX STYLES
 	  $total_amount           = 0;
 
 
-    $checkindate  = $_GET['checkindate'];
-    $checkoutdate = $_GET['checkoutdate'];
-    $rooms_count  = $_GET['rooms_count'];
-    $adults       = $_GET['adults'];
-    $children     = $_GET['children'];
+    $checkindate  = !empty($_GET['checkindate']) ? $_GET['checkindate'] : null;
+    $checkoutdate = !empty($_GET['checkoutdate']) ? $_GET['checkoutdate'] : null;
+    $rooms_count  = !empty($_GET['rooms_count']) ? $_GET['rooms_count'] : null;
+    $adults       = !empty($_GET['adults']) ? $_GET['adults'] : null;
+    $children     = !empty($_GET['children']) ? $_GET['children'] : null;
     $total_person = intval($adults)+intval($children);
 
     $bed_tmp     = fmod($total_person,3);
@@ -342,7 +399,7 @@ TELSTRA CHECKBOX STYLES
 
   }
 
-    $extra_bed = $extra_bed_count;  ?>
+    $extra_bed = $extra_bed_count; ?>
 
 
 
@@ -374,7 +431,16 @@ TELSTRA CHECKBOX STYLES
 
 </div>
 
-    <?php
+
+<div class="row">
+
+<div class="col-sm-12 text-center">
+
+    <h3>Select Your Room</h3>
+
+</div>
+
+  <?php
 
   $available_count=0;
  
@@ -418,7 +484,9 @@ TELSTRA CHECKBOX STYLES
 
   ?>
      
-      <div class="row my-3 radio" data-value="<?php echo $val->roomid; ?>" title="Click To Select This Room">
+      <?php /*
+      <div class="row my-3 col-sm-6 radio" data-value="<?php echo $val->roomid; ?>" title="Click To Select This Room">
+
       <div class="col-md-6 p-0">
         <div class="item">
          <a href="<?php echo base_url();?>rooms/<?php echo $val->room_slug_name;?>"> <div class="position-re o-hidden"><img src="<?php echo base_url();?>uploads/Rooms/<?php echo $val->image;?>" alt=""> </div></a>
@@ -510,31 +578,61 @@ TELSTRA CHECKBOX STYLES
         </div>
       </div>
 
-
     </div>
+    */
+    ?>
+
+
+          <div class="col-sm-4 radio-container">
+
+              <div class="room-card radio" data-value="<?php echo $val->roomid; ?>" title="Select This Room">
+
+              <div class="room-image">
+
+              <img src="<?php echo base_url();?>uploads/Rooms/<?php echo $val->image;?>">
+
+              </div>
+
+              <div class="room-name">
+
+              <h3><?php echo $val->name;?></h3>
+
+              </div>
+
+              <div class="room-details">
+
+              <p>Size : <?php echo $val->room_size; ?></p>
+
+              </div>
+
+              <div class="room-price">
+
+              <p>Rs <span><?php echo $val->rate; ?></span>/Night</p>
+
+              </div>
+
+              <div class="input_fields_wrap_<?php echo $val->roomid?> input_fields_wrap">
+                
+              <input type="hidden" value="1" style="width: 25%;text-align: center;display:inline-block;" class="cboNumRooms" id="cboNumRooms-<?php echo $val->roomid;?>" readonly/>
+
+              </div>
+
+              </div>
+
+
+          </div>
 
 
 
 
       <input type="hidden" id="single_price<?php echo $val->roomid;?>" value="<?php echo $val->rate;?>">
-      <input type="hidden" id="total_rooms<?php echo $val->roomid;?>" value="<?php echo $val->avail_room;?>">
-      <input type="hidden" id="selected_rooms<?php echo $val->roomid;?>" value="0">
-      <input type="hidden" id="total_price<?php echo $val->roomid; ?>" value="0">
-
       
-
+      <input type="hidden" id="total_rooms<?php echo $val->roomid;?>" value="<?php echo $val->avail_room;?>">
+      
+      <input type="hidden" id="selected_rooms<?php echo $val->roomid;?>" value="0">
+      
       
       <input type="hidden" id="s_roomid" value="<?php echo $val->roomid;?>">
-
-     
-
-
-      <input type="hidden" id="s_total_price_nights<?php echo $val->roomid; ?>"  value="<?php echo $total_price_nights;?>">
-      <input type="hidden" id="s_disc_price_nights<?php echo $val->roomid; ?>" value="<?php echo $disc_price_nights;?>">
-      <input type="hidden" id="s_total_price_extra_bed<?php echo $val->roomid; ?>" value="<?php echo $total_price_extra_bed;?>">
-      <input type="hidden" id="s_total_gst<?php echo $val->roomid; ?>" value="<?php echo $total_gst;?>">
-      <input type="hidden" id="s_total_amount<?php echo $val->roomid; ?>" value="<?php echo $total_amount;?>">
-   
 
 
     <?php  
@@ -556,6 +654,9 @@ $available_count++;
     }
 
     ?>
+
+
+  </div>
     
 
     <?php  if($available_count<1) { ?>
@@ -572,90 +673,123 @@ $available_count++;
         <h2>Enter Guest Details</h2>
       </div>
     </div>        
+
+     <form method="post" action="<?php echo base_url()?>Check/BookNow" id="check-form">
+
 <div class="row">
-<div class="col-lg-8">
+<div class="col-lg-6 order-2">
     <div class="row my-3 Guest">
-      <form method="post" action="<?php echo base_url()?>Check/Enquiry" id="check-form">
-          <input type="hidden" value="<?php echo $_GET['checkindate']?>" name="checkin">
-          <input type="hidden" value="<?php echo $_GET['checkoutdate']?>" name="checkout">
-          <input type="hidden" value="<?php echo $_GET['hotel']?>" name="hotel">
-          <input type="hidden" value="<?php echo $_GET['adults']?>" name="adults">
-          <input type="hidden" value="<?php echo $_GET['children']?>" name="children">
-          <input type="hidden" value="<?php echo $_GET['rooms_count']?>" name="rooms_count">
-           <input type="hidden" value="<?php echo $total_rate;?>" name="totalrate">
-            <input type="hidden" value="<?php echo $room_gst;?>" name="gst">
-             <input type="hidden" value="<?php echo $grand_rate;?>" name="grand">
+
+     
+          
         <div class="row">
+
           <div class="col-lg-6">
-            <input type="text" class="form-control" placeholder="Name" name="name" required>
+            <input type="text" class="form-control" placeholder="First Name" name="fname" required>
           </div>
+
           <div class="col-lg-6">
-            <input type="email" class="form-control" placeholder="Email" name="email" required/>
+            <input type="text" class="form-control" placeholder="Last Name" name="lname" required>
           </div>
+
           <div class="col-lg-6">
             <input type="text" class="form-control" placeholder="Mobile" name="mobile" required>
           </div>
+
           <div class="col-lg-6">
-            <input type="text" class="form-control" placeholder="Address" name="address" required>
+            <input type="email" class="form-control" placeholder="Email" name="email" required/>
           </div>
-          <div class="col-lg-6">
-            <input type="text" class="form-control" placeholder="City" name="city" required>
-          </div>
-          <div class="col-lg-6">
-            <input type="text" class="form-control" placeholder="Post Code" name="post_code" required>
-          </div>
+          
           <div class="col-lg-12">
-            <input type="text" class="form-control" placeholder="Country" name="country" required>
+            <textarea rows="3" class="form-control" placeholder="Address" name="address" required></textarea>
           </div>
+         
+
           <div class="col-lg-12">
-<textarea name="bed_pref"  class="form-control" placeholder="Comment..."></textarea>
+        <textarea rows="3" name="notes"  class="form-control" placeholder="Notes/Preferences..."></textarea>
           </div>
         </div> 
         
           <!-- Google reCAPTCHA widget -->
- <div class="form-group col-12">
-        <div class="g-recaptcha" data-sitekey="6LdhoLAqAAAAAMH-IZ8__VbUYsFwrNvpSkbIdd1o" required></div>
-    </div>
+          <div class="form-group col-12">
+          <div class="g-recaptcha" data-sitekey="6LdhoLAqAAAAAMH-IZ8__VbUYsFwrNvpSkbIdd1o" required></div>
+          </div>
         
-        
-        
-      <div style="display: flex;align-items: center;justify-content: center;">      
-    <div class="col-lg-4" >   
-    <input class="as-btn style4 shadow-none" type="submit" name="sub" value="Submit">
-      </div></div>
-  </form>
+        <input type="hidden" id="book_room_id" name="room_id">
+
+        <input type="hidden" id="book_check_in" name="check_in" value="<?= $checkindate ?>">
+
+        <input type="hidden" id="book_check_out" name="check_out" value="<?= $checkoutdate ?>">
+
+        <input type="hidden" id="book_adults" name="adults" value="<?= $adults ?>">
+
+        <input type="hidden" id="book_children" name="children" value="<?= $children ?>">
+
+        <input type="hidden" id="book_rooms" name="no_of_rooms" value="<?= $rooms_count ?>">
+
+
+
+
 </div>
-</div>
+  </div>
+
  <?php if(!empty($available_rooms)){?>
-<div class="col-lg-4" style="margin-top:18px;">
+<div class="col-lg-6 order-1" style="margin-top:18px;">
 
 <table class="table">
+
+
+          <tr>
+            <td>Room Name</td>
+            <td id="b_room_name">-</td>
+          </tr> 
+
+          <tr>
+            <td>Room Price</td>
+            <td id="b_room_amount">-</td>
+          </tr> 
+
           <tr>
             <td>No Of Days</td>
-            <td id="display_nights"><?php echo $datediff;?> Nights</td>
+            <td id="b_no_of_days">-</td>
           </tr>
           <tr>
 
           <tr>
             <td>No Of Rooms</td>
-            <td id="display_nights"><?php echo $rooms_count;?> Rooms</td>
+            <td id="b_no_of_rooms">-</td>
           </tr>
-          <tr>
 
-            <td>Total Amount</td>
-            <td id="display_amount">Rs.&nbsp;<?php echo $total_rate;?></td>
-          </tr>         
+          <?php /*
           <tr>
             <td>GST</td>
-            <td id="display_gst"><?php echo $room_gst;?>%</td>
+            <td id="display_gst">%</td>
           </tr>
+          */ ?>
+
+          
           <tr class="grand_total">
             <td>Grand Total</td>
-            <td id="display_grandtotal">Rs.&nbsp;<?php echo $grand_rate;?></td>
+            <td id="b_total_amount">-</td>
           </tr>
+
         </table>
       </div>
       <?php } ?>
+
+
+      </div>
+
+
+       <div class="col-lg-12 my-3 text-center" style="display: flex;align-items: center;justify-content: center;">      
+        <div class="col-lg-3">   
+          <input class="as-btn style4 shadow-none" type="submit" name="sub" value="Make Payment">
+        </div>
+      </div>
+
+        </form>
+
+
     </div>
 </div>
 </div>
@@ -860,12 +994,44 @@ var incrementMinus = buttonMinus.click(function() {
 
 
 $('.radio').click(function(){
-    $(this).parent().find('.radio').removeClass('selected');
+
+    $('.radio-container').parent().find('.radio').removeClass('selected');
+    
     $(this).addClass('selected');
-    var val = $(this).attr('data-value');
-    //alert(val);
-    $('#f_roomid').val(val);
-    $('#f_roomid').change();
+
+    var roomid = $(this).attr('data-value');
+
+    const params = new URLSearchParams(window.location.search);
+
+     $.ajax({
+            url: '<?php echo base_url(); ?>Check/GetRoomPrice',
+            type: 'POST',
+            data: {
+                  room_id: roomid, 
+                  check_in: params.get('checkindate'), 
+                  check_out: params.get('checkoutdate'),
+                  room_count: params.get('rooms_count'),
+                  },
+
+                  success: function(response) {
+
+                  var data = JSON.parse(response)
+
+                  $('#book_room_id').val(roomid);
+
+                  $('#b_room_name').html(data.room_name);
+
+                  $('#b_room_amount').html(data.room_rate);
+
+                  $('#b_no_of_days').html(data.no_of_days);
+
+                  $('#b_no_of_rooms').html(data.no_of_rooms);
+
+                  $('#b_total_amount').html(data.total_price);
+                     
+                  }
+              });
+    
 });
 
 
@@ -976,7 +1142,8 @@ function formValidate()
 
   <script>
             
-            if ($_SERVER["REQUEST_METHOD"] === "POST") {
+  /*
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $recaptcha_secret = "6LdhoLAqAAAAAMDXdlG__dGL4HLhfwR5pFshJfjL"; // Replace with your Secret Key
     $recaptcha_response = $_POST['g-recaptcha-response'];
 
@@ -984,7 +1151,7 @@ function formValidate()
     $verify_response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$recaptcha_secret&response=$recaptcha_response");
     $response_data = json_decode($verify_response);
 
-    if ($response_data->success) {
+    if ($response_data.success) {
         // reCAPTCHA verified successfully
         echo "Message sent successfully!";
     } else {
@@ -992,9 +1159,7 @@ function formValidate()
         echo "Please complete the reCAPTCHA.";
     }
 }
-        </script>
         
-        <script>
     document.getElementById('check-form').addEventListener('submit', function(event) {
         var recaptchaResponse = grecaptcha.getResponse();
         if (recaptchaResponse.length === 0) {
@@ -1004,6 +1169,7 @@ function formValidate()
             alert("Please complete the reCAPTCHA to submit the form.");
         }
     });
+  */
 </script>
         
 
