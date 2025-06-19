@@ -140,14 +140,14 @@
               <!-- small box -->
              <div class="small-box" style="">
                 <div class="inner">
-                  <h3 style="">0<?php //echo $max_order;?></h3>
+                  <h3 style="" id="booking_count"><?php echo $summary['booked_count'];?></h3>
                   <p>Bookings</p>
                 </div>
                 <div class="icon">
                  <!-- <i class="fa fa-shopping-cart"></i>-->
                   <a href="#" style="color:rgba(0, 0, 0, 0.15)"><i class="fa fa-star" style="padding-top:10px"></i></a>
                 </div>
-                <a href="#" class="small-box-footer">
+                <a href="<?php echo base_url(); ?>admin/Bookings" class="small-box-footer">
                   More info <i class="fa fa-arrow-circle-right"></i>
                 </a>
               </div>
@@ -159,7 +159,7 @@
               <!-- small box -->
              <div class="small-box" style="">
                 <div class="inner">
-                  <h3 style="">0<?php //echo $max_order;?></h3>
+                  <h3 style="" id="checkin_count"><?php echo $summary['checkin_count'];?></h3>
                   <p>Check In's</p>
                 </div>
                 <div class="icon">
@@ -180,7 +180,7 @@
               <!-- small box -->
              <div class="small-box" style="">
                 <div class="inner">
-                  <h3 style="">0<?php //echo $max_order;?></h3>
+                  <h3 style="" id="checkout_count"><?php echo $summary['checkout_count'];?></h3>
                   <p>Check Out's</p>
                 </div>
                 <div class="icon">
@@ -200,7 +200,7 @@
               <!-- small box -->
              <div class="small-box" style="">
                 <div class="inner">
-                  <h3 style="">0<?php //echo $max_order;?></h3>
+                  <h3 style=""><?php echo $customers;?></h3>
                   <p>Customers</p>
                 </div>
                 <div class="icon">
@@ -251,7 +251,7 @@
                           <div class="room-box">
 
                               <h3 class="room-title"><?= $val->name ?></h3>
-                              <p class="room-available"><?= $val->avail_room ?></p>
+                              <p class="room-available" id="<?= $val->room_slug_name ?>"><?= $val->available_rooms ?></p>
                               <p class="room-price"></p>
 
                           </div>
@@ -498,6 +498,37 @@ $(function() {
     $('.day').removeClass('today');
 
     $(this).addClass('today');
+
+    var date_val = $(this).data('date');
+
+    $('.room-available').html('-');
+
+    $.ajax({
+
+      url : '<?= base_url() ?>admin/Home/RoomAvailableByDate',
+      type : 'POST',
+      data : {date:date_val},
+      success:function(response)
+      {
+      
+      var response = JSON.parse(response);
+
+      //console.log(response);
+
+      var rooms = response.rooms;
+
+      rooms.forEach(function(room) {
+        $('#' + room.room_slug_name).html(room.available_rooms);
+      });
+
+      $('#booking_count').html(response.summary.booked_count);
+      $('#checkin_count').html(response.summary.checkin_count);
+      $('#checkout_count').html(response.summary.checkout_count);
+
+
+      }
+
+    });
 
     /*
     $('#class_wrapper').hide();

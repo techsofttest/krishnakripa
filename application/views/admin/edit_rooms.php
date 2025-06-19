@@ -1,6 +1,73 @@
 <?php $this->load->view('admin/includes/header');?>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
+      <style>
+
+
+        .fac-box
+        {
+        text-align: center;
+        margin: 10px 0px;
+        box-shadow: 0px 0px 3px 3px #0000002e;
+        padding: 10px;
+        border-radius: 10px;
+        }
+
+        .fac-box img
+        {
+        height: 40px !important;
+        width: 40px !important;
+        object-fit: contain;
+        }
+
+        .fac-box h3
+        {
+        font-size:13px;
+        margin:2px;
+
+        }
+
+        .fac-box a
+        {
+
+        color: red;
+
+        }
+
+
+         .img-box
+        {
+        text-align: center;
+        margin: 10px 0px;
+        box-shadow: 0px 0px 3px 3px #0000002e;
+        padding: 10px;
+        border-radius: 10px;
+        }
+
+        .img-box img
+        {
+        height: 100px !important;
+        width: 100% !important;
+        object-fit: contain;
+        }
+
+        .img-box h3
+        {
+        font-size:13px;
+        margin:2px;
+
+        }
+
+        .img-box a
+        {
+
+        color: red;
+
+        }
+
+        
+      </style>
+
       <!-- Left side column. contains the logo and sidebar -->
       <aside class="main-sidebar">
         <!-- sidebar: style can be found in sidebar.less -->
@@ -121,6 +188,8 @@
 <!--<input type="text" id="text-input" name="extrabed_price" placeholder="Extrabed Price" class="form-control"  onKeyPress="return isNumeric(event)" value="<?php echo $arr_pack["extrabed_price"]?>" required>-->
 <!--							</div>-->
 <!--                          </div>-->
+
+
                           <div class="row">
 						     <div class="col-xs-12 col-sm-3 row-seperate">
 							 <label> Room Size  <strong style="color:#F00;">*</strong></label>
@@ -139,13 +208,26 @@
                           </div> 
 
 
-                          <?php  foreach($fac as $facl) {	?>
-                           <?php echo $facl->Factitle;?>
-                    <img  src="<?php echo base_url();?>uploads/Rooms/<?php echo $facl->Facimage;?>" style="width:138px;height:100px;padding-top:10px;display:inline"/>
-                  
+
+                  <div class="row">
+                  <div class="col-xs-12 col-sm-3 row-seperate">
+                  <label>Added Facilities</label>
+                  </div>
+                    <div class="col-xs-12 col-sm-9 row-seperate">
+                    <div class="row">
+                    <?php  foreach($fac as $facl) {	?>
+                    <div class="col-sm-2">
+                    <div class="fac-box">
+                    <img  src="<?php echo base_url();?>uploads/Rooms/<?php echo $facl->Facimage;?>" style=""/>
+                     <h3><?php echo $facl->Factitle;?></h3>
                     <a class="lnk_new" href="<?php echo base_url();?>admin/Rooms/DeleteRoomsFac/<?php echo $facl->roomid; ?>/<?php echo $facl->imageid; ?>" title="Delete" OnClick="return confirm('Do you want to Delete');">Delete</a>
-                                   
+                    </div>
+                    </div>           
 				         	<?php } ?>
+                    </div>
+                    </div>
+
+                    </div>
 				
 
                           <div class="row" style="margin-top:5%">
@@ -200,27 +282,42 @@
 														?>                         
 							</div>
                           </div>
+
                           <div class="row">
-						     <div class="col-xs-12 col-sm-3 row-seperate">
-							 <label>Change Image </label>
-                             </div>
+                          <div class="col-xs-12 col-sm-3 row-seperate">
+                        <label>Change Image </label>
+                                      </div>
                              <div class="col-xs-12 col-sm-9 row-seperate">
                               <input type="file" class="form-control" name="main_img[]" >
-							</div>
-                          </div>                        
-                    
+							              </div>
+                          </div> 
+
+
+                  <div class="row">
+                  <div class="col-xs-12 col-sm-3 row-seperate">
+                  <label>More Images </label>
+                  </div>
+                  <div class="col-xs-12 col-sm-9 row-seperate">
+                    <div class="row">
                   <?php  foreach($res as $new=>$val) {	?>
-                    <img  src="<?php echo base_url();?>uploads/Rooms/<?php echo $val->more_image;?>" style="width:138px;height:100px;padding-top:10px;"/>
+                    <div class="col-sm-4">
+                    <div class="img-box">
+                    <img  src="<?php echo base_url();?>uploads/Rooms/<?php echo $val->more_image;?>" style="display:block;"/>
                     <a class="lnk_new" href="<?php echo base_url();?>admin/Rooms/DeleteRoomsMore/<?php echo $val->roomid; ?>/<?php echo $val->imageid; ?>" title="Delete" OnClick="return confirm('Do you want to Delete');">Delete</a>
-                                   
+                    </div>
+                    </div>       
 				         	<?php } ?>
+                  </div>
+                  </div>
+
+                  </div>
 				
 						      	</div>
                           </div>  
                    
                           <div class="row">
 						     <div class="col-xs-12 col-sm-3 row-seperate">
-							 <label>More Image<strong style="color:#F00;">*</strong></label>
+							 <label>Add New More Image<strong style="color:#F00;">*</strong></label>
                              
                              </div>
                   <div class="col-xs-12 col-sm-9 row-seperate field_wrapper">                

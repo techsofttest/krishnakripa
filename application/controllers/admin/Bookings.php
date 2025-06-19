@@ -160,6 +160,16 @@ class Bookings extends MY_Controller {
 			'booking_notes'=>$this->input->post('booking_notes'),
 
 			'booking_status'=>$this->input->post('booking_status'),
+
+			'customer_first_name' => $this->input->post('f_name'),
+
+			'customer_last_name' => $this->input->post('l_name'),
+
+			'customer_email' => $this->input->post('email'),
+
+			'customer_phone_number' => trim($this->input->post('phone')),
+
+			'customer_address' => $this->input->post('address'),
 		
 		 	);
 		
@@ -280,6 +290,12 @@ class Bookings extends MY_Controller {
 
 
 
+
+		
+
+
+
+
 		public function CalculatePrice()
 		{
 
@@ -394,9 +410,27 @@ class Bookings extends MY_Controller {
 
 		$data['refunds'] = $this->BookingModel->ViewPaymentsByBookingId($id,"debit");
 
+		$data['total_payments'] = $this->BookingModel->BookingTotalPayments($id);
+
+		$data['total_refunds'] = $this->BookingModel->BookingTotalRefunds($id);
+
 		$this->load->view('admin/view_booking_single',$data);
  
 		}
+
+
+		public function Edit($id)
+		{
+
+		$data['booking'] = $this->BookingModel->ViewBookingById($id);
+
+		$data['room_types']	=	$this->Admin_model->fetch_all_order('categories','cat_title','asc');
+
+		$this->load->view('admin/edit_booking',$data);
+
+
+		}
+
 
 
 
@@ -437,6 +471,8 @@ class Bookings extends MY_Controller {
 			echo json_encode(['status' => 'error', 'message' => 'Booking ID is missing']);
 			return;
 		}
+		$booking = $this->BookingModel->ViewBookingById($booking_id);
+
 		// Validate the payment date
 		$payment_date = $this->input->post('payment_date');
 		if (empty($payment_date) || !DateTime::createFromFormat('Y-m-d', $payment_date)) {
@@ -449,6 +485,16 @@ class Bookings extends MY_Controller {
 			echo json_encode(['status' => 'error', 'message' => 'Invalid amount']);
 			return;
 		}
+
+		$total_already_paid = $this->BookingModel->BookingTotalPayments($booking_id);
+
+		if($amount>($booking['total_amount']-$total_already_paid))
+		{
+			echo json_encode(['status' => 'error', 'message' => 'Cannot be greater than total amount']);
+			return;
+		}
+
+
 		// Validate the payment method
 		$payment_method = $this->input->post('payment_method');
 		if (empty($payment_method)) {
@@ -480,13 +526,15 @@ class Bookings extends MY_Controller {
 
 			if($payment_type=="credit")
 			{
-			$booking = $this->BookingModel->ViewBookingById($booking_id);
-			$new_paid_amount = $booking['paid_amount'] + $this->input->post('amount');
+
 			$update_booking_data = array(
-				'paid_amount' => $new_paid_amount
+				'paid_amount' => $this->BookingModel->BookingTotalPayments($booking_id)
 			);
+
 			$update_booking_cond = array('booking_id' => $booking_id);
+
 			$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
+
 			}
 
 			echo json_encode(['status' => 'success', 'message' => 'Payment added successfully']);
@@ -751,7 +799,7 @@ class Bookings extends MY_Controller {
 				<td width="50%" align="left">
 				To<br>
 				<b>'.$booking['first_name'].' '.$booking['last_name'].'<br>
-				'.$booking['address'].'<br>
+				'.nl2br($booking['address']).'<br>
 				'.$booking['phone_number'].'<br>
 				'.$booking['email_address'].'
 				</b>
@@ -766,6 +814,7 @@ class Bookings extends MY_Controller {
 
 				
 				</tr>
+				
 
 				</table>
 
@@ -809,9 +858,13 @@ class Bookings extends MY_Controller {
 
 				<td>{$booking['name']}</td>
 
+				<td>{$booking['rate']}</td>
+
 				<td>".date('d-M-Y',strtotime($booking['check_in_date']))."</td>
 				
 				<td>".date('d-M-Y',strtotime($booking['check_out_date']))."</td>
+
+				<td>{$booking['no_of_rooms']}</td>
 
 				<td align=\"right\">Rs. ".$booking['total_amount']."</td>
 				
@@ -826,13 +879,17 @@ class Bookings extends MY_Controller {
 
 					<tr style="">
 						
-						<th width="40%"><b>Room</b></th>
+						<th width="20%"><b>Room</b></th>
 
-						<th width="20%"><b>From</b></th>
+						<th width="20%"><b>Price / Day</b></th>
 
-						<th width="20%"><b>To</b></th>
+						<th width="15%"><b>Check In</b></th>
 
-						<th width="20%"><b>Price</b></th>
+						<th width="15%"><b>Check Out</b></th>
+
+						<th width="10%"><b>No Of Rooms</b></th>
+
+						<th width="20%"><b>Amount</b></th>
 					
 					</tr>
 					
@@ -841,13 +898,29 @@ class Bookings extends MY_Controller {
 
 
 					<tr>
-					<td align="right" colspan="3" style="font-size:16px;"><b>Grand Total</b></td>
+					<td align="right" colspan="5" style="font-size:16px;"><b>Grand Total</b></td>
 					<td align="right" style="font-size:16px;"><b>Rs. '.$booking['total_amount'].'</b></td>
 					</tr>
 
 				</table>
 
 				';
+
+				$footer_html = '
+					<hr>
+					<table width="100%" style="font-size:9px;">
+						<tr>
+							<td width="50%" align="left">
+								Krishnakripa Residency, Ambalamedu PO, Kakkanad, Kochi
+							</td>
+							<td width="50%" align="right">
+								Page '.$pdf->getAliasNumPage().' of '.$pdf->getAliasNbPages().'
+							</td>
+						</tr>
+					</table>
+				';
+
+				$pdf->setHtmlFooter($footer_html);
 
 			// output the HTML content
 			$pdf->writeHTML($html, true, false, true, false, '');

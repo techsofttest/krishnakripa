@@ -21,8 +21,16 @@ class Home extends MY_Controller {
 	function index()
 	{   
 	   
-		$data['bookings']	=	$this->BookingModel->ViewBookingsToday();	
-		$data['rooms'] = $this->Admin_model->fetch_all('room');
+		$data['bookings']	=	$this->BookingModel->ViewBookingsToday();
+
+		$data['customers'] = 5;
+
+		//$data['rooms'] = $this->Admin_model->fetch_all('room');
+
+		$data['rooms'] = $this->BookingModel->get_available_room_count_by_date(date('Y-m-d'));
+
+		$data['summary'] = $this->BookingModel->get_daily_booking_summary(date('Y-m-d'));
+
 		$this->load->view('admin/home',$data);
 		
 	}
@@ -53,6 +61,19 @@ class Home extends MY_Controller {
 	}
 	
 	// change profile
+
+	public function RoomAvailableByDate()
+	{
+
+	$date = date('Y-m-d',strtotime($this->input->post('date')));
+	
+	$data['rooms'] = $this->BookingModel->get_available_room_count_by_date($date);
+
+	$data['summary'] = $this->BookingModel->get_daily_booking_summary($date);
+
+	echo json_encode($data);
+
+	}
 	
 		
 }

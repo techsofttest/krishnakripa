@@ -185,9 +185,12 @@ Other Contents</span></a> </li>
       <li class="<?php if($this->uri->segment(3)=="AddRooms"):echo 'active'; endif; ?>" > <a href="<?php echo base_url();?>admin/Rooms/AddRooms"> <i class="fa fa-plus-square"></i><span>Add Room</span></a> </li>
          
         <li class="<?php if( ($this->uri->segment(2)=="Rooms" && $this->uri->segment(3)=="") || $this->uri->segment(3)=="EditRoom"):echo 'active'; endif; ?>" > <a href="<?php echo base_url();?>admin/Rooms"> <i class="fa fa-plus-square"></i><span>View/Edit Rooms</span></a> </li>
+        
+        <?php /*
         <li class="<?php if(($this->uri->segment(2)=="Available_dates" && $this->uri->segment(3)=="")):echo 'active'; endif; ?>"><a href="<?php echo base_url();?>admin/Available_dates"><i class="fa fa-calendar" aria-hidden="true"></i><span> Available Dates</span>
               </a>
-            </li>     
+        </li>   
+        */ ?>  
           
       </ul>
       </li>
@@ -199,9 +202,12 @@ Other Contents</span></a> </li>
       <li class="<?php if($this->uri->segment(3)=="AddStay"):echo 'active'; endif; ?>" > <a href="<?php echo base_url();?>admin/Stay/AddRooms"> <i class="fa fa-plus-square"></i><span>Add Room</span></a> </li>
          
         <li class="<?php if( ($this->uri->segment(2)=="Stay" && $this->uri->segment(3)=="") || $this->uri->segment(3)=="EditStay"):echo 'active'; endif; ?>" > <a href="<?php echo base_url();?>admin/Stay"> <i class="fa fa-plus-square"></i><span>View/Edit Rooms</span></a> </li>
+        
+        <?php /*
         <li class="<?php if(($this->uri->segment(2)=="Available_stay_dates" && $this->uri->segment(3)=="")):echo 'active'; endif; ?>"><a href="<?php echo base_url();?>admin/Available_stay_dates"><i class="fa fa-calendar" aria-hidden="true"></i><span> Available Dates</span>
               </a>
-            </li>     
+        </li>     
+        */ ?>
           
       </ul>
       </li>

@@ -260,6 +260,16 @@ function BookNow()
 			'booking_notes'=>$this->input->post('notes'),
 
 			'booking_status'=> "pending",
+
+			'customer_first_name' => $this->input->post('fname'),
+
+			'customer_last_name' => $this->input->post('lname'),
+
+			'customer_email' => $this->input->post('email'),
+
+			'customer_phone_number' => trim($this->input->post('mobile')),
+
+			'customer_address' => $this->input->post('address'),
 		
 		 	);
 		
@@ -302,6 +312,27 @@ function BookNow()
 			else
 			{
 
+			/* Update Customer Data Start */
+
+			$update_cus_data = array(
+
+				'first_name' => $this->input->post('fname'),
+
+				'last_name' => $this->input->post('lname'),
+
+				'email_address' => $this->input->post('email'),
+
+				'phone_number' => trim($this->input->post('mobile')),
+
+				'address' => $this->input->post('address'),
+			);
+
+			$update_customer_cond = array('cus_id' => $check_customer['cus_id']);
+
+			$this->Admin_model->update_all($update_cus_data,$update_customer_cond,'customers');
+
+			/* Update Customer Data End */
+
 			$bid =  $this->Admin_model->insertsection('bookings',$booking_data);
 
 			$update_booking_data = array(
@@ -332,16 +363,16 @@ function BookNow()
 			$update_booking_data = array(
 				'uid' => $booking_uid,
 			);
+
 			$update_booking_cond = array('booking_id' => $bid);
 
 			$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
 
 			$this->session->set_userdata('b_id',$bid);
 					
-			$this->session->set_flashdata('success', 'Booking added successfully.');
+			//$this->session->set_flashdata('success', 'Booking added successfully.');
 
 			redirect(base_url().'Booking/Summary');	
-
 
 		}
 

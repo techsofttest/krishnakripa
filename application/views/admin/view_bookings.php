@@ -9,7 +9,7 @@
 
       <style>
       
-        .btn-primary
+        .btn
         {
           margin:5px 5px;
         }
@@ -108,6 +108,8 @@
 
                                          <th>Amount</th>
 
+                                         <th>Payments</th>
+
                                          <th>Booking Status</th>
 
                                          <th>Actions</th>
@@ -148,29 +150,44 @@
                         </td>
 
                         <td>
+
+                        
+                        <?php 
+                      
+                        if($val->booking_status=="cancelled"){ ?>
+                        <a class="btn btn-warning add_refund_btn" data-type="debit" data-id="<?= $val->booking_id;?>" data-toggle="modal" data-target="#payModal" title="Refund To Customer"><i class="fa fa-reply"></i> Refund</a>
+                        <?php } else { ?>
+                        <a class="btn btn-primary add_payment_btn" data-type="credit" data-id="<?= $val->booking_id;?>" data-toggle="modal" data-target="#payModal" title="Add Payment To Booking"><i class="fa fa-money"></i> Payment</a>
+                        <?php } ?>
+
+                       
+
+                        </td>
+
+                        <td>
                         <?php
                         if($val->booking_status=="pending"){
                         ?>
-                        <span class="btn btn-warning status_btn" data-id="<?= $val->booking_id ?>">Pending</span>
+                        <span class="btn btn-warning status_btn" data-id="<?= $val->booking_id ?>"><i class="fa fa-clock-o" ></i> Pending</span>
                         <?php 
                         }
                         else if($val->booking_status=="confirmed"){
                         ?>
-                        <span class="btn btn-success status_btn" data-id="<?= $val->booking_id ?>">Confirmed</span>
+                        <span class="btn btn-success status_btn" data-id="<?= $val->booking_id ?>"><i class="fa fa-check" ></i> Confirmed</span>
                         <?php 
                         } else if($val->booking_status=="cancelled"){
                         ?>
-                        <span class="btn btn-danger status_btn" data-id="<?= $val->booking_id ?>">Cancelled</span>
+                        <span class="btn btn-danger status_btn" data-id="<?= $val->booking_id ?>"><i class="fa fa-times" ></i> Cancelled</span>
                         <?php
                         }
                         else if($val->booking_status=="checked_in"){
                         ?>
-                        <span class="btn btn-success status_btn" data-id="<?= $val->booking_id ?>">Checked In</span>
+                        <span class="btn btn-success status_btn" data-id="<?= $val->booking_id ?>"><i class="fa fa-sign-in" ></i> Checked In</span>
                         <br><b><?= !empty($val->actual_check_in_date) ? date('d-m-Y', strtotime($val->actual_check_in_date)) : '' ?></b>
                         <br><b><?= !empty($val->actual_check_in_date) ? date('h:i a', strtotime($val->actual_check_in_date)) : '' ?></b>
                         <?php } 
                         else if($val->booking_status=="checked_out") { ?>
-                        <span class="btn btn-success status_btn" data-id="<?= $val->booking_id ?>">Checked Out</span>
+                        <span class="btn btn-success status_btn" data-id="<?= $val->booking_id ?>"><i class="fa fa-sign-out" ></i> Checked Out</span>
                         <br><b><?= !empty($val->actual_check_out_date) ? date('d-m-Y', strtotime($val->actual_check_out_date)) : '' ?></b>
                         <br><b><?= !empty($val->actual_check_out_date) ? date('h:i a', strtotime($val->actual_check_out_date)) : '' ?></b>
                         <?php } ?>
@@ -179,17 +196,12 @@
 
                         <td>
                           
-                          <a class="btn btn-primary" href="<?= base_url(); ?>admin/Bookings/Invoice/<?= $val->booking_id; ?>" target="_blank" title="Print Invoice"><i class="fa fa-file-text"></i> </a>
+                          <a style="" class="btn btn-primary" href="<?= base_url(); ?>admin/Bookings/Invoice/<?= $val->booking_id; ?>" target="_blank" title="Print Invoice"><i class="fa fa-file-text"></i> </a>
 
                           <a class="btn btn-primary" href="<?= base_url(); ?>admin/Bookings/View/<?= $val->booking_id; ?>" title="View Booking Details"><i class="fa fa-eye" ></i> </a>
 
-                          <?php if($val->booking_status!="cancelled"){ ?>
-                          <a class="btn btn-primary add_payment_btn" data-type="credit" data-id="<?= $val->booking_id;?>" data-toggle="modal" data-target="#payModal" title="Add Payment To Booking"><i class="fa fa-money"></i> </a>
-                          <?php } ?>
+                          <a class="btn btn-warning" href="<?= base_url(); ?>admin/Bookings/Edit/<?= $val->booking_id; ?>" title="Edit Booking Details"><i class="fa fa-pencil" ></i> </a>
 
-                          <?php if($val->booking_status=="cancelled"){ ?>
-                          <a class="btn btn-warning add_refund_btn" data-type="debit" data-id="<?= $val->booking_id;?>" data-toggle="modal" data-target="#payModal" title="Add Refund To Booking"><i class="fa fa-reply"></i> </a>
-                          <?php } ?>
 
                         </td>
 
@@ -434,7 +446,6 @@
         $('#amount').val(response.total_paid);
 
       }
-     
       
     } else {
       alertify.error(response.message);
@@ -468,11 +479,12 @@
         alertify.success(response.message);
 
         $('#payModal').modal('hide');
-        //location.reload();
+
+        location.reload();
 
       } else {
 
-        alertify.error(response.message);
+        alert(response.message);
 
       }
 

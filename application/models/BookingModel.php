@@ -18,10 +18,28 @@ class BookingModel extends CI_model {
     }
 
     //Fetch Datatable End
+
+
+
+    public function get_daily_booking_summary($date)
+    {
+    $prefix = $this->db->dbprefix;
+
+    $sql = "
+        SELECT 
+            (SELECT COUNT(*) FROM {$prefix}bookings WHERE booking_status != 'cancelled' AND check_in_date = ?) AS checkin_count,
+            (SELECT COUNT(*) FROM {$prefix}bookings WHERE booking_status != 'cancelled' AND check_out_date = ?) AS checkout_count,
+            (SELECT COUNT(*) FROM {$prefix}bookings WHERE DATE(created_at) = ?) AS booked_count
+    ";
+
+    $query = $this->db->query($sql, [$date, $date, $date]);
+    return $query->row_array(); // returns an object with checkin_count, checkout_count, booked_count
+    }
+
 	
 	
 
-
+    /*
     public function get_available_rooms($room_count, $check_in, $check_out, $category)
     {
         $this->db->select('r.*');
@@ -62,6 +80,64 @@ class BookingModel extends CI_model {
 
         return $query->result();
     }
+    */
+
+    public function get_available_rooms($room_count, $check_in, $check_out, $category)
+    {
+    $this->db->select('r.*, (r.avail_room - IFNULL(b.booked_rooms, 0)) as available_rooms', false);
+    $this->db->from('room r');
+
+    if ($category != 0) {
+        $this->db->where('r.category', $category);
+    }
+
+    // Subquery to calculate total booked rooms for each room in the date range
+    $subquery = "(SELECT booking_room_id, SUM(no_of_rooms) as booked_rooms
+                  FROM {$this->db->dbprefix('bookings')}
+                  WHERE booking_status != 'cancelled'
+                  AND (
+                      ('$check_in' < check_out_date AND '$check_out' > check_in_date)
+                  )
+                  GROUP BY booking_room_id
+                ) as b";
+
+    // Join subquery
+    $this->db->join($subquery, 'b.booking_room_id = r.roomid', 'left');
+
+    // Ensure enough rooms are available
+    $this->db->having('available_rooms >=', $room_count);
+
+    $query = $this->db->get();
+    return $query->result();
+    }
+
+
+
+
+    public function get_available_room_count_by_date($date)
+    {
+    $this->db->select('r.roomid,r.room_slug_name, r.name, r.avail_room, IFNULL(b.booked_rooms, 0) as booked_rooms, 
+                      (r.avail_room - IFNULL(b.booked_rooms, 0)) as available_rooms', false);
+    $this->db->from('room r');
+
+    // Subquery: Sum no_of_rooms booked on the given date
+    $subquery = "(SELECT booking_room_id, SUM(no_of_rooms) as booked_rooms
+                  FROM {$this->db->dbprefix('bookings')}
+                  WHERE booking_status != 'cancelled'
+                  AND booking_status != 'pending'
+                  AND '$date' >= check_in_date
+                  AND '$date' < check_out_date
+                  GROUP BY booking_room_id
+                ) AS b";
+
+    // Left join to room table
+    $this->db->join($subquery, 'b.booking_room_id = r.roomid', 'left');
+
+    $query = $this->db->get();
+    return $query->result();
+    }
+
+
 
     public function get_available_room_counts($check_in = null, $check_out = null, $category = 0)
     {
@@ -85,10 +161,11 @@ class BookingModel extends CI_model {
         $subquery = "(SELECT booking_room_id, COUNT(*) as booked_count
             FROM {$this->db->dbprefix('bookings')}
             WHERE booking_status != 'cancelled'
+            AND booking_status != 'pending'
             AND (
-                ('$check_in' BETWEEN check_in_date AND DATE_SUB(check_out_date, INTERVAL 1 DAY)) OR
-                ('$check_out' BETWEEN check_in_date AND DATE_SUB(check_out_date, INTERVAL 1 DAY)) OR
-                (check_in_date BETWEEN '$check_in' AND '$check_out')
+            ('$check_in' BETWEEN check_in_date AND DATE_SUB(check_out_date, INTERVAL 1 DAY)) OR
+            ('$check_out' BETWEEN check_in_date AND DATE_SUB(check_out_date, INTERVAL 1 DAY)) OR
+            (check_in_date BETWEEN '$check_in' AND '$check_out')
             )
             GROUP BY booking_room_id
         ) b";
@@ -158,6 +235,35 @@ class BookingModel extends CI_model {
         return false;
     }
     }
+
+
+    public function BookingTotalPayments($id)
+    {
+
+    $this->db->select_sum('bp_amount');
+    $this->db->from('booking_payments');
+    $this->db->where('bp_type', 'credit');
+    $this->db->where('bp_booking', $id);
+    $query = $this->db->get();
+    $result = $query->row_array();
+    return isset($result['bp_amount']) ? $result['bp_amount'] : 0;
+
+    }
+
+
+    public function BookingTotalRefunds($id)
+    {
+
+    $this->db->select_sum('bp_amount');
+    $this->db->from('booking_payments');
+    $this->db->where('bp_type', 'debit');
+    $this->db->where('bp_booking', $id);
+    $query = $this->db->get();
+    $result = $query->row_array();
+    return isset($result['bp_amount']) ? $result['bp_amount'] : 0;
+
+    }
+
 
 
     public function ViewPaymentsByBookingId($id,$type="")

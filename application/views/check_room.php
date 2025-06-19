@@ -457,24 +457,6 @@ textarea.form-control, textarea {
   
   $available = TRUE;  
 
-  $each_day = $this->Admin_model->check_room_each_day($val->roomid,$_GET['checkindate'],$_GET['checkoutdate']);
-
-  foreach($each_day as $check_each)
-  {
-    
-    $available_on_day = $check_each->avail_room;
-
-    if($available_on_day<$_GET['rooms_count'])
-    {
-     
-      $available=FALSE;
-
-    }
-
-  }
-
-  
-  
   if($available==TRUE)
   {
 
@@ -585,7 +567,7 @@ textarea.form-control, textarea {
 
           <div class="col-sm-4 radio-container">
 
-              <div class="room-card radio" data-value="<?php echo $val->roomid; ?>" title="Select This Room">
+              <div class="room-card radio" id="roomid<?php echo $val->roomid; ?>" data-value="<?php echo $val->roomid; ?>" title="Select This Room">
 
               <div class="room-image">
 
@@ -1136,6 +1118,33 @@ function formValidate()
 		$button.parent().find('input').val(newVal);
     $('#xtrabed_nos').html(newVal);
 	});
+
+</script>
+
+
+<script>
+
+  <?php if(!empty($room_id_get=$this->input->get('room_selected'))){ ?>
+
+  if ($('#roomid<?= $room_id_get ?>').length) {
+    $('#roomid<?= $room_id_get ?>').trigger('click');
+
+    $('html, body').animate({
+      scrollTop: $('.booking_step_heading').last().offset().top
+    }, 500);
+  }
+  else
+  {
+
+  Swal.fire({
+  title: "Room unavailable!",
+  text: "Please select another room!",
+  icon: "error"
+  });
+
+  }
+
+  <?php } ?>
 
 </script>
 

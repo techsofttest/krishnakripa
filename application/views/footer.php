@@ -328,27 +328,36 @@ Toast.fire({
 </script>
 
 <?php } ?>
+
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 <script>
-  $( function() {
-    $( "#datepicker" ).datepicker(
-        {
-            minDate: 0,
-             onSelect: function(selectedDate) {
-      $("#datepicker1").datepicker("option", "minDate", selectedDate);
-    }
-        });
-  } );
-  $( function() {
-    $( "#datepicker1" ).datepicker({
-         minDate: 0,
-          onSelect: function(selectedDate) {
-      $("#datepicker").datepicker("option", "maxDate", selectedDate);
-    }
+  $(function() {
+    $("#datepicker").datepicker({
+      minDate: 0,
+      onSelect: function(selectedDate) {
+        var date = $(this).datepicker('getDate');
+        if (date) {
+          date.setDate(date.getDate() + 1);
+          $("#datepicker1").datepicker("option", "minDate", date);
+        }
+      }
     });
-    
-  } );
+  });
+
+  $(function() {
+    $("#datepicker1").datepicker({
+      minDate: 1,
+      onSelect: function(selectedDate) {
+        var date = $(this).datepicker('getDate');
+        if (date) {
+          date.setDate(date.getDate() - 1);
+          $("#datepicker").datepicker("option", "maxDate", date);
+        }
+      }
+    });
+  });
+
   </script>
 
   
@@ -444,7 +453,7 @@ $(document).on("change", "#hotel_search", function() {
 
    <script>
             
-            if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $recaptcha_secret = "6LdhoLAqAAAAAMDXdlG__dGL4HLhfwR5pFshJfjL"; // Replace with your Secret Key
     $recaptcha_response = $_POST['g-recaptcha-response'];
 

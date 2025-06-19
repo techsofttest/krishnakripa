@@ -70,19 +70,21 @@
 						     <div class="col-xs-12 col-sm-3 row-seperate">
 							 <label>Name<strong style="color:#F00;">*</strong></label>
                              </div>
-                             <div class="col-xs-12 col-sm-9 row-seperate">
+                             <div class="col-xs-12 col-sm-4 row-seperate">
                              <input type="text" name="name" class="form-control" required>
 							</div>
                           </div>
 
+                          <?php /*
                           <div class="row">
-						     <div class="col-xs-12 col-sm-3 row-seperate">
-							 <label>Select Date Range<strong style="color:#F00;">*</strong></label>
-                             </div>
-                             <div class="col-xs-12 col-sm-4 row-seperate">
-                             <input type="text" name="daterange" class="form-control" required>
-							</div>
+						              <div class="col-xs-12 col-sm-3 row-seperate">
+							            <label>Select Date Range<strong style="color:#F00;">*</strong></label>
                           </div>
+                          <div class="col-xs-12 col-sm-4 row-seperate">
+                          <input type="text" name="daterange" class="form-control" required>
+							            </div>
+                          </div>
+                          */ ?> 
                                                      
                            <div class="row">
 						     <div class="col-xs-12 col-sm-3 row-seperate">

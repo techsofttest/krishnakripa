@@ -41,7 +41,7 @@ $color = '#'.$color_pic;
 
 $type	        =	$_POST['type'];			 
 $name		           =	$_POST['name'];
-$daterange		   =	$_POST['daterange'];
+//$daterange		   =	$_POST['daterange'];
 $rate		   =	$_POST['rate'];
 $facilities		       =	$_POST['facilities'];
 $description		   =	$_POST['description'];
@@ -74,8 +74,8 @@ $data['name_data'] 	= 	$this->Admin_model->fetch_data('room',$name_cond);
 	'facilities'		=>	$facilities,
 	'description'	=>	$description,
 	'avail_room'	        =>	$avail_room,
- 'startdate'		        =>	$startdate1,
- 'enddate'	            =>	$enddate1,	
+	//'startdate'		    =>	$startdate1,
+	//'enddate'	            =>	$enddate1,	
 	'tax'	                =>	$tax,
 	'create_date'	        =>	$create_date,
 	'room_size'	            =>	$room_size,
@@ -86,6 +86,7 @@ $data['name_data'] 	= 	$this->Admin_model->fetch_data('room',$name_cond);
 	
 		$id = 	$this->Admin_model->insertsection('room',$add_data);
 
+			/*
 			$sTime = strtotime($startdate[0]); // Start as time  
 			$eTime = strtotime($startdate[1]); // End as time  
 			
@@ -95,17 +96,16 @@ $data['name_data'] 	= 	$this->Admin_model->fetch_data('room',$name_cond);
 			$nextdate = date('Y-m-d', strtotime($betdates .' +1 day'));
 			
 			$fieldsin  	= 	array(
-	'roomid'           =>    $id,
-	'avail_room'       =>    $avail_room,
-	'startdate'		   =>	$betdates,
-	'end_date'		   =>	$nextdate,
-	'rate'     =>	$rate,	
-	'hotel' => 0
-	);
-			
+			'roomid'           =>    $id,
+			'avail_room'       =>    $avail_room,
+			'startdate'		   =>	$betdates,
+			'end_date'		   =>	$nextdate,
+			'rate'     =>	$rate,	
+			'hotel' => 0
+			);
 			$passin = 	$this->Admin_model->insertsection('available_date',$fieldsin);
-		
-		} 
+			} 
+			*/
 			
 
 			for ($i = 0; $i < count($_FILES['main_img']['name']); $i++) 
@@ -163,18 +163,15 @@ $data['name_data'] 	= 	$this->Admin_model->fetch_data('room',$name_cond);
 					
 					move_uploaded_file($_FILES["Facimage"]["tmp_name"][$i],  $uploadfile."/".$gallery);
 					
-					
-						
-			$fieldsin  	= 	array('roomid'  => $id,'Facimage'=>$gallery,'Factitle'=>$_POST['Factitle'][$i]);
-			$add_imgg2 = 	$this->Admin_model->insertsection('room_facility',$fieldsin);
+					$fieldsin  	= 	array('roomid'  => $id,'Facimage'=>$gallery,'Factitle'=>$_POST['Factitle'][$i]);
+					$add_imgg2 = 	$this->Admin_model->insertsection('room_facility',$fieldsin);
 									
 					}
 				}	
 				
-				
-		
-		$this->session->set_flashdata('success', 'Rooms Added Successfully.'); 
-		redirect(base_url().'admin/Rooms/AddRooms');
+				$this->session->set_flashdata('success', 'Rooms Added Successfully.'); 
+
+				redirect(base_url().'admin/Rooms/AddRooms');
 		
 	  
 	  }	
@@ -225,9 +222,10 @@ $data['name_data'] 	= 	$this->Admin_model->fetch_data('room',$name_cond);
 		{			 
 			$data['seo_title'] 	= 	"View Rooms | ".$this->data['admin_title']."";		
 
-				$data['type_data']	=	$this->Admin_model->fetch_all_order('categories','cat_id','Desc');		
+			$data['type_data']	=	$this->Admin_model->fetch_all_order('categories','cat_id','Desc');		
 			 
 			$cond1                  =   array('roomid' => $roomid);
+
 			$data['arr_pack'] 	= 	$this->Admin_model->fetch_one_row('room',$cond1);
 		
 			$data['res'] 	        = 	$this->Admin_model->fetch_data('room_images',$cond1);
@@ -500,5 +498,19 @@ $pass_adds	=	$this->Admin_model->update_all($datass,$cond_fet,'available_date');
 			}
 			return $slug_name;
 		}
+
+
+		public function ToggleAvailability($rid,$status)
+		{
+
+		
+
+		}
+
+
+
+
+
+
 			    			
 }

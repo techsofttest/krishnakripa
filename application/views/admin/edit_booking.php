@@ -1,7 +1,6 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
-
 <style>
 .totals{
     text-align: right;
@@ -48,9 +47,7 @@
             	<?php }?>
             
             
-            
-            
-						<?php echo form_open(base_url().'admin/Bookings/Add',array('method'=>"POST",'enctype'=>"multipart/form-data",'id'=>"add_gallery"))?>
+						<?php echo form_open(base_url().'admin/Bookings/Edit',array('method'=>"POST",'enctype'=>"multipart/form-data",'id'=>"add_gallery"))?>
 			
 				   <!-- Form Element sizes -->
 				    <div class="box box-success">				
@@ -74,14 +71,14 @@
 						                     
                  <div class="col-xs-12 col-sm-6 row-seperate">
                  <label>Check In<strong style="color:#F00;">*</strong></label>
-	               <input id="checkin" class="form-control" name="check_in"   type="date" min="<?= date('Y-m-d'); ?>" onclick="this.showPicker()" required>	
+	               <input id="checkin" class="form-control" name="check_in"   type="date" min="" value="<?= date('Y-m-d',strtotime($booking['check_in_date'])) ?>" onclick="this.showPicker()" required>	
 							    
                  </div>
 
 
                  <div class="col-xs-12 col-sm-6 row-seperate">
                  <label>Check Out<strong style="color:#F00;">*</strong></label>
-	               <input id="checkout" class="form-control room_check" name="check_out"  type="date" onclick="this.showPicker()" required>	
+	               <input id="checkout" class="form-control room_check" name="check_out" value="<?= date('Y-m-d',strtotime($booking['check_out_date'])) ?>"  type="date" onclick="this.showPicker()" required>	
 							    
                  </div>
 
@@ -92,18 +89,16 @@
                   
 
 
-                   <div class="row">
+                  <div class="row">
 						                     
-                 <div class="col-xs-12 col-sm-4 row-seperate">
+                  <div class="col-xs-12 col-sm-4 row-seperate">
                   <label>Adults<strong style="color:#F00;">*</strong></label>
-	                
                   <select class="form-control room_check" name="adults" required>
                   <option value="">Select No Of Adults</option>
                   <?php for($i=1;$i<=15;$i++){ ?>
-                  <option value="<?= $i ?>"><?= $i ?></option>
+                  <option value="<?= $i ?>" <?php if($i==$booking['adults']) { echo "selected"; } ?>><?= $i ?></option>
                   <?php } ?>
                   </select>
-							    
                  </div>
 
 
@@ -113,22 +108,20 @@
 	                <select class="form-control room_check" name="childrens" required>
                   <option value="">Select No Of Children</option>
                   <?php for($i=0;$i<=10;$i++){ ?>
-                  <option value="<?= $i ?>"><?= $i ?></option>
+                  <option value="<?= $i ?>" <?php if($i==$booking['children']) { echo "selected"; } ?>><?= $i ?></option>
                   <?php } ?>
                   </select>
-							    
                  </div>
 
 
                  <div class="col-xs-12 col-sm-4 row-seperate">
 
                  <label>No Of Rooms<strong style="color:#F00;">*</strong></label>
-	               <input class="form-control room_check" id="no_of_rooms" name="rooms"  type="number" required>	
+	               <input class="form-control room_check" id="no_of_rooms" name="rooms"  type="number" value="<?= $booking['no_of_rooms']; ?>" required>	
 							    
                  </div>
 
-
-                  </div>                        
+                 </div>                        
                           
                           
                      
@@ -176,7 +169,8 @@
 
                           
 
-              <div class="row"> 
+                <?php /*
+                <div class="row"> 
 
                 <div class="col-xs-12 col-sm-12 row-seperate">
 
@@ -221,6 +215,8 @@
                 </div>
 
 							  </div>
+                */
+                ?>
 
 
 
@@ -299,7 +295,7 @@
                 
                 <label> Phone <strong style="color:#F00;">*</strong></label>
                 <div class="input-group">
-							  <input class="form-control phone_input" name="phone" autocomplete="off" required>	
+							  <input class="form-control phone_input" name="phone" autocomplete="off" value="<?= $booking['customer_phone_number'] ?>" required>	
                 
                 <span class="input-group-addon transparent">
                 <i id="phone_status_icon" class='fa fa-question' aria-hidden='true'></i>
@@ -311,7 +307,7 @@
 
                 <div class="col-xs-12 col-sm-6 row-seperate">
                               <label> Email <strong style="color:#F00;"></strong></label>
-							  <input class="form-control email_input" type="email" name="email" autocomplete="off">	
+							  <input class="form-control email_input" type="email" value="<?= $booking['customer_email']; ?>" name="email" autocomplete="off">	
 							        </div>
 
                   </div>
@@ -323,14 +319,14 @@
 
                   <div class="col-xs-12 col-sm-6 row-seperate">
                   <label> First Name <strong style="color:#F00;">*</strong></label>
-							    <input class="form-control f_name_input" type="text" name="f_name" autocomplete="off" required>
+							    <input class="form-control f_name_input" type="text" name="f_name" value="<?= $booking['customer_first_name']; ?>" autocomplete="off" required>
 
 							    </div>
 
 
                   <div class="col-xs-12 col-sm-6 row-seperate">
                     <label> Last Name <strong style="color:#F00;">*</strong></label>
-							    <input class="form-control l_name_input" type="text" name="l_name" autocomplete="off" required>	
+							    <input class="form-control l_name_input" type="text" name="l_name" value="<?= $booking['customer_last_name']; ?>" autocomplete="off" required>	
 							    </div>
                    
 
@@ -343,21 +339,20 @@
 
                   <div class="col-xs-12 col-sm-6 row-seperate">
                   <label> Address <strong style="color:#F00;"></strong></label>
-							    <textarea class="form-control address_input" name="address" autocomplete="off"></textarea>
+							    <textarea class="form-control address_input" name="address" value="<?= $booking['customer_address']; ?>" autocomplete="off"></textarea>
 
 							    </div>
 
-                   <div class="col-xs-12 col-sm-6 row-seperate">
-                          <label> ID Proof <strong style="color:#F00;"></strong></label>
-							            <input class="form-control" type="file" name="">
-							     </div>
+                  <div class="col-xs-12 col-sm-6 row-seperate">
+                      <label>Update ID Proof <strong style="color:#F00;"></strong></label>
+							        <input class="form-control" type="file" name="id_proof">
+							    </div>
 
 
                   </div>
 
 
-
-                   <div class="row"> 
+                <div class="row"> 
                 <div class="col-xs-12 col-sm-12 row-seperate text-center">
 
                 <h3>Payment & Status</h3>
@@ -366,56 +361,14 @@
                 </div>
 
 
-
-
-                  <div class="row">
-						 
-                    <div class="col-xs-12 col-sm-6 row-seperate">
-                              <label> Payment Method <strong style="color:#F00;">*</strong></label>
-
-                              <select class="form-control" name="payment_method" required>
-                                  <option value="">Select Payment Method</option>
-                                  <option value="cash">Cash</option>
-                                  <option value="card">Card</option>
-                                  <option value="upi">UPI</option>
-                                  <option value="online">Online</option>  
-                              </select>
-							  
-							        </div>
-
-
-
-                       <div class="col-xs-12 col-sm-6 row-seperate">
-                              <label> Booking Status <strong style="color:#F00;">*</strong></label>
-                              <select class="form-control" name="booking_status" required>
-                                  <option value="">Select Booking Status</option>
-                                  <option value="pending">Pending</option>
-                                  <option value="confirmed">Confirmed</option>
-                                  <option value="cancelled">Cancelled</option>  
-                              </select>
-							  
-							        </div>
-
-                     
-
-                   </div>
-
-
-
-
-                  <div class="row">
+              <div class="row">
 
                     <div class="col-xs-12 col-sm-6 row-seperate">
-                          <label> Payment Details/Notes <strong style="color:#F00;"></strong></label>
-							            <textarea class="form-control" name="payment_notes"></textarea>	
-							        </div>
+                          <label> Special Requirements / Notes <strong style="color:#F00;"></strong></label>
+                          <textarea class="form-control" name="booking_notes"><?= $booking['booking_notes']; ?></textarea>	
+                  </div>
 
-                       <div class="col-xs-12 col-sm-6 row-seperate">
-                              <label> Special Requirements / Notes <strong style="color:#F00;"></strong></label>
-							                <textarea class="form-control" name="booking_notes"></textarea>	
-							        </div>
-
-                   </div>
+                </div>
 
 
 
@@ -454,24 +407,16 @@
                   </tr>
 
 
-                  <tr>
-
-                    <th>Current Payment</th>
-                    <td class="totals" ><input class="totals" value="0" name="current_payment"></td>
-
-                  </tr>
-
-
                   </table>
 
                   </div>
 
                   </div>
-
-
                           
                   <div class="box-footer">
-                    <button type="submit" class="btn btn-primary" id="submitbutton">Add</button>
+
+                    <button type="submit" class="btn btn-primary" id="submitbutton">Update</button>
+
                     <a href="javascript:history.go(-1)" class="btn btn-primary">Cancel</a>
                     	
                   </div>
@@ -611,7 +556,19 @@
                 });
 
 
+
+                $('.room_check').trigger('change');
+
+                
+
+
             });
+
+            window.addEventListener('load', function () {
+            $('.room_select[value="<?= $booking['roomid']; ?>"]').prop('checked', true).trigger('change');
+            })
+
+
           </script>
 
 

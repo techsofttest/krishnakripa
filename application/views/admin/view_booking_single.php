@@ -63,7 +63,7 @@
         }
 
         .detail-table tbody {
-        font-size: 25px;
+        font-size: 17px;
         }
 
       </style>
@@ -87,8 +87,6 @@
         <section class="content">
           <div class="row">
             <div class="col-xs-12">  
-            
-            
             
             
         <?php if($this->session->flashdata('success')) {?>
@@ -168,84 +166,120 @@
                                   </div>
                                 </div>
 
-                                
-
-
 
                             </div>
 
-
-                            <section class="invoice">
+                          
      
-      <!-- info row -->
-      <div class="row invoice-info">
 
-        <div class="col-sm-6 invoice-col">
-          Customer
-          <address>
-            <strong><?= $booking['first_name'] ?> <?= $booking['last_name'] ?></strong><br>
-            <strong><?= nl2br($booking['address']); ?></strong><br>
-           
-          </address>
-        </div>
-        
-
-        <div class="col-sm-4 invoice-col">
-          Contact Details & ID Proof
-          <address>
-            <b><?= $booking['phone_number']; ?></b><br>
-            <b><?= $booking['email_address']; ?></b>
-          </address>
-        </div>
-        <!-- /.col -->
-
-
-        <div class="col-sm-2 invoice-col">
-          Booking Notes
-          <address>
-            <b><?= $booking['booking_notes']; ?></b><br>
-          </address>
-        </div>
-        <!-- /.col -->
-
-
-
-      </div>
-      <!-- /.row -->
-
-
-      <!-- Table row -->
       <div class="row">
-        <div class="col-xs-12 text-center">
-          <h3>Room Details</h3>
+
+
+       <!-- this row will not appear when printing -->
+      
+        <div class="col-xs-12">
+          <a href="<?= base_url(); ?>admin/Bookings/Invoice/<?= $booking['booking_id']; ?>" target="_blank" class="btn btn-default"><i class="fa fa-print"></i> Invoice</a>
+          <button type="button" class="btn btn-success pull-right"><i class="fa fa-credit-card"></i>Add Payment
+          </button>
+          <a href="<?= base_url(); ?>admin/Bookings/Invoice/<?= $booking['booking_id']; ?>" target="_blank" class="btn btn-primary pull-right" style="margin-right: 5px;">
+            <i class="fa fa-download"></i> Invoice
+          </a>
         </div>
-        <div class="col-xs-12 table-responsive">
-          <table class="table table-striped detail-table">
-            <thead>
-            <tr>
-              
-              <th>Room Type</th>
-              <th>No Of Rooms</th>
-              <th>Adults/Children</th>
-              <th>Subtotal</th>
-            </tr>
-            </thead>
+     
+
+
+        <!-- Customer Details Start -->
+        <div class="col-xs-6 text-center">
+
+        <h3>Customer Details</h3>
+        <table class="table table-striped table-bordered detail-table">
+
+
+                  <tr>
+
+                    <td class="-right">Name : </td>
+
+                    <th class=""><?= $booking['first_name'] ?> <?= $booking['last_name'] ?></th>
+
+                  </tr>
+
+
+                  <tr>
+
+                    <td class="-right">Address : </td>
+
+                    <th class=""><?= nl2br($booking['address']); ?></th>
+
+                  </tr>
+
+                  <tr>
+
+                    <td class="-right">Phone : </td>
+
+                    <th class=""><?= $booking['phone_number']; ?></th>
+
+                  </tr>
+
+
+                  <tr>
+
+                    <td class="-right">Email : </td>
+
+                    <th class=""><?= $booking['email_address']; ?></th>
+
+                  </tr>
+
+
+        </table>
+
+        </div>
+
+        <!-- Customer Details End -->
+
+
+        <!-- Room Details Start -->
+
+         <div class="col-xs-6 table-responsive text-center">
+          <h3>Booking Details</h3>
+          <table class="table table-bordered table-striped detail-table">
+          
             <tbody>
-            <tr>
-             
-              <td><?= $booking['name']; ?></td>
-              <td><?= $booking['no_of_rooms']; ?></td>
-              <td><?= $booking['adults']; ?>/<?= $booking['children']; ?></td>
-              <td><?= $booking['total_amount']; ?></td>
-            </tr>
+           
+              <tr>
+              <td>Room Type</td>
+              <th><?= $booking['name']; ?></th>
+              </tr>
+
+              <tr>
+              <td>No Of Rooms</td>
+              <th><?= $booking['no_of_rooms']; ?></th>
+              </tr>
+
+              <tr>
+              <td>Adults/Children</td>
+              <th><?= $booking['adults']; ?>/<?= $booking['children']; ?></th>
+              </tr>
+
+              <tr>
+              <td>Subtotal</td>
+              <th><?= $booking['total_amount']; ?></th>
+              </tr>
+
+              <tr>
+                  <td class="-right">Notes : </td>
+                  <th class=""><?= $booking['booking_notes']; ?></th>
+              </tr>
            
             </tbody>
           </table>
         </div>
-        <!-- /.col -->
-      </div>
-      <!-- /.row -->
 
+
+        <!-- Room Details End -->
+
+
+
+      </div>
 
 
 
@@ -273,9 +307,9 @@
             foreach($payments as $pay){ ?>
             <tr>
               <td><?= ++$p ?></td>
-              <td><?= date('d M Y',strtotime($pay->bp_paid_on)) ?> - <?= date('h:i a',strtotime($pay->bp_paid_on)) ?></td>
+              <td><?= date('d M Y',strtotime($pay->bp_paid_on)) ?>  <?php // date('h:i a',strtotime($pay->bp_paid_on)) ?></td>
               <td><?= $pay->bp_pay_method ?></td>
-              <td><?= $pay->bp_pay_method ?></td>
+              <td><?= $pay->bp_notes ?></td>
               <td class="text-success"><?= $pay->bp_amount ?></td>
             </tr>
 
@@ -317,9 +351,9 @@
             foreach($refunds as $pay){ ?>
             <tr>
               <td><?= ++$p ?></td>
-              <td><?= date('d M Y',strtotime($pay->bp_paid_on)) ?> - <?= date('h:i a',strtotime($pay->bp_paid_on)) ?></td>
+              <td><?= date('d M Y',strtotime($pay->bp_paid_on)) ?>  <?php // date('h:i a',strtotime($pay->bp_paid_on)) ?></td>
               <td><?= $pay->bp_pay_method ?></td>
-              <td><?= $pay->bp_pay_method ?></td>
+              <td><?= $pay->bp_notes ?></td>
               <td class="text-danger"><?= $pay->bp_amount ?></td>
             </tr>
 
@@ -361,6 +395,8 @@
         <!-- accepted payments column -->
         <!-- /.col -->
         <div class="col-xs-12">
+
+          <h3 class="text-center">Payment Summary</h3>
           
           <div class="table-responsive">
             <table class="table payment-summary-table">
@@ -376,10 +412,17 @@
                 <td style="color:green;"><?= $booking['paid_amount']; ?></td>
               </tr>
 
+              <?php if($booking['booking_status']=="cancelled"){ ?>
+               <tr>
+                <th>Refunded:</th>
+                <td style="color:red;"><?= format_currency($total_refunds); ?></td>
+              </tr>
+              <?php } else { ?>
               <tr>
                 <th>Pending:</th>
                 <td style="color:red;"><?= format_currency($booking['total_amount']-$booking['paid_amount']); ?></td>
               </tr>
+              <?php } ?>
 
             </tbody></table>
           </div>
@@ -388,17 +431,7 @@
       </div>
       <!-- /.row -->
 
-      <!-- this row will not appear when printing -->
-      <div class="row no-print">
-        <div class="col-xs-12">
-          <a href="invoice-print.html" target="_blank" class="btn btn-default"><i class="fa fa-print"></i> Print</a>
-          <button type="button" class="btn btn-success pull-right"><i class="fa fa-credit-card"></i> Submit Payment
-          </button>
-          <a href="<?= base_url(); ?>admin/Bookings/Invoice/<?= $booking['booking_id']; ?>" target="_blank" class="btn btn-primary pull-right" style="margin-right: 5px;">
-            <i class="fa fa-download"></i> Invoice
-          </a>
-        </div>
-      </div>
+
     </section>
 
 
