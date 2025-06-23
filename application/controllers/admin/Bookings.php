@@ -247,6 +247,28 @@ class Bookings extends MY_Controller {
 
 			$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
 
+
+			if($_FILES['id_proof']['tmp_name']!='')
+					{
+					
+					$filename 	= 	basename($_FILES["id_proof"]["name"]);
+					$ext 		= 	@end(explode('.', $filename));
+					$ext 		= 	strtolower($ext);			
+					$gallery    = 	$bid."id".rand().'.'.$ext;			
+					$uploadfile = 	"uploads/Booking";
+					
+					move_uploaded_file($_FILES["id_proof"]["tmp_name"],  $uploadfile."/".$gallery);
+					
+					$update_id_proof_data = array(
+					'id_proof' => $gallery,
+					);
+
+					$update_booking_cond = array('booking_id' => $bid);
+
+					$this->Admin_model->update_all($update_id_proof_data,$update_booking_cond,'bookings');
+
+					}
+
 					
 			$this->session->set_flashdata('success', 'Booking Added Successfully.'); 
 				
@@ -426,8 +448,103 @@ class Bookings extends MY_Controller {
 
 		$data['room_types']	=	$this->Admin_model->fetch_all_order('categories','cat_title','asc');
 
+		if(!empty($this->input->post()))
+		{
+
+		$room_count = $this->input->post('room_count');
+
+		$check_in = $this->input->post('check_in');
+
+		$check_out = $this->input->post('check_out');
+
+		$current_booking_id = $id;
+
+		$is_available = $this->BookingModel->room_available_check_edit($data['booking']['booking_room_id'], $check_in, $check_out, $room_count, $current_booking_id);
+
+		if(!$is_available)
+		{
+
+		$this->session->set_flashdata('error', 'Room Unavailable.'); 
+				
+		redirect(base_url().'admin/Bookings/Edit/'.$id);
+
+		}
+
+		else
+		{
+		//Update date and payments
+
+
+		$base_price = $data['booking']['rate'];
+		//$tax = isset($room_det['tax']) ? $room_det['tax'] : 0;
+		$tax = 0;
+
+		// Calculate number of nights
+		$check_in_date = new DateTime($check_in);
+		$check_out_date = new DateTime($check_out);
+		$interval = $check_in_date->diff($check_out_date);
+		$nights = $interval->days;
+
+		// Calculate total price
+		$subtotal = $base_price * $room_count * $nights;
+		$tax_amount = ($subtotal * $tax) / 100;
+		$total = $subtotal + $tax_amount;
+
+
+		$update_booking_data = array(
+
+		'check_in_date'  => date('Y-m-d',strtotime($this->input->post('check_in'))),
+		
+		'check_out_date' => date('Y-m-d',strtotime($this->input->post('check_out'))),
+
+		'no_of_rooms'=> $room_count,
+
+		'total_amount' => $total,
+
+		'customer_first_name' => $this->input->post('f_name'),
+
+		'customer_last_name' => $this->input->post('l_name'),
+
+		'customer_email' => $this->input->post('email'),
+
+		'customer_phone_number' => trim($this->input->post('phone')),
+
+		'customer_address' => $this->input->post('address'),
+
+		);
+
+		$update_booking_cond = array('booking_id' => $id);
+
+		$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
+
+		$this->session->set_flashdata('success', 'Booking Updated.'); 
+				
+		redirect(base_url().'admin/Bookings/Edit/'.$id);
+
+		}
+
+
+		}
+
 		$this->load->view('admin/edit_booking',$data);
 
+
+		}
+
+
+
+		public function Delete($id)
+		{
+
+		$this->db->where('booking_id',$id);
+		
+		$this->db->delete('bookings');
+
+		$this->db->where('bp_booking',$id);
+		
+		$this->db->delete('booking_payments');
+
+		redirect(base_url().'admin/Bookings');
 
 		}
 

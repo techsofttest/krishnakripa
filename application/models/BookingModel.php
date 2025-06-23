@@ -112,6 +112,38 @@ class BookingModel extends CI_model {
     }
 
 
+    public function room_available_check_edit($room_id, $check_in, $check_out, $room_count, $current_booking_id)
+{
+    // Subquery to count overlapping bookings for the room, excluding current booking
+    $this->db->select_sum('no_of_rooms', 'booked_rooms');
+    $this->db->from('bookings');
+    $this->db->where('booking_room_id', $room_id);
+    $this->db->where('booking_status !=', 'cancelled');
+    $this->db->where('booking_id !=', $current_booking_id);
+    $this->db->where("('$check_in' < check_out_date AND '$check_out' > check_in_date)", null, false);
+    $query = $this->db->get();
+    $result = $query->row();
+
+    $booked_rooms = $result ? (int)$result->booked_rooms : 0;
+
+    // Now fetch total available rooms from room table
+    $this->db->select('avail_room');
+    $this->db->from('room');
+    $this->db->where('roomid', $room_id);
+    $room = $this->db->get()->row();
+
+    if (!$room) {
+        return false; // room not found
+    }
+
+    $available = (int)$room->avail_room - $booked_rooms;
+
+    return $available >= $room_count;
+}
+
+
+
+
 
 
     public function get_available_room_count_by_date($date)
@@ -190,6 +222,8 @@ class BookingModel extends CI_model {
     $this->db->join('customers','customers.cus_id=bookings.booking_customer_id','left');
 
     $this->db->join('room','room.roomid=bookings.booking_room_id','left');
+
+    $this->db->order_by('bookings.created_at','desc');
 
     $query = $this->db->get();
 

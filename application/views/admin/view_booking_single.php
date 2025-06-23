@@ -178,8 +178,11 @@
        <!-- this row will not appear when printing -->
       
         <div class="col-xs-12">
-          <a href="<?= base_url(); ?>admin/Bookings/Invoice/<?= $booking['booking_id']; ?>" target="_blank" class="btn btn-default"><i class="fa fa-print"></i> Invoice</a>
-          <button type="button" class="btn btn-success pull-right"><i class="fa fa-credit-card"></i>Add Payment
+
+          <?php if(!empty($booking['id_proof'])){ ?>
+          <a download href="<?= base_url(); ?>uploads/Booking/<?= $booking['id_proof']; ?>" class="btn btn-warning"><i class="fa fa-print"></i> ID Proof</a>
+          <?php } ?>
+          <!--<button type="button" class="btn btn-success pull-right"><i class="fa fa-credit-card"></i>Add Payment-->
           </button>
           <a href="<?= base_url(); ?>admin/Bookings/Invoice/<?= $booking['booking_id']; ?>" target="_blank" class="btn btn-primary pull-right" style="margin-right: 5px;">
             <i class="fa fa-download"></i> Invoice

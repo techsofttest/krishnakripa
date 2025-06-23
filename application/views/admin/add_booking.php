@@ -45,7 +45,7 @@
 					<a href="#" class="close" data-dismiss="alert">&times;</a>
 			     	<?php echo $this->session->flashdata('error');?>
 				</div>
-            	<?php }?>
+            <?php }?>
             
             
             
@@ -349,7 +349,7 @@
 
                    <div class="col-xs-12 col-sm-6 row-seperate">
                           <label> ID Proof <strong style="color:#F00;"></strong></label>
-							            <input class="form-control" type="file" name="">
+							            <input class="form-control" type="file" name="id_proof">
 							     </div>
 
 

@@ -202,6 +202,7 @@
 
                           <a class="btn btn-warning" href="<?= base_url(); ?>admin/Bookings/Edit/<?= $val->booking_id; ?>" title="Edit Booking Details"><i class="fa fa-pencil" ></i> </a>
 
+                          <a onclick="return confirm('Delete this booking?')" class="btn btn-danger" href="<?= base_url(); ?>admin/Bookings/Delete/<?= $val->booking_id; ?>" title="Delete Booking"><i class="fa fa-trash" ></i> </a>
 
                         </td>
 

@@ -47,7 +47,7 @@
             	<?php }?>
             
             
-						<?php echo form_open(base_url().'admin/Bookings/Edit',array('method'=>"POST",'enctype'=>"multipart/form-data",'id'=>"add_gallery"))?>
+						<?php echo form_open('',array('method'=>"POST",'enctype'=>"multipart/form-data",'id'=>"add_gallery"))?>
 			
 				   <!-- Form Element sizes -->
 				    <div class="box box-success">				
@@ -117,7 +117,7 @@
                  <div class="col-xs-12 col-sm-4 row-seperate">
 
                  <label>No Of Rooms<strong style="color:#F00;">*</strong></label>
-	               <input class="form-control room_check" id="no_of_rooms" name="rooms"  type="number" value="<?= $booking['no_of_rooms']; ?>" required>	
+	               <input class="form-control room_check" id="no_of_rooms" name="room_count"  type="number" value="<?= $booking['no_of_rooms']; ?>" required>	
 							    
                  </div>
 
@@ -167,62 +167,8 @@
                 </div>
                 </div>
 
-                          
 
-                <?php /*
-                <div class="row"> 
-
-                <div class="col-xs-12 col-sm-12 row-seperate">
-
-                 <label>Room Type <strong style="color:#F00;">*</strong> </label>
-                             
-                <div class="row"> 
-
-                <div class="col-sm-2">
-                <label class="w-100">
-                <input type="radio" name="room_type" class="card-input-element room_check type_select" value="0" checked/>
-                <div class="panel panel-default card-input">
-                <div class="panel-heading"> All</div>
-                   
-                  </div>
-                </label>
-
-                </div>
-
-
-							  <?php
-                foreach($room_types as $rt){
-                ?>
-               
-                <div class="col-sm-2">
-                <label class="w-100">
-                <input type="radio" name="room_type" class="card-input-element room_check type_select" value="<?= $rt->cat_id ?>" />
-                <div class="panel panel-default card-input">
-                <div class="panel-heading"> <?= $rt->cat_title; ?></div>
-                   
-                  </div>
-                </label>
-
-                </div>
-                <?php
-                }
-                ?>
-                </div>
-
-
-
-
-                </div>
-
-							  </div>
-                */
-                ?>
-
-
-
-
-
-                <div class="row room_details" style="display:none;"> 
+                <div class="row room_details"> 
 
                 <div class="col-xs-12 col-sm-12 row-seperate">
 
@@ -238,8 +184,6 @@
 
                   <tr>
 
-                  <th>Choose</th>
-
                   <th>Image</th>
 
                   <th>Room Name</th>
@@ -253,7 +197,19 @@
                   </thead>
 
 
-                  <tbody id="room-sec">
+                  <tbody id="">
+
+                  <tr>
+			
+                  <td><img src='<?= base_url() ?>/uploads/Rooms/<?=$booking['image'] ?>' style='height:80px;width:80px;'></td>
+
+                  <td><?= $booking['name'] ?></td>
+
+                  <td><?= $booking['avail_room'] ?></td>
+
+                  <td><?= $booking['rate'] ?></td>
+
+                  </tr>
 
 
                   </tbody>
@@ -270,11 +226,6 @@
                 </div>
 
 							  </div>
-
-
-
-
-
 
 
 
@@ -355,7 +306,7 @@
                 <div class="row"> 
                 <div class="col-xs-12 col-sm-12 row-seperate text-center">
 
-                <h3>Payment & Status</h3>
+                <h3>Other Details</h3>
 
                 </div>
                 </div>
@@ -363,9 +314,9 @@
 
               <div class="row">
 
-                    <div class="col-xs-12 col-sm-6 row-seperate">
-                          <label> Special Requirements / Notes <strong style="color:#F00;"></strong></label>
-                          <textarea class="form-control" name="booking_notes"><?= $booking['booking_notes']; ?></textarea>	
+                  <div class="col-xs-12 col-sm-12 row-seperate">
+                        <label> Special Requirements / Notes <strong style="color:#F00;"></strong></label>
+                        <textarea class="form-control" name="booking_notes"><?= $booking['booking_notes']; ?></textarea>	
                   </div>
 
                 </div>
@@ -380,29 +331,13 @@
                   
                   <table class="table table-striped">
 
-                  <tr>
-
-                    <th>Room Total</th>
-                    <td  class="totals" id="room_total"></td>
-
-                  </tr>
-
-
-                  <tr>
-
-                    <th>Tax</th>
-                    <td class="totals" id="tax"></td>
-
-                  </tr>
-
-
+                
                    <tr>
 
                     <th>Total Amount</th>
                     <td class="totals" id="total_amount">
-
+                    <?= $booking['total_amount']; ?>
                     </td>
-                    <input type="hidden" id="total_amount_val" name="total_amount">
 
                   </tr>
 
@@ -443,6 +378,7 @@
             $(document).ready(function() {
 
 
+              /*
                 $('.room_check').on('change input', function() {
                     var selectedType = $('.type_select:checked').val();
                     //$('.type_select').val()('change');
@@ -559,15 +495,10 @@
 
                 $('.room_check').trigger('change');
 
-                
+                */
 
 
             });
-
-            window.addEventListener('load', function () {
-            $('.room_select[value="<?= $booking['roomid']; ?>"]').prop('checked', true).trigger('change');
-            })
-
 
           </script>
 
