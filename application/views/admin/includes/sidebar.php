@@ -89,6 +89,17 @@
 
 
 
+      <li class="treeview <?php if($this->uri->segment(2)=="SpecialRates")  :echo 'active'; endif; ?>"> <a href="#"> <i class="fa fa-star" aria-hidden="true"></i> <span>Special Rates</span> </a>
+      
+      <ul class="treeview-menu">
+         
+      <li class="<?php if( ($this->uri->segment(2)=="SpecialRates" && $this->uri->segment(3)=="") || $this->uri->segment(3)==""):echo 'active'; endif; ?>" > <a href="<?php echo base_url();?>admin/SpecialRates"> <i class="fa fa-plus-square"></i><span>Manage Special Rates</span></a> </li>   
+          
+      </ul>
+      </li>
+
+
+
 
       <li class="treeview <?php if($this->uri->segment(2)=="Payments")  :echo 'active'; endif; ?>"> <a href="#"> <i class="fa fa-money" aria-hidden="true"></i> <span>Payments</span> </a>
       

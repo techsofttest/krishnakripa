@@ -98,6 +98,7 @@
                             <table id="datatable" class="table table-bordered table-striped delTable" style="display:none;">
                     			<thead>
                                     <tr>
+
                                          <th>Id</th>    
                                      
                                          <th>Period</th>
@@ -106,7 +107,11 @@
 
                                          <th>Customer</th>
 
-                                         <th>Amount</th>
+                                         <th>Total</th>
+
+                                         <th>Paid</th>
+
+                                         <th>Pending</th>
 
                                          <th>Payments</th>
 
@@ -144,24 +149,23 @@
                         </td>
                       
                         <td class="text-right">
-                        <b style="font-size:20px"><?= $val->total_amount; ?></b><br>
-                        <b style="color:green;font-size:20px"><?= $val->paid_amount; ?></b><br>
-                        <b style="color:red;font-size:20px"><?= format_currency($val->total_amount-$val->paid_amount); ?></b>
+                        <b style="font-size:20px"><?= $val->total_amount; ?></b>
                         </td>
 
-                        <td>
 
-                        
+
+                        <td class="text-right"><b style="color:green;font-size:20px"><?= $val->paid_amount; ?></b></td>
+
+
+                        <td class="text-right"><b style="color:red;font-size:20px"><?= format_currency($val->total_amount-$val->paid_amount); ?></b></td>
+
+                        <td>
                         <?php 
-                      
                         if($val->booking_status=="cancelled"){ ?>
                         <a class="btn btn-warning add_refund_btn" data-type="debit" data-id="<?= $val->booking_id;?>" data-toggle="modal" data-target="#payModal" title="Refund To Customer"><i class="fa fa-reply"></i> Refund</a>
                         <?php } else { ?>
                         <a class="btn btn-primary add_payment_btn" data-type="credit" data-id="<?= $val->booking_id;?>" data-toggle="modal" data-target="#payModal" title="Add Payment To Booking"><i class="fa fa-money"></i> Payment</a>
                         <?php } ?>
-
-                       
-
                         </td>
 
                         <td>
@@ -195,14 +199,28 @@
                         </td>
 
                         <td>
-                          
+
+                          <div class="row">
+
+                          <div class="col-sm-6">
                           <a style="" class="btn btn-primary" href="<?= base_url(); ?>admin/Bookings/Invoice/<?= $val->booking_id; ?>" target="_blank" title="Print Invoice"><i class="fa fa-file-text"></i> </a>
+                          </div>
 
+                          <div class="col-sm-6">
                           <a class="btn btn-primary" href="<?= base_url(); ?>admin/Bookings/View/<?= $val->booking_id; ?>" title="View Booking Details"><i class="fa fa-eye" ></i> </a>
+                          </div>
 
+                          </div>
+
+                          <div class="row">
+
+                          <div class="col-sm-6">
                           <a class="btn btn-warning" href="<?= base_url(); ?>admin/Bookings/Edit/<?= $val->booking_id; ?>" title="Edit Booking Details"><i class="fa fa-pencil" ></i> </a>
-
+                          </div>
+                          <div class="col-sm-6">
                           <a onclick="return confirm('Delete this booking?')" class="btn btn-danger" href="<?= base_url(); ?>admin/Bookings/Delete/<?= $val->booking_id; ?>" title="Delete Booking"><i class="fa fa-trash" ></i> </a>
+                          </div>
+                          </div>
 
                         </td>
 

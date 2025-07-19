@@ -67,10 +67,11 @@ $data['name_data'] 	= 	$this->Admin_model->fetch_data('room',$name_cond);
 	 else
 	 {
 			
-		$add_data  	= 	array(
+	$add_data  	= 	array(
 	'category' =>    $type,	
 	'name'     =>    $name,
 	'rate'    =>    $rate,
+	'kidPrice' => $this->input->post('kid_extra'),
 	'facilities'		=>	$facilities,
 	'description'	=>	$description,
 	'avail_room'	        =>	$avail_room,
@@ -274,6 +275,7 @@ $data['name_data'] 	= 	$this->Admin_model->fetch_data('room',$name_cond);
 			'category' =>    $type,	
 			'name'     =>    $name,
 			'rate'    =>    $rate,
+			'kidPrice' => $this->input->post('kid_extra'),
 			'facilities'		=>	$facilities,
 			'description'	=>	$description,
 			'avail_room'	        =>	$avail_room,

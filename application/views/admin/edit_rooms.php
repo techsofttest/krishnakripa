@@ -169,6 +169,9 @@
 <input type="text" id="text-input" name="avail_room" onKeyPress="return isNumeric(event)" placeholder="Available Rooms" class="form-control" value="<?php echo $arr_pack["avail_room"]?>" required>
 							</div>
                           </div>
+
+
+
                            <div class="row">
 						     <div class="col-xs-12 col-sm-3 row-seperate">
 						
@@ -178,6 +181,23 @@
 <input type="text" id="text-input" name="rate" onKeyPress="return isNumeric(event)" placeholder="Offer Price" class="form-control" value="<?php echo $arr_pack["rate"]?>" required>
 							</div>
               </div>
+
+
+
+
+               <div class="row">
+                        <div class="col-xs-12 col-sm-3 row-seperate">				
+                          <label>Kids Extra<strong style="color:#F00;">*</strong></label>
+                          </div>
+                        <div class="col-xs-12 col-sm-4 row-seperate">
+              <input type="text" name="kid_extra" onKeyPress="return isNumeric(event)" placeholder="" class="form-control" value="<?php echo $arr_pack["kidPrice"]?>" required>
+							</div>
+                          </div>
+
+
+
+
+
 						   
                         
 <!--                           <div class="row">-->

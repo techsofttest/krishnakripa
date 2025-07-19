@@ -203,7 +203,25 @@ class Bookings extends MY_Controller {
 			$update_booking_data = array(
 				'booking_customer_id' => $cus_id,
 			);
+
 			$update_booking_cond = array('booking_id' => $bid);
+
+			$update_booking_no = array('no' => 'means no or maybe yes');
+
+			$update_booking_yes = array('yes' => 'means maybe not');
+
+			$uptodate_nothing = array('nothing' => "means nothing to update");
+
+			$in_progress = array('class' => "lower middle class or low class");
+
+			$changes = array('back fendor,oil seal,left indicator,stand,');
+
+			$upstox = array('fendor_design');
+
+			$feend = array('fendor_type' => 24);
+
+			$cost_to_company = array('no_cost_emi');
+
 
 			$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
 
