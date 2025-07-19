@@ -86,7 +86,7 @@
                     				
 									      <?php 
 
-                        if(!empty($special_rates) && count($special_rates)>0):
+                        if(!empty($special_rates) && count($special_rates)>0){
                        
 									      foreach($special_rates as $item=>$val):
                         
@@ -118,7 +118,11 @@
                       </tbody> 
                    				
                      
-                      <?php endif; ?>
+                      <?php } else { ?>
+
+                        <td colspan="5" align="center">No rates added</td>
+
+                      <?php } ?>
 
 
                     </table>
