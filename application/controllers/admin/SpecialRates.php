@@ -36,23 +36,30 @@ class SpecialRates extends MY_Controller {
 
 		$rate = $this->input->post('rate');
 
+		// Check if any dates are already added in this range
+		$this->db->where('rroom_id', $room);
+		$this->db->where('from_date <=', date('Y-m-d', strtotime($date_to)));
+		$this->db->where('to_date >=', date('Y-m-d', strtotime($date_from)));
+		$exists = $this->db->get('room_rates')->num_rows();
+
+		if ($exists > 0) {
+			$this->session->set_flashdata('error', 'A special rate already exists for the selected date range.');
+			redirect(base_url().'admin/SpecialRates');
+			return;
+		}
+
 		$special_price_data = array(
-
 			'rroom_id' => $room,
-
-			'from_date' => date('Y-m-d',strtotime($date_from)),
-
-			'to_date' => date('Y-m-d',strtotime($date_to)),
-
+			'from_date' => date('Y-m-d', strtotime($date_from)),
+			'to_date' => date('Y-m-d', strtotime($date_to)),
 			'rate' => $rate
-
 		);
 
-		$this->Admin_model->insertsection('room_rates',$special_price_data);
+		$this->Admin_model->insertsection('room_rates', $special_price_data);
 
 		$this->session->set_flashdata('success', 'Special rate added successfully.'); 
 
-		redirect(base_url().'SpecialRates');
+		redirect(base_url().'admin/SpecialRates');
 
 		}
 		
