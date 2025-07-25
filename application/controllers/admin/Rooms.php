@@ -19,17 +19,19 @@ class Rooms extends MY_Controller {
         public function index()
 		{ 
 			
-			$data['view_data']	=	$this->Admin_model->fetch_room();		
-			$data['seo_title'] 	= 	"View Rooms | ".$this->data['admin_title']."";					
-		 $this->load->view('admin/view_rooms',$data); 
- }
+		$data['view_data']	=	$this->Admin_model->fetch_room();		
+		$data['seo_title'] 	= 	"View Rooms | ".$this->data['admin_title']."";					
+		$this->load->view('admin/view_rooms',$data); 
+
+ 		}
 		
 		
 	  
 		 
         public function AddRooms(){			 
 
-			$data['type_data']	=	$this->Admin_model->fetch_all_order('categories','cat_id','Desc');		
+			$data['type_data']	=	$this->Admin_model->fetch_all_order('categories','cat_id','Desc');	
+			$data['hotels']	=	$this->Admin_model->fetch_all_order('hotels','hotel_name','asc');	
 			$data['seo_title'] 	= 	"Add Rooms | ".$this->data['admin_title']."";			
 
 			 
@@ -80,7 +82,7 @@ $data['name_data'] 	= 	$this->Admin_model->fetch_data('room',$name_cond);
 	'tax'	                =>	$tax,
 	'create_date'	        =>	$create_date,
 	'room_size'	            =>	$room_size,
-	'hotel'               =>0,
+	'hotel'               	=>  1,
 	'color'     =>    $color,
 	'room_slug_name'  => $this->create_slug($this->input->post('name')),
 	);

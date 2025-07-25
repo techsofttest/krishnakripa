@@ -1,13 +1,153 @@
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
 
 
 <style>
-.totals{
-    text-align: right;
-    font-size: 25px;
-    font-weight: 600;
+  
+  .totals{
+      text-align: right;
+      font-size: 25px;
+      font-weight: 600;
+  }
+  .span {cursor:pointer; }
+	.minus, .plus{
+		width:20px;
+		height:20px;
+		background:#f2f2f2;
+		border-radius:4px;
+		padding:8px 5px 8px 5px;
+		border:1px solid #ddd;
+    display: inline-block;
+    vertical-align: middle;
+    text-align: center;
+		}
+	input{
+		height:34px;
+    width: 100px;
+    text-align: center;
+    font-size: 26px;
+		border:1px solid #ddd;
+		border-radius:4px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+
+
+.guests-input {
+	position: relative;
+  width: 100%;
+  margin: 0 auto;
 }
+.guests-input button {
+	cursor: pointer;
+}
+.guests-input button:after,
+.guests-input button:before {
+	content: " ";
+	width: 10px;
+	height: 2px;
+	border-radius: 2px;
+	background-color: #484848;
+	position: absolute;
+	top: 19px
+}
+.guests-input button:before {
+	-webkit-transform: rotate(-45deg);
+	transform: rotate(-45deg);
+	right: 15px
+}
+.guests-input button:after {
+	-webkit-transform: rotate(45deg);
+	transform: rotate(45deg);
+	right: 21px
+}
+.guests-input button.open:before {
+	-webkit-transform: rotate(45deg);
+	transform: rotate(45deg)
+}
+.guests-input button.open:after {
+	-webkit-transform: rotate(-45deg);
+	transform: rotate(-45deg)
+}
+.guests-input__options {
+	position: absolute;
+	width: 100%;
+	background-color: #fff;
+	-webkit-box-shadow: rgba(72, 72, 72, 0.2) 0px 15px 20px;
+	box-shadow: rgba(72, 72, 72, 0.2) 0px 15px 20px;
+	border-radius: 2px;
+	overflow: hidden;
+	height: 0;
+	opacity: 0;
+	-webkit-transition: all .1s linear;
+	transition: all .1s linear
+}
+.guests-input__options.open {
+	opacity: 1;
+	height: 146px;
+  z-index:1;
+}
+.guests-input__options>div {
+	padding: 10px 0;
+	text-align: center
+}
+.guests-input__options>div:first-child {
+	padding-top: 20px
+}
+.guests-input__options>div:last-child {
+	padding-bottom: 35px
+}
+.guests-input__ctrl {
+    display: inline-block;
+    border: 1px solid #484848;
+    font-size: 20px;
+    color: #484848;
+    padding: 3px 3px;
+    line-height: 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-transition: all .2s ease;
+    transition: all .2s ease;
+}
+.guests-input__ctrl.disabled {
+	color: #d8d8d8;
+	border-color: #d8d8d8;
+	cursor: default
+}
+.guests-input__value {
+	display: inline-block;
+	padding: 0 10px;
+	width: 100px;
+	cursor: default
+}
+.guests-input__value span {
+	display: inline-block;
+	padding-right: 5px
+}
+
+.guests-btn {
+	position: relative;
+	width: 100%;
+	margin: 0px;
+	padding: 10px 6px;
+	background-color: #fff;
+	border: 1px solid #d8d8d8;
+	border-radius: 2px;
+	text-overflow: ellipsis;
+	font-size: 17px;
+	-webkit-transition: border-color 0.2s ease;
+	transition: border-color 0.2s ease;
+	text-align: left;
+	color: #484848;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none
+}
+
 
 </style>
 
@@ -52,7 +192,7 @@
             
 						<?php echo form_open(base_url().'admin/Bookings/Add',array('method'=>"POST",'enctype'=>"multipart/form-data",'id'=>"add_gallery"))?>
 			
-				   <!-- Form Element sizes -->
+				    <!-- Form Element sizes -->
 				    <div class="box box-success">				
 					  <div class="box-body">
 						 
@@ -71,7 +211,8 @@
                   
                          
                  <div class="row">
-						                     
+						                   
+                 <!--
                  <div class="col-xs-12 col-sm-6 row-seperate">
                  <label>Check In<strong style="color:#F00;">*</strong></label>
 	               <input id="checkin" class="form-control" name="check_in"   type="date" min="<?= date('Y-m-d'); ?>" onclick="this.showPicker()" required>	
@@ -82,19 +223,91 @@
                  <div class="col-xs-12 col-sm-6 row-seperate">
                  <label>Check Out<strong style="color:#F00;">*</strong></label>
 	               <input id="checkout" class="form-control room_check" name="check_out"  type="date" onclick="this.showPicker()" required>	
-							    
+							   -->
+
+                <div class="col-xs-12 col-sm-4 row-seperate">
+
+                <label>Date Range<strong style="color:#F00;">*</strong></label>
+
+                <input type="text" id="daterangepikr" placeholder="Check In - Check Out" class="form-control" value="" autocomplete="off" readonly/>
+				        <i class="fas fa-calendar-alt"></i>
+                <input type="hidden" class="room_check" name="check_in" id="checkin" autocomplete="off" required>
+                <input type="hidden" class="room_check" name="check_out" id="checkout" autocomplete="off" required>
+
+                </div>
+                
+
+                
+
+                 <div class="col-xs-12 col-sm-4 row-seperate">
+                  <label for="guests-input-btn">Guests</label>
+                    <div class="booking-form__input guests-input">
+                        
+                        <button type="button" name="guests-btn" id="guests-input-btn" class="form-control">1 guest</button>
+                        <div class="guests-input__options" id="guests-input-options">
+                            <div>
+                                <span class="guests-input__ctrl minus" id="adults-subs-btn">-</span><!-- /.guests-input__ctrl -->
+                                <span class="guests-input__value"><span id="guests-count-adults">1</span>Adults</span><!-- /.guests-input__value -->
+                                <span class="guests-input__ctrl plus" id="adults-add-btn">+</span><!-- /.guests-input__ctrl -->
+                            </div>
+                            <div>
+                                <span class="guests-input__ctrl minus" id="children-subs-btn">-</span><!-- /.guests-input__ctrl -->
+                                <span class="guests-input__value"><span id="guests-count-children">0</span>Children</span><!-- /.guests-input__value -->
+                                <span class="guests-input__ctrl plus" id="children-add-btn">+</span><!-- /.guests-input__ctrl -->
+                            </div>
+
+                             <div>
+                                <span class="guests-input__ctrl minus-" id="room-subs-btn">-</span><!-- /.guests-input__ctrl -->
+                                <span class="guests-input__value"><span id="room-count">0</span>Rooms</span><!-- /.guests-input__value -->
+                                <span class="guests-input__ctrl plus-" id="room-add-btn">+</span><!-- /.guests-input__ctrl -->
+                            </div>
+
+
+                        </div><!-- /.guests-input__options -->
+                    </div><!-- /.booking-form__input -->
+
+                
                  </div>
 
 
 
-                  </div>     
-                  
-                  
-
-
-                   <div class="row">
-						                     
                  <div class="col-xs-12 col-sm-4 row-seperate">
+                  <label for="">Hotel</label>
+
+                  <select class="form-control room_check" id="hotel_type" name="hotel_type" required>
+
+                  <option value="">Select Hotel</option>
+
+                  <?php foreach($hotels as $hotel){ ?>
+
+                     <option value="<?= $hotel->hotel_id ?>"><?= $hotel->hotel_name ?></option>
+
+                  <?php } ?>
+
+                  </select>
+
+                </div>
+
+
+                    
+
+
+                <input type="hidden" class="room_check" id="adults_input" name="adults">
+
+                <input type="hidden" class="room_check" id="childrens_input" name="childrens">
+
+                <input type="hidden" class="room_check" id="no_of_rooms" name="rooms">
+
+
+                </div>
+
+
+                
+                <?php /*
+
+                 <div class="row">
+
+                  <div class="col-xs-12 col-sm-4 row-seperate">
                   <label>Adults<strong style="color:#F00;">*</strong></label>
 	                
                   <select class="form-control room_check" name="adults" required>
@@ -104,10 +317,12 @@
                   <?php } ?>
                   </select>
 							    
-                 </div>
+                  </div>
+						                     
 
 
-                 <div class="col-xs-12 col-sm-4 row-seperate">
+
+                  <div class="col-xs-12 col-sm-4 row-seperate">
                   <label>Children<strong style="color:#F00;">*</strong></label>
 
 	                <select class="form-control room_check" name="childrens" required>
@@ -116,22 +331,19 @@
                   <option value="<?= $i ?>"><?= $i ?></option>
                   <?php } ?>
                   </select>
-							    
-                 </div>
+                  </div>
 
 
-                 <div class="col-xs-12 col-sm-4 row-seperate">
-
-                 <label>No Of Rooms<strong style="color:#F00;">*</strong></label>
-	               <input class="form-control room_check" id="no_of_rooms" name="rooms"  type="number" required>	
-							    
-                 </div>
+                  <div class="col-xs-12 col-sm-4 row-seperate">
+                  <label>No Of Rooms<strong style="color:#F00;">*</strong></label>
+                  <input class="form-control room_check" id="no_of_rooms" name="rooms" type="number" required>	
+                  </div>
 
 
-                  </div>                        
-                          
-                          
-                     
+                  </div>  
+
+                  */ ?>  
+                  
 
 
                    <style>
@@ -330,9 +542,9 @@
 
                   <div class="col-xs-12 col-sm-6 row-seperate">
                     <label> Last Name <strong style="color:#F00;">*</strong></label>
-							    <input class="form-control l_name_input" type="text" name="l_name" autocomplete="off" required>	
+							    <input class="form-control l_name_input" type="text" name="l_name" autocomplete="off">	
 							    </div>
-                   
+
 
                   </div>
 
@@ -389,7 +601,6 @@
                               <label> Booking Status <strong style="color:#F00;">*</strong></label>
                               <select class="form-control" name="booking_status" required>
                                   <option value="">Select Booking Status</option>
-                                  <option value="pending">Pending</option>
                                   <option value="confirmed">Confirmed</option>
                                   <option value="cancelled">Cancelled</option>  
                               </select>
@@ -406,7 +617,7 @@
                   <div class="row">
 
                     <div class="col-xs-12 col-sm-6 row-seperate">
-                          <label> Payment Details/Notes <strong style="color:#F00;"></strong></label>
+                          <label> Transaction Id <strong style="color:#F00;"></strong></label>
 							            <textarea class="form-control" name="payment_notes"></textarea>	
 							        </div>
 
@@ -456,7 +667,7 @@
 
                   <tr>
 
-                    <th>Current Payment</th>
+                    <th>Advance Payment</th>
                     <td class="totals" ><input class="totals" value="0" name="current_payment"></td>
 
                   </tr>
@@ -494,6 +705,7 @@
         </section>
           <?php $this->load->view('admin/includes/footer');?>
 
+
           <script>
             $(document).ready(function() {
 
@@ -504,12 +716,13 @@
                     var check_in_date = $('input[name="check_in"]').val();
                     var check_out_date = $('input[name="check_out"]').val();
                     var room_count = $('#no_of_rooms').val();
+                    var hotel_type = $('#hotel_type').val();
                     if (!room_count) room_count = 1;
                     // Fetch and display available rooms based on the selected room type
                     $.ajax({
                         url: '<?php echo base_url("admin/Bookings/GetRoomsAvailable"); ?>',
                         type: 'POST',
-                        data: {room_count:room_count, room_type: selectedType,check_in: check_in_date, check_out: check_out_date },
+                        data: {room_count:room_count, room_type: selectedType,check_in: check_in_date, check_out: check_out_date,hotel_type : hotel_type },
                         success: function(response) {
                            var data = JSON.parse(response)
                            if(data.status==1)
@@ -641,6 +854,159 @@
               }
             });
           </script>
+
+
+
+<script>
+  
+  const guestBtn = document.querySelector("#guests-input-btn"),
+	guestOptions = document.querySelector("#guests-input-options"),
+	adultsSubsBtn = document.querySelector("#adults-subs-btn"),
+	adultsAddBtn = document.querySelector("#adults-add-btn"),
+	childrenSubsBtn = document.querySelector("#children-subs-btn"),
+	childrenAddBtn = document.querySelector("#children-add-btn"),
+  roomSubsBtn = document.querySelector("#room-subs-btn"),
+	roomAddBtn = document.querySelector("#room-add-btn"),
+	adultsCountEl = document.querySelector("#guests-count-adults"),
+	childrenCountEl = document.querySelector("#guests-count-children"),
+  roomCountEl = document.querySelector("#room-count");
+  let maxNumGuests = 15,
+	isGuestInputOpen = false,
+	adultsCount = 1,
+	childrenCount = 0;
+  roomCount = 1;
+updateValues();
+guestBtn.addEventListener('click', function (e) {
+	if (isGuestInputOpen) {
+		guestBtn.classList.remove("open");
+		guestOptions.classList.remove("open");
+	} else {
+		guestBtn.classList.add("open");
+		guestOptions.classList.add("open");
+	}
+	isGuestInputOpen = isGuestInputOpen ? false : true;
+	e.preventDefault();
+});
+adultsAddBtn.addEventListener('click', function () {
+	adultsCount = addValues(adultsCount);
+	updateValues();
+});
+adultsSubsBtn.addEventListener('click', function () {
+	adultsCount = substractValues(adultsCount, 1);
+	updateValues();
+});
+childrenAddBtn.addEventListener('click', function () {
+	childrenCount = addValues(childrenCount);
+	updateValues();
+});
+childrenSubsBtn.addEventListener('click', function () {
+	childrenCount = substractValues(childrenCount, 0);
+	updateValues();
+});
+
+roomAddBtn.addEventListener('click', function () {
+	roomCount = addValues(roomCount);
+	updateValues();
+});
+roomSubsBtn.addEventListener('click', function () {
+	roomCount = substractValues(roomCount, 1);
+	updateValues();
+});
+
+
+function calcTotalGuests() {
+	return adultsCount + childrenCount;
+}
+
+function addValues(count) {
+	return (calcTotalGuests() < maxNumGuests) ? count + 1 : count;
+}
+
+function substractValues(count, min) {
+	return (count > min) ? count - 1 : count;
+}
+
+function updateValues() {
+	let btnText = `${adultsCount} Adults`;
+	btnText += (childrenCount > 0) ? `, ${childrenCount} Children` : '';
+  btnText += (roomCount > 0) ? `, ${roomCount} Rooms` : '';
+	guestBtn.innerHTML = btnText;
+	adultsCountEl.innerHTML = adultsCount;
+	childrenCountEl.innerHTML = childrenCount;
+  roomCountEl.innerHTML = roomCount;
+
+  document.getElementById('adults_input').value=adultsCount;
+  document.getElementById('childrens_input').value=childrenCount;
+  document.getElementById('no_of_rooms').value=roomCount;
+
+  var event = new Event('change');
+
+// Dispatch it.
+  document.getElementById('adults_input').dispatchEvent(event);
+
+  document.getElementById('childrens_input').dispatchEvent(event);
+
+  document.getElementById('no_of_rooms').dispatchEvent(event);
+
+
+	if (adultsCount == 1) {
+		adultsSubsBtn.classList.add("disabled");
+	} else {
+		adultsSubsBtn.classList.remove("disabled");
+	} if (childrenCount == 0) {
+		childrenSubsBtn.classList.add("disabled");
+	} else {
+		childrenSubsBtn.classList.remove("disabled");
+	} if (calcTotalGuests() == maxNumGuests) {
+		adultsAddBtn.classList.add("disabled");
+		childrenAddBtn.classList.add("disabled");
+	} else {
+		adultsAddBtn.classList.remove("disabled");
+		childrenAddBtn.classList.remove("disabled");
+	}
+}
+
+
+</script>
+
+          <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+          <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+          <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+
+        <script>
+
+            var j = jQuery.noConflict();
+
+            j('#daterangepikr').daterangepicker({
+            opens: 'left',
+            autoUpdateInput: false,
+            autoApply:true,
+            minDate: moment().startOf('day'),
+            locale: {
+            cancelLabel: 'Clear'
+            }
+            },function(start, end) {
+              j('#checkin').val(start.format('YYYY-MM-DD'));
+              j('#checkout').val(end.format('YYYY-MM-DD'));
+              });
+
+            j('#daterangepikr').on('apply.daterangepicker', function(ev, picker) {
+                j(this).val(picker.startDate.format('ddd DD MMM YYYY') + ' - ' + picker.endDate.format('ddd DD MMM YYYY'));
+            });
+
+            j('#daterangepikr').on('cancel.daterangepicker', function(ev, picker) {
+                j(this).val('');
+            });
+
+
+        </script>
+
+
+
+
 
  
    

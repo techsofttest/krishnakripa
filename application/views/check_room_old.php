@@ -310,17 +310,6 @@ textarea.form-control, textarea {
 }
 
 
-.room-services img{
-    height: 40px;
-    width: 40px;
-    object-fit: contain;
-    margin: 5px 5px;
-    border: 1px solid #00000036;
-    padding: 5px;
-    border-radius: 5px;
-  }
-
-
 
 </style>
 
@@ -443,26 +432,13 @@ textarea.form-control, textarea {
 </div>
 
 
-<div class="Room-category-sec">
- 
- 
- <div class="container">
+<div class="row">
 
- <div class="col-sm-12 text-center">
+<div class="col-sm-12 text-center">
 
     <h3>Select Your Room</h3>
 
 </div>
-
- <?php /*
- <div class="title-area text-center mb-30  mt-30 " data-aos="zoom-in" data-aos-duration="800">
-      <h2 class="sec-title   ">2 Search results Found</h2>
-	  
-  </div>
-  */ ?>
-
-
-  <div class="row">
 
   <?php
 
@@ -489,88 +465,146 @@ textarea.form-control, textarea {
 
 
   ?>
-
-
-
-  <div class="col-lg-12 col-md-12 d-flex " data-aos="zoom-in" data-aos-duration="800">
-  <div class="jon-list-sec">
-  <div class="row align-items-center">
-  <div class="col-lg-4 col-md-12">
-  <a href="<?php echo base_url()?>rooms/<?php echo $val->room_slug_name?>"  class="jon-list-sec-img">
-  <img src="<?php echo base_url();?>uploads/Rooms/<?php echo $val->image;?>" alt="">
-  </a>
-  </div>
-  <div class="col-xl-5 col-lg-6 col-md-8">
- <div class="jon-list-sec-content">
-  <div class="jon-list-sec-content-inner">
-  <div class="deal-rating mar-bottom-15">
-                                        <span class="fa fa-star checked"></span>
-                                        <span class="fa fa-star checked"></span>
-                                        <span class="fa fa-star checked"></span>
-                                        <span class="fa fa-star checked"></span>
-                                        <span class="fa fa-star checked"></span>
-                                    </div>
-<h3><a href="<?php echo base_url()?>rooms/<?php echo $val->room_slug_name?>" > <?php echo $val->name;?></a></h3>
-
-
-                      <?php
-
-                      $facilities = $this->Admin_model->fetch_where_order('krishna_room_facility',['roomid' => $val->roomid],'Factitle','ASC');
-			
-
-                      ?>
-
-
-                                <div class="room-services mar-top-20">
-                                    <ul>
-                                       
-                                        <?php foreach($facilities as $fac){  ?>
-                                        <li><img src="<?= base_url(); ?>uploads/Rooms/<?= $fac->Facimage ?>" title="<?= $fac->Factitle ?>"></li>
-                                        <?php } ?>
-
-                                    </ul>
-                                </div>
-
-
-
-    <div class="btn-group">
-
-          <?php
-                 
-              $query_params = [
-                 'room_id'     => $val->roomid,
-                 'checkin'     => $this->input->get('checkin'),
-                 'checkout'    => $this->input->get('checkout'),
-                 'adults'      => $this->input->get('adults'),
-                 'children'    => $this->input->get('children'),
-                 'rooms_count' => $this->input->get('rooms_count'),
-              ];
-
-            // Generate URL-encoded query string
-            $query_string = http_build_query($query_params);
-
-            // Generate final booking link
-            $booking_url = base_url().'Check/Confirm?' . $query_string;
-
-            ?>
-                      
-                <a href="<?= $booking_url ?>" class="as-btn">Book Now</a> 
-
-								<a href="<?php echo base_url()?>rooms/<?php echo $val->room_slug_name?>" class="as-btn mstyle1 shadow-none">View Details</a> 
-                                
-            </div>
-    </div>
-    </div>
-    </div>
-    <div class="col-xl-3 col-lg-2 col-md-4">
-
-    <div class="rrprice">RS <?php echo $val->rate;?> / NIGHT</div>
-    </div>
-    </div>
-    </div>
-    </div>
-
      
+      <?php /*
+      <div class="row my-3 col-sm-6 radio" data-value="<?php echo $val->roomid; ?>" title="Click To Select This Room">
+
+      <div class="col-md-6 p-0">
+        <div class="item">
+         <a href="<?php echo base_url();?>rooms/<?php echo $val->room_slug_name;?>"> <div class="position-re o-hidden"><img src="<?php echo base_url();?>uploads/Rooms/<?php echo $val->image;?>" alt=""> </div></a>
+            <div class="con">
+            <h6><a href="<?php echo base_url();?>rooms/<?php echo $val->room_slug_name;?>">Rs <?php echo $val->rate;?> / Night</a></h6>
+           
+             <p><?php echo $val->avail_room;?>&nbsp; Rooms Available</p> 
+            
+            <div class="line"></div>
+
+            <div class="row facilities">
+
+              <div class="col col-lg-2">
+
+                <p>Room Size : <?php echo $val->room_size; ?></p>            
+               
+                
+              </div>
+
+              <!--<div class="col-lg-2">-->
+              <!--  <p>Extra Bed : <?php echo $val->extrabed_price; ?>/-</p>-->
+              <!--</div>-->
+              <div class="col col-lg-2 text-right">
+                <div class="permalink"> <a target="_blank" href="<?php echo base_url();?>rooms/<?php echo $val->room_slug_name;?>">Learn More <i class="bi bi-arrow-right"></i></a> </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+           
+      
+      <div class="col-md-6 p-0 bg-cream ">
+
+        <div class="content">
+
+
+          <div class="cont text-left room_desc">
+            
+            <h4><?php echo $val->name;?></h4>            
+           
+          </div>
+
+
+          <div class="row">  
+
+            <div class="col-lg-6 text-center">
+            
+              <div class="qty-container">
+              
+              <div class="input_fields_wrap_<?php echo $val->roomid?> input_fields_wrap">
+                
+               
+              <input type="hidden" value="1" style="width: 25%;text-align: center;display:inline-block;" class="cboNumRooms" id="cboNumRooms-<?php echo $val->roomid;?>" readonly/>
+               
+              
+              </div>
+
+              
+              </div>
+            </div>
+
+
+            <div class="row">
+
+
+              <div class="col-lg-12 text-center price_details">
+              
+                <p>Rs <span><?php echo $val->rate; ?></span>/Night</p>
+
+              </div>
+
+            
+            </div>
+
+
+
+            
+            <div class="row">
+
+                <div class="col-lg-12">
+            
+                </div>
+
+
+            </div>
+       
+            
+          </div>
+        </div>
+      </div>
+
+    </div>
+    */
+    ?>
+
+
+          <div class="col-sm-4 radio-container">
+
+              <div class="room-card radio" id="roomid<?php echo $val->roomid; ?>" data-value="<?php echo $val->roomid; ?>" title="Select This Room">
+
+              <div class="room-image">
+
+              <img src="<?php echo base_url();?>uploads/Rooms/<?php echo $val->image;?>">
+
+              </div>
+
+              <div class="room-name">
+
+              <h3><?php echo $val->name;?></h3>
+
+              </div>
+
+              <div class="room-details">
+
+              <p>Size : <?php echo $val->room_size; ?></p>
+
+              </div>
+
+              <div class="room-price">
+
+              <p>Rs <span><?php echo $val->rate; ?></span>/Night</p>
+
+              </div>
+
+              <div class="input_fields_wrap_<?php echo $val->roomid?> input_fields_wrap">
+                
+              <input type="hidden" value="1" style="width: 25%;text-align: center;display:inline-block;" class="cboNumRooms" id="cboNumRooms-<?php echo $val->roomid;?>" readonly/>
+
+              </div>
+
+              </div>
+
+
+          </div>
+
+
 
 
       <input type="hidden" id="single_price<?php echo $val->roomid;?>" value="<?php echo $val->rate;?>">
@@ -586,11 +620,11 @@ textarea.form-control, textarea {
     <?php  
 
       $i++;
-	  }
+	}
 
-    $available_count++;
+$available_count++;
 
-    }
+}
 
 
 
@@ -604,11 +638,7 @@ textarea.form-control, textarea {
     ?>
 
 
-    </div>
-
-    </div>
- 
-    </div>
+  </div>
     
 
     <?php  if($available_count<1) { ?>
@@ -618,22 +648,18 @@ textarea.form-control, textarea {
     </div>
 
     <?php }  ?>
-
     </form>
     
-
-      <?php /*
-
-      <div class="row justify-content-center">
+    <div class="row justify-content-center">
       <div class="col-lg-12 col-md-12 col-sm-12 booking_step_heading">
         <h2>Enter Guest Details</h2>
       </div>
-      </div>        
+    </div>        
 
      <form method="post" action="<?php echo base_url()?>Check/BookNow" id="check-form">
 
-    <div class="row">
-    <div class="col-lg-6 order-2">
+<div class="row">
+<div class="col-lg-6 order-2">
     <div class="row my-3 Guest">
 
      
@@ -664,7 +690,6 @@ textarea.form-control, textarea {
           <div class="col-lg-12">
         <textarea rows="3" name="notes"  class="form-control" placeholder="Notes/Preferences..."></textarea>
           </div>
-
         </div> 
         
           <!-- Google reCAPTCHA widget -->
@@ -717,13 +742,12 @@ textarea.form-control, textarea {
             <td id="b_no_of_rooms">-</td>
           </tr>
 
-          <!--
+          <?php /*
           <tr>
             <td>GST</td>
             <td id="display_gst">%</td>
           </tr>
-          -->
-          
+          */ ?>
 
           
           <tr class="grand_total">
@@ -748,11 +772,7 @@ textarea.form-control, textarea {
         </form>
 
 
-        */ ?>
-
-
-
-
+    </div>
 </div>
 </div>
 </section>

@@ -48,7 +48,7 @@
                   <td><?php echo $i++; ?></td>
                   <td>
                   <strong>
-				  <?php echo $val->name; ?>
+				          <?php echo $val->name; ?>
                   </strong>
                   <br /><br />
                   Size : <?php echo $val->room_size; ?>
@@ -59,7 +59,7 @@
 
                   </td>                 
                   <td>
-                   <a href="<?php echo base_url();?>uploads/Rooms/<?php echo $val->image ?>" class="fancybox-media">
+                  <a href="<?php echo base_url();?>uploads/Rooms/<?php echo $val->image ?>" class="fancybox-media">
                   <img  src="<?php echo base_url();?>uploads/Rooms/<?php echo $val->image;?>" style="width=100px;height:100px;"/>
                   </a>
 				</td>

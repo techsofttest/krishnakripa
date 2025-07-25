@@ -7,7 +7,6 @@ class BookingModel extends CI_model {
 	}
 
 
-
     //Fetch Datatable Start
 
     public function FetchData()
@@ -82,13 +81,19 @@ class BookingModel extends CI_model {
     }
     */
 
-    public function get_available_rooms($room_count, $check_in, $check_out, $category)
+    public function get_available_rooms($room_count, $check_in, $check_out, $category,$hotel)
     {
     $this->db->select('r.*, (r.avail_room - IFNULL(b.booked_rooms, 0)) as available_rooms', false);
     $this->db->from('room r');
 
     if ($category != 0) {
         $this->db->where('r.category', $category);
+    }
+
+
+    if($hotel != "")
+    {
+    $this->db->where('r.hotel',$hotel);
     }
 
     // Subquery to calculate total booked rooms for each room in the date range
@@ -409,6 +414,11 @@ class BookingModel extends CI_model {
 
 
     }
+
+
+
+
+    
 
 
 	

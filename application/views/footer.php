@@ -123,7 +123,7 @@ Ambalamedu PO, Kuzhikkadu-682 303
     <div class="container">
       <div class="row align-items-center">
         <div class="col-lg-12">
-          <p class="copyright-text text-center">Copyright <i class="fal fa-copyright"></i> 2023 <a href="index.html">Krishnakripa Residency</a>. All Rights Reserved. <a href="https://www.techsoftweb.com/" target="_blank">Web Design Company Kochi</a> -  <a href="https://www.techsoftweb.com/" target="_blank">Techsoft</a></p>
+          <p class="copyright-text text-center">Copyright <i class="fal fa-copyright"></i> <?= date('Y') ?> <a href="<?= base_url(); ?>">Krishnakripa Residency</a>. All Rights Reserved. <a href="https://www.techsoftweb.com/" target="_blank">Web Design Company Kochi</a> -  <a href="https://www.techsoftweb.com/" target="_blank">Techsoft</a></p>
         </div>
       </div>
     </div>
@@ -220,7 +220,17 @@ Ambalamedu PO, Kuzhikkadu-682 303
 
 
 
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+
 <script>
+
+
+    document.addEventListener("DOMContentLoaded", function(event) { 
+
+     
+    });
+
 
 
  var header = $('#header-sticky');
@@ -268,7 +278,7 @@ Ambalamedu PO, Kuzhikkadu-682 303
 
 		  jQuery('#slide-panel'). removeClass('visible').animate({'margin-right':'-350px'});
 
-		});
+		}); 
 		});
 
 		jQuery(document).ready(function(){
@@ -331,7 +341,13 @@ Toast.fire({
 
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
 <script>
+  
   $(function() {
     $("#datepicker").datepicker({
       minDate: 0,
@@ -383,49 +399,7 @@ Toast.fire({
 // });
 
 
-$('#adult_count_search,#child_count_search').change(function(){
 
-var adults = parseInt($('#adult_count_search').val()) || 0;
-
-var childs = parseInt($('#child_count_search').val()) || 0;
-
-var rooms_count1 = Math.ceil(adults/2);
-
-if((rooms_count1 == 1) && (childs > 2)){
-
-  var rooms_count = rooms_count1+1;
-  
-} else {
-    
-  var rooms_count = Math.ceil(adults/2);
-}
-
-$("#rooms_count_search").val(rooms_count).change();
-
-$('#rooms_count_search option').each(function() {
-    $(this).prop('disabled', Number($(this).val()) < rooms_count)
-})
-
-});
-
-
-$('#adult_count_search_modal,#child_count_search_modal').change(function(){
-
-var adults = parseInt($('#adult_count_search_modal').val()) || 0;
-
-var childs = parseInt($('#child_count_search_modal').val()) || 0; 
-
-var adults_count = adults+childs;
-
-var rooms_count = Math.ceil(adults_count/3);
-
-$("#rooms_count_search_modal").val(rooms_count).change();
-
-$('#rooms_count_search_modal option').each(function() {
-    $(this).prop('disabled', Number($(this).val()) < rooms_count)
-})
-
-});
 
 
 
@@ -448,41 +422,6 @@ $(document).on("change", "#hotel_search", function() {
     });
 
 </script>
-
-
-
-   <script>
-            
-    if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $recaptcha_secret = "6LdhoLAqAAAAAMDXdlG__dGL4HLhfwR5pFshJfjL"; // Replace with your Secret Key
-    $recaptcha_response = $_POST['g-recaptcha-response'];
-
-    // Verify the reCAPTCHA response
-    $verify_response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$recaptcha_secret&response=$recaptcha_response");
-    $response_data = json_decode($verify_response);
-
-    if ($response_data->success) {
-        // reCAPTCHA verified successfully
-        echo "Message sent successfully!";
-    } else {
-        // reCAPTCHA failed
-        echo "Please complete the reCAPTCHA.";
-    }
-}
-        </script>
-        
-        <script>
-    document.getElementById('enquiry-from').addEventListener('submit', function(event) {
-        var recaptchaResponse = grecaptcha.getResponse();
-        if (recaptchaResponse.length === 0) {
-            // Prevent form submission
-            event.preventDefault();
-            // Show an alert if reCAPTCHA is not completed
-            alert("Please complete the reCAPTCHA to submit the form.");
-        }
-    });
-</script>
-        
 
 
 

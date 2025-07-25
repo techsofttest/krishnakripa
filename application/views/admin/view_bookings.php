@@ -50,6 +50,31 @@
             
 
 
+            <div class="row" style="margin:10px 0px;">
+
+                    <div class="col-lg-3"></div>
+                       
+                      <div class="col-lg-6">
+
+                       
+        <div class="type-toggle-container">
+
+        <a href="<?= base_url(); ?>" class="type-toggle-btn active">All</a>
+
+        <a href="<?= base_url(); ?>" class="type-toggle-btn ">Residency</a>
+
+        <a href="<?= base_url(); ?>" class="type-toggle-btn">Stay</a>
+
+        </div>
+                      
+                      </div>
+                       
+                    <div class="col-lg-3"></div>
+            
+            </div>
+
+
+
                       <div class="row" style="margin:10px 0px;">
                       <div class="col-lg-3"></div>
                        

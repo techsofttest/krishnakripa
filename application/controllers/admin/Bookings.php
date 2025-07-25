@@ -132,6 +132,8 @@ class Bookings extends MY_Controller {
 			$data['seo_title'] 	= 	"Add Bookings | ".$this->data['admin_title'].""; 
 
 			$data['room_types']	=	$this->Admin_model->fetch_all_order('categories','cat_title','asc');	
+
+			$data['hotels']	=	$this->Admin_model->fetch_all_order('hotels','hotel_name','asc');
 			
 			if($_POST):
 			 
@@ -385,14 +387,15 @@ class Bookings extends MY_Controller {
 			$check_out = $this->input->post('check_out');
 			$room_type = $this->input->post('room_type');
 			$room_count = $this->input->post('room_count');
+			$hotel_type = $this->input->post('hotel_type');
 
 			$data['html'] ="";
-			
+
 			if($check_in && $check_out)
 			{
 				$data['status'] = 1;
 
-				$available_rooms = $this->BookingModel->get_available_rooms($room_count,$check_in, $check_out,$room_type);
+				$available_rooms = $this->BookingModel->get_available_rooms($room_count,$check_in, $check_out,$room_type,$hotel_type);
 
 				if(!empty($available_rooms))
 				{
@@ -423,7 +426,6 @@ class Bookings extends MY_Controller {
 							</tr>";
 
 				}	
-
 
 
 				echo json_encode($data);

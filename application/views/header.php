@@ -33,6 +33,7 @@
 <!-- Slick Slider -->
 <link rel="stylesheet" href="<?php echo base_url()?>assets/css/slick.min.css">
 <!-- nice-select -->
+ <link rel="stylesheet" href="<?= base_url(); ?>assets/css/datetimepicker.min.css">
 
 <!-- Theme Custom CSS -->
 <link rel="stylesheet" href="<?php echo base_url()?>assets/css/style.css">

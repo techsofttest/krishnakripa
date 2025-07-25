@@ -23,8 +23,8 @@ class Check extends MY_Controller {
 	
 	public function index()
 	{
-		$startdate =  $_GET['checkindate']; 
-		$enddate   =  $_GET['checkoutdate'];		
+		$startdate =  $_GET['checkin']; 
+		$enddate   =  $_GET['checkout'];		
 		$startdate1         =  date('Y-m-d', strtotime($startdate)); 
 	 	$enddate1           =  date('Y-m-d', strtotime($enddate)); 
 	 	$diff               =  strtotime($startdate) - strtotime($enddate); 
@@ -34,11 +34,12 @@ class Check extends MY_Controller {
 		$adults             =  $_GET['adults'];
 		$children           =  $_GET['children'];
 		$rooms_count        =  $_GET['rooms_count'];
+		$hotel_type        =  $_GET['hotel_type'];
 		$total_room = $rooms_count;			
 
 		//$data['available_rooms'] = $this->Admin_model->check_availability($startdate1,$enddate1,$total_room,$hotel,$roomf);	
 
-		$data['available_rooms'] = $this->BookingModel->get_available_rooms($total_room, $startdate1, $enddate1, $category=0);
+		$data['available_rooms'] = $this->BookingModel->get_available_rooms($total_room, $startdate1, $enddate1, $category=0,$hotel_type);
 
 		//$data['roomdet'] = $this->Admin_model->fetch_one_row('room',array('roomid'=>$roomf));
 		//$rate = $data['roomdet']['rate'];
@@ -62,8 +63,7 @@ class Check extends MY_Controller {
 	}
 
 	
-	$create_date                  =  date('Y-m-d'); 			
-	
+	$create_date                  =  date('Y-m-d');
 	$roomid                          =  $_POST['roomid'];
 	$room_nights                 =  $_POST['room_nights'];
 	$checkindate_get          =  date("Y-m-d", strtotime($_POST['checkindate_get']));
@@ -140,6 +140,111 @@ redirect(base_url().'Payment');
 $this->load->view('check_room',$data);
 
 }
+
+
+
+
+public function Confirm()
+{
+
+$check_in_date="";
+
+$check_out_date="";
+
+$children=0;
+
+$hotel="";
+
+$adults=1;
+
+$rooms_count=1;
+
+$room_id = $_GET['room_id'];
+
+if(!empty($_GET['checkin'])) 
+{
+$check_in_date = $_GET['checkin'];
+}
+
+if(!empty($_GET['checkout'])) 
+{
+$check_out_date = $_GET['checkout'];
+}
+
+if(!empty($_GET['adults'])) 
+
+{
+
+$adults = $_GET['adults'];
+
+}
+
+if(!empty($_GET['hotel'])) 
+
+{
+
+$hotel = $_GET['hotel'];
+
+}
+
+if(!empty($_GET['children']))
+
+{
+
+$children = $_GET['children'];
+
+}
+
+if(!empty($_GET['rooms_count']))
+{
+$rooms_count = $_GET['rooms_count'];
+}
+
+$data['room'] = $this->Admin_model->fetch_one_row('room',['roomid' => $room_id]);
+
+$room = $data['room'];
+
+$data['facilities'] = $this->Admin_model->fetch_where_order('room_facility',['roomid' => $room_id],'Factitle','ASC');
+
+
+$checkin_date_format = date("Y-m-d", strtotime($check_in_date));
+$checkout_date_format = date("Y-m-d", strtotime($check_out_date));
+$start_date = new DateTime($checkin_date_format);
+$end_date = new DateTime($checkout_date_format);
+$interval = $start_date->diff($end_date);
+$no_of_days = $interval->days;
+
+if($no_of_days <= 0) {
+	echo json_encode(array('status' => 'error', 'message' => 'Check-out date must be after check-in date.'));
+	return;
+}
+
+$total_price = $room['rate'] * $no_of_days * $rooms_count;	
+//$gst = ($total_price * $room_data['tax']) / 100;
+$gst  = 0;
+$data['booking_details'] =array(
+	'status' => 'success',
+	'room_name' => $room['name'],
+	'room_rate' => $room['rate'],
+	'no_of_rooms' => $rooms_count,
+	'no_of_days' => $no_of_days,
+	'total_price' => $total_price,
+	'gst' => $gst,
+	'grand_total' => $total_price + $gst
+);
+			
+
+$this->load->view('confirm_booking',$data);
+
+
+}
+
+
+
+
+
+
+
 
 
 

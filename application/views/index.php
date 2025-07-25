@@ -92,7 +92,7 @@
         $youtube_id = $matches[count($matches) - 1];
     }
     return 'https://www.youtube.com/embed/' . $youtube_id ;
-}
+    }
 	?>
  <style>
 

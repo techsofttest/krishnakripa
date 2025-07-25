@@ -1,6 +1,6 @@
-
-
 <?php $this->load->view('header');?>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <style>
 .list_rows
 {
@@ -188,7 +188,7 @@ TELSTRA CHECKBOX STYLES
     border: 2px solid lightblue;
     cursor:pointer;
     margin: 2px 0; 
-    opacity: 0.7;
+    opacity: 0.8;
     border: 1px solid #bdbdbd;
     transition: all .3s ease;
     transform: scale(0.99);
@@ -196,7 +196,8 @@ TELSTRA CHECKBOX STYLES
 }
 
 .radio.selected{
-    border-color: #ef7c00 !important;
+    border: 5px solid;
+    border-color: #ff0000 !important;
     opacity: 1;
     transform: scale(1);
     transition: all .3s ease;
@@ -254,7 +255,77 @@ TELSTRA CHECKBOX STYLES
 
 
 
+
+/* New Room Card STart */
+
+.room-card
+{
+  box-shadow: 0px 0px 3px 1px #bababa;
+  border-radius: 10px;
+  margin: 15px 0px;
+}
+
+
+.room-image img
+{
+    height: 220px;
+    width: 100%;
+    object-fit: cover;
+}
+
+.room-name h3
+{
+  font-size: 18px;
+  margin: 10px 0px 0px 0px;
+  padding: 10px 0px 0px 0px;
+  text-align: center;
+}
+
+.room-details p
+{
+text-align:center;
+margin: 0;
+padding:5px;
+}
+
+
+.room-price p
+{
+    text-align: center;
+    font-size: 13px;
+}
+
+.room-price span
+{
+    font-size: 19px;
+    font-weight: 600;
+    color:red;
+}
+
+
+/* New Room Card End */
+
+textarea.form-control, textarea {
+    min-height: 65px;
+}
+
+
+.room-services img{
+    height: 40px;
+    width: 40px;
+    object-fit: contain;
+    margin: 5px 5px;
+    border: 1px solid #00000036;
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+
+
 </style>
+
+
+
 <div class="breadcumb-wrapper " data-bg-src="<?php echo base_url()?>assets/img/attraction-banner.jpg">
     <div class="container">
         <div class="breadcumb-content">
@@ -291,11 +362,11 @@ TELSTRA CHECKBOX STYLES
 	  $total_amount           = 0;
 
 
-    $checkindate  = $_GET['checkindate'];
-    $checkoutdate = $_GET['checkoutdate'];
-    $rooms_count  = $_GET['rooms_count'];
-    $adults       = $_GET['adults'];
-    $children     = $_GET['children'];
+    $checkindate  = !empty($_GET['checkindate']) ? $_GET['checkindate'] : null;
+    $checkoutdate = !empty($_GET['checkoutdate']) ? $_GET['checkoutdate'] : null;
+    $rooms_count  = !empty($_GET['rooms_count']) ? $_GET['rooms_count'] : null;
+    $adults       = !empty($_GET['adults']) ? $_GET['adults'] : null;
+    $children     = !empty($_GET['children']) ? $_GET['children'] : null;
     $total_person = intval($adults)+intval($children);
 
     $bed_tmp     = fmod($total_person,3);
@@ -339,7 +410,7 @@ TELSTRA CHECKBOX STYLES
 
   }
 
-    $extra_bed = $extra_bed_count;  ?>
+    $extra_bed = $extra_bed_count; ?>
 
 
 
@@ -365,13 +436,35 @@ TELSTRA CHECKBOX STYLES
 
 <div class="col-lg-12 pt-3">
 
-<p style="color:#ff8300;font-size:18px;display: flex;justify-content: center;align-items: center;"><i class='bx bx-info-circle' style="font-size: 25px;padding-right: 5px;"></i> 1 Room has maximum capacity of 3 people, You may change no of rooms according to your preference.</p>
+<p style="color:#ff8300;font-size:18px;display: flex;justify-content: center;align-items: center;"><i class='bx bx-info-circle' style="font-size: 25px;padding-right: 5px;"></i> 1 Room has maximum capacity of 2 people, You may change no of rooms according to your preference.</p>
 
 </div>
 
 </div>
 
-    <?php
+
+<div class="Room-category-sec">
+ 
+ 
+ <div class="container">
+
+ <div class="col-sm-12 text-center">
+
+    <h3>Select Your Room</h3>
+
+</div>
+
+ <?php /*
+ <div class="title-area text-center mb-30  mt-30 " data-aos="zoom-in" data-aos-duration="800">
+      <h2 class="sec-title   ">2 Search results Found</h2>
+	  
+  </div>
+  */ ?>
+
+
+  <div class="row">
+
+  <?php
 
   $available_count=0;
  
@@ -388,24 +481,6 @@ TELSTRA CHECKBOX STYLES
   
   $available = TRUE;  
 
-  $each_day = $this->Admin_model->check_room_each_day($val->roomid,$_GET['checkindate'],$_GET['checkoutdate']);
-
-  foreach($each_day as $check_each)
-  {
-    
-    $available_on_day = $check_each->avail_room;
-
-    if($available_on_day<$_GET['rooms_count'])
-    {
-     
-      $available=FALSE;
-
-    }
-
-  }
-
-  
-  
   if($available==TRUE)
   {
 
@@ -414,134 +489,108 @@ TELSTRA CHECKBOX STYLES
 
 
   ?>
-     
-      <div class="row my-3 radio" data-value="<?php echo $val->roomid; ?>" title="Click To Select This Room">
-      <div class="col-md-6 p-0">
-        <div class="item">
-          <div class="position-re o-hidden"> <img src="<?php echo base_url();?>uploads/Rooms/<?php echo $val->image;?>" alt=""> </div>
-            <div class="con">
-            <h6><a href="<?php echo base_url();?>Rooms/<?php echo $val->room_slug_name;?>">Rs <?php echo $val->rate;?> / Night</a></h6>
-           
-             <p><?php echo $val->avail_room;?>&nbsp; Rooms Available</p> 
-            
-            <div class="line"></div>
 
-            <div class="row facilities">
 
-              <div class="col col-lg-2">
 
-                <p>Room Size : <?php echo $val->room_size; ?></p>            
-               
-                
-              </div>
+  <div class="col-lg-12 col-md-12 d-flex " data-aos="zoom-in" data-aos-duration="800">
+  <div class="jon-list-sec">
+  <div class="row align-items-center">
+  <div class="col-lg-4 col-md-12">
+  <a href="<?php echo base_url()?>rooms/<?php echo $val->room_slug_name?>"  class="jon-list-sec-img">
+  <img src="<?php echo base_url();?>uploads/Rooms/<?php echo $val->image;?>" alt="">
+  </a>
+  </div>
+  <div class="col-xl-5 col-lg-6 col-md-8">
+ <div class="jon-list-sec-content">
+  <div class="jon-list-sec-content-inner">
+  <div class="deal-rating mar-bottom-15">
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star checked"></span>
+                                    </div>
+<h3><a href="<?php echo base_url()?>rooms/<?php echo $val->room_slug_name?>" > <?php echo $val->name;?></a></h3>
 
-              <div class="col-lg-2">
-                <p>Extra Bed : <?php echo $val->extrabed_price; ?>/-</p>
-              </div>
-              <div class="col col-lg-2 text-right">
-                <div class="permalink"> <a target="_blank" href="<?php echo base_url();?>rooms/<?php echo $val->room_slug_name;?>">Learn More <i class="bi bi-arrow-right"></i></a> </div>
-              </div>
+
+                      <?php
+
+                      $facilities = $this->Admin_model->fetch_where_order('krishna_room_facility',['roomid' => $val->roomid],'Factitle','ASC');
+			
+
+                      ?>
+
+
+                                <div class="room-services mar-top-20">
+                                    <ul>
+                                       
+                                        <?php foreach($facilities as $fac){  ?>
+                                        <li><img src="<?= base_url(); ?>uploads/Rooms/<?= $fac->Facimage ?>" title="<?= $fac->Factitle ?>"></li>
+                                        <?php } ?>
+
+                                    </ul>
+                                </div>
+
+
+
+    <div class="btn-group">
+
+          <?php
+                 
+              $query_params = [
+                 'room_id'     => $val->roomid,
+                 'checkin'     => $this->input->get('checkin'),
+                 'checkout'    => $this->input->get('checkout'),
+                 'adults'      => $this->input->get('adults'),
+                 'children'    => $this->input->get('children'),
+                 'rooms_count' => $this->input->get('rooms_count'),
+              ];
+
+            // Generate URL-encoded query string
+            $query_string = http_build_query($query_params);
+
+            // Generate final booking link
+            $booking_url = base_url().'checkout?' . $query_string;
+
+        ?>
+                      
+                <a href="<?= $booking_url ?>" class="as-btn">Book Now</a> 
+
+								<a href="<?php echo base_url()?>rooms/<?php echo $val->room_slug_name?>" class="as-btn mstyle1 shadow-none">View Details</a> 
+                                
             </div>
-          </div>
-        </div>
-      </div>
-           
-      
-      <div class="col-md-6 p-0 bg-cream ">
+    </div>
+    </div>
+    </div>
+    <div class="col-xl-3 col-lg-2 col-md-4">
 
-        <div class="content">
-
-
-          <div class="cont text-left room_desc">
-            
-            <h4><?php echo $val->name;?></h4>            
-           
-          </div>
-
-
-          <div class="row">  
-
-            <div class="col-lg-6 text-center">
-            
-              <div class="qty-container">
-              
-              <div class="input_fields_wrap_<?php echo $val->roomid?> input_fields_wrap">
-                
-               
-              <input type="hidden" value="1" style="width: 25%;text-align: center;display:inline-block;" class="cboNumRooms" id="cboNumRooms-<?php echo $val->roomid;?>" readonly/>
-               
-              
-              </div>
-
-              
-              </div>
-            </div>
-
-
-            <div class="row">
-
-
-              <div class="col-lg-12 text-center price_details">
-              
-                <p>Rs <span><?php echo $val->rate; ?></span>/Night</p>
-
-              </div>
-
-            
-            </div>
-
-
-
-            
-            <div class="row">
-
-                <div class="col-lg-12">
-            
-                </div>
-
-
-            </div>
-       
-            
-          </div>
-        </div>
-      </div>
-
-
+    <div class="rrprice">RS <?php echo $val->rate;?> / NIGHT</div>
+    </div>
+    </div>
+    </div>
     </div>
 
-
+     
 
 
       <input type="hidden" id="single_price<?php echo $val->roomid;?>" value="<?php echo $val->rate;?>">
-      <input type="hidden" id="total_rooms<?php echo $val->roomid;?>" value="<?php echo $val->avail_room;?>">
-      <input type="hidden" id="selected_rooms<?php echo $val->roomid;?>" value="0">
-      <input type="hidden" id="total_price<?php echo $val->roomid; ?>" value="0">
-
       
-
+      <input type="hidden" id="total_rooms<?php echo $val->roomid;?>" value="<?php echo $val->avail_room;?>">
+      
+      <input type="hidden" id="selected_rooms<?php echo $val->roomid;?>" value="0">
+      
       
       <input type="hidden" id="s_roomid" value="<?php echo $val->roomid;?>">
-
-     
-
-
-      <input type="hidden" id="s_total_price_nights<?php echo $val->roomid; ?>"  value="<?php echo $total_price_nights;?>">
-      <input type="hidden" id="s_disc_price_nights<?php echo $val->roomid; ?>" value="<?php echo $disc_price_nights;?>">
-      <input type="hidden" id="s_total_price_extra_bed<?php echo $val->roomid; ?>" value="<?php echo $total_price_extra_bed;?>">
-      <input type="hidden" id="s_total_gst<?php echo $val->roomid; ?>" value="<?php echo $total_gst;?>">
-      <input type="hidden" id="s_total_amount<?php echo $val->roomid; ?>" value="<?php echo $total_amount;?>">
-   
 
 
     <?php  
 
       $i++;
-	}
+	  }
 
-$available_count++;
+    $available_count++;
 
-}
+    }
 
 
 
@@ -553,6 +602,13 @@ $available_count++;
     }
 
     ?>
+
+
+    </div>
+
+    </div>
+ 
+    </div>
     
 
     <?php  if($available_count<1) { ?>
@@ -562,56 +618,137 @@ $available_count++;
     </div>
 
     <?php }  ?>
+
     </form>
     
-    <div class="row justify-content-center">
+      <div class="row justify-content-center">
       <div class="col-lg-12 col-md-12 col-sm-12 booking_step_heading">
         <h2>Enter Guest Details</h2>
       </div>
-    </div>        
+      </div>        
 
+     <form method="post" action="<?php echo base_url()?>Check/BookNow" id="check-form">
+
+    <div class="row">
+    <div class="col-lg-6 order-2">
     <div class="row my-3 Guest">
-      <form method="post" action="<?php echo base_url()?>Check/Enquiry">
-          <input type="hidden" value="<?php echo $_GET['checkindate']?>" name="checkin">
-          <input type="hidden" value="<?php echo $_GET['checkoutdate']?>" name="checkout">
-          <input type="hidden" value="<?php echo $_GET['hotel']?>" name="hotel">
-          <input type="hidden" value="<?php echo $_GET['adults']?>" name="adults">
-          <input type="hidden" value="<?php echo $_GET['children']?>" name="children">
-          <input type="hidden" value="<?php echo $_GET['rooms_count']?>" name="rooms_count">
+
+     
+          
         <div class="row">
+
           <div class="col-lg-6">
-            <input type="text" class="form-control" placeholder="Name" name="name" required>
+            <input type="text" class="form-control" placeholder="First Name" name="fname" required>
           </div>
+
           <div class="col-lg-6">
-            <input type="email" class="form-control" placeholder="Email" name="email" required/>
+            <input type="text" class="form-control" placeholder="Last Name" name="lname" required>
           </div>
+
           <div class="col-lg-6">
             <input type="text" class="form-control" placeholder="Mobile" name="mobile" required>
           </div>
+
           <div class="col-lg-6">
-            <input type="text" class="form-control" placeholder="Address" name="address" required>
+            <input type="email" class="form-control" placeholder="Email" name="email" required/>
           </div>
-          <div class="col-lg-6">
-            <input type="text" class="form-control" placeholder="City" name="city" required>
-          </div>
-          <div class="col-lg-6">
-            <input type="text" class="form-control" placeholder="Post Code" name="post_code" required>
-          </div>
+          
           <div class="col-lg-12">
-            <input type="text" class="form-control" placeholder="Country" name="country" required>
+            <textarea rows="3" class="form-control" placeholder="Address" name="address" required></textarea>
           </div>
+         
+
           <div class="col-lg-12">
-<textarea name="bed_pref"  class="form-control" placeholder="Optional : Bed Preferences (King| Queen | Twin), Arrival Time etc"></textarea>
+        <textarea rows="3" name="notes"  class="form-control" placeholder="Notes/Preferences..."></textarea>
           </div>
+
         </div> 
-      <div style="display: flex;align-items: center;justify-content: center;">      
-    <div class="col-lg-4" >   
-    <input class="as-btn style4 shadow-none" type="submit" name="sub" value="Submit">
-      </div></div>
-  </form>
-</section>
+        
+          <!-- Google reCAPTCHA widget -->
+          <div class="form-group col-12">
+          <div class="g-recaptcha" data-sitekey="6LdhoLAqAAAAAMH-IZ8__VbUYsFwrNvpSkbIdd1o" required></div>
+          </div>
+        
+        <input type="hidden" id="book_room_id" name="room_id">
+
+        <input type="hidden" id="book_check_in" name="check_in" value="<?= $checkindate ?>">
+
+        <input type="hidden" id="book_check_out" name="check_out" value="<?= $checkoutdate ?>">
+
+        <input type="hidden" id="book_adults" name="adults" value="<?= $adults ?>">
+
+        <input type="hidden" id="book_children" name="children" value="<?= $children ?>">
+
+        <input type="hidden" id="book_rooms" name="no_of_rooms" value="<?= $rooms_count ?>">
+
+
+
 
 </div>
+  </div>
+
+ <?php if(!empty($available_rooms)){?>
+<div class="col-lg-6 order-1" style="margin-top:18px;">
+
+<table class="table">
+
+
+          <tr>
+            <td>Room Name</td>
+            <td id="b_room_name">-</td>
+          </tr> 
+
+          <tr>
+            <td>Room Price</td>
+            <td id="b_room_amount">-</td>
+          </tr> 
+
+          <tr>
+            <td>No Of Days</td>
+            <td id="b_no_of_days">-</td>
+          </tr>
+          <tr>
+
+          <tr>
+            <td>No Of Rooms</td>
+            <td id="b_no_of_rooms">-</td>
+          </tr>
+
+          <?php /*
+          <tr>
+            <td>GST</td>
+            <td id="display_gst">%</td>
+          </tr>
+          */ ?>
+
+          
+          <tr class="grand_total">
+            <td>Grand Total</td>
+            <td id="b_total_amount">-</td>
+          </tr>
+
+        </table>
+      </div>
+      <?php } ?>
+
+
+      </div>
+
+
+       <div class="col-lg-12 my-3 text-center" style="display: flex;align-items: center;justify-content: center;">      
+        <div class="col-lg-3">   
+          <input class="as-btn style4 shadow-none" type="submit" name="sub" value="Make Payment">
+        </div>
+      </div>
+
+        </form>
+
+
+
+
+</div>
+</div>
+</section>
 
 <?php $this->load->view("footer")?>
 <script>
@@ -812,12 +949,44 @@ var incrementMinus = buttonMinus.click(function() {
 
 
 $('.radio').click(function(){
-    $(this).parent().find('.radio').removeClass('selected');
+
+    $('.radio-container').parent().find('.radio').removeClass('selected');
+    
     $(this).addClass('selected');
-    var val = $(this).attr('data-value');
-    //alert(val);
-    $('#f_roomid').val(val);
-    $('#f_roomid').change();
+
+    var roomid = $(this).attr('data-value');
+
+    const params = new URLSearchParams(window.location.search);
+
+     $.ajax({
+            url: '<?php echo base_url(); ?>Check/GetRoomPrice',
+            type: 'POST',
+            data: {
+                  room_id: roomid, 
+                  check_in: params.get('checkindate'), 
+                  check_out: params.get('checkoutdate'),
+                  room_count: params.get('rooms_count'),
+                  },
+
+                  success: function(response) {
+
+                  var data = JSON.parse(response)
+
+                  $('#book_room_id').val(roomid);
+
+                  $('#b_room_name').html(data.room_name);
+
+                  $('#b_room_amount').html(data.room_rate);
+
+                  $('#b_no_of_days').html(data.no_of_days);
+
+                  $('#b_no_of_rooms').html(data.no_of_rooms);
+
+                  $('#b_total_amount').html(data.total_price);
+                     
+                  }
+              });
+    
 });
 
 
@@ -926,7 +1095,65 @@ function formValidate()
 </script>
 
 
+<script>
 
+  <?php if(!empty($room_id_get=$this->input->get('room_selected'))){ ?>
+
+  if ($('#roomid<?= $room_id_get ?>').length) {
+    $('#roomid<?= $room_id_get ?>').trigger('click');
+
+    $('html, body').animate({
+      scrollTop: $('.booking_step_heading').last().offset().top
+    }, 500);
+  }
+  else
+  {
+
+  Swal.fire({
+  title: "Room unavailable!",
+  text: "Please select another room!",
+  icon: "error"
+  });
+
+  }
+
+  <?php } ?>
+
+</script>
+
+
+  <script>
+            
+  /*
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $recaptcha_secret = "6LdhoLAqAAAAAMDXdlG__dGL4HLhfwR5pFshJfjL"; // Replace with your Secret Key
+    $recaptcha_response = $_POST['g-recaptcha-response'];
+
+    // Verify the reCAPTCHA response
+    $verify_response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$recaptcha_secret&response=$recaptcha_response");
+    $response_data = json_decode($verify_response);
+
+    if ($response_data.success) {
+        // reCAPTCHA verified successfully
+        echo "Message sent successfully!";
+    } else {
+        // reCAPTCHA failed
+        echo "Please complete the reCAPTCHA.";
+    }
+}
+        
+    document.getElementById('check-form').addEventListener('submit', function(event) {
+        var recaptchaResponse = grecaptcha.getResponse();
+        if (recaptchaResponse.length === 0) {
+            // Prevent form submission
+            event.preventDefault();
+            // Show an alert if reCAPTCHA is not completed
+            alert("Please complete the reCAPTCHA to submit the form.");
+        }
+    });
+  */
+</script>
+        
 
 
 

@@ -125,6 +125,32 @@
       }
 
       /* Action Buttons End */
+
+
+
+         .type-toggle-container{
+              background: #000000;
+              padding: 5px 9px;
+              margin: 5px 10px;
+              border-radius: 10px;
+              text-align: center;
+              color: white;
+              }
+
+              .type-toggle-container a{
+              color: white !important;
+              padding: 5px;
+              border-radius: 10px;
+              font-size: 15px;
+              display: inline-block;
+              width: 30%;
+              }
+
+              a.type-toggle-btn.active {
+                background: #ffffff !important;
+                color: black !important;
+            }
+
 	
 
 </style>

@@ -78,7 +78,7 @@ $data['name_data'] 	= 	$this->Admin_model->fetch_data('room',$name_cond);
 	'tax'	                =>	$tax,
 	'create_date'	        =>	$create_date,
 	'room_size'	            =>	$room_size,
-	'hotel'               =>1,
+	'hotel'               =>  2,
  'color'     =>    $color,
 	'room_slug_name'  => $this->create_slug($this->input->post('name')),
 	);
