@@ -408,7 +408,7 @@
 
               <tr>
                 <th>Total :</th>
-                <td><?= $booking['tax_excluded_total']-$booking['extra_amount']; ?></td>
+                <td><?= $booking['tax_excluded_total']-$booking['extra_amount']+$booking['total_discounts']; ?></td>
               </tr>
 
               <?php if($booking['extra_amount']>0) {?>
@@ -422,6 +422,15 @@
                 <th>Tax :</th>
                 <td><?= $booking['tax_amount']; ?></td>
               </tr>
+
+              <?php if($booking['total_discounts']>0) { ?>
+
+                <tr>
+                <th style="color:red;">Discounts :</th>
+                <td style="color:red">- <?= $booking['total_discounts']; ?></td>
+                </tr>
+
+              <?php } ?>
 
 
               <tr>
