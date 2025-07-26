@@ -26,7 +26,7 @@
           <div class="row">
 
 
-            <div class="row" style="margin:10px 0px;">
+              <div class="row" style="margin:10px 0px;">
 
                     <div class="col-lg-3"></div>
                        
@@ -35,11 +35,11 @@
                        
         <div class="type-toggle-container">
 
-        <a href="<?= base_url(); ?>" class="type-toggle-btn active">All</a>
+        <a href="javascript:void(0);" data-id="" class="type-toggle-btn <?php if($this->input->get('hotel_type') == 0 || empty($this->input->get('hotel_type'))) { echo "active"; } ?>">All</a>
 
-        <a href="<?= base_url(); ?>" class="type-toggle-btn ">Residency</a>
+        <a href="javascript:void(0);" data-id="1" class="type-toggle-btn <?php if($this->input->get('hotel_type') == 1 ) { echo "active"; } ?>">Residency</a>
 
-        <a href="<?= base_url(); ?>" class="type-toggle-btn">Stay</a>
+        <a href="javascript:void(0);" data-id="2" class="type-toggle-btn <?php if($this->input->get('hotel_type') == 2 ) { echo "active"; } ?>">Stay</a>
 
         </div>
                       
@@ -51,7 +51,9 @@
 
 
 
-          <form>
+          <form id="filter_form">
+
+          <input type="hidden" name="hotel_type" value="<?php if(!empty($hotel_type_get=$this->input->get('hotel_type'))) { echo $hotel_type_get; } ?>" id="hotel_type_input">
 
           <div class="col-xs-12" style="margin:10px 0px;">
 
@@ -68,12 +70,12 @@
 
                     <div class="col-sm-3">
                       <label>Date From</label>
-                      <input class="form-control" type="date" name="date_from" id="dateFrom" onclick="this.showPicker()">
+                      <input class="form-control" type="date" value="<?php if(!empty($this->input->get('date_from'))) { echo $this->input->get('date_from'); } ?>" name="date_from" id="dateFrom" onclick="this.showPicker()">
                     </div>
 
                     <div class="col-sm-3">
                       <label>Date To</label>
-                      <input class="form-control" type="date" name="date_to" id="dateTo" onclick="this.showPicker()">
+                      <input class="form-control" type="date" value="<?php if(!empty($this->input->get('date_from'))) { echo $this->input->get('date_to'); } ?>" name="date_to" id="dateTo" onclick="this.showPicker()">
                     </div>
 
                     <script>
@@ -326,6 +328,19 @@
     $('.loader').removeClass("loader");
    
 	});
+
+
+
+  $('.type-toggle-btn').click(function(){
+
+  var type = $(this).data('id');
+
+  $('#hotel_type_input').val(type);
+
+  $('#filter_form').submit();
+
+  })
+
 	
  	</script>
    

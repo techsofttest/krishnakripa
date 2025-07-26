@@ -208,7 +208,7 @@ public function get_profile_details($id)
 			
 			$this->db->select('*');
 			$this->db->from('room');			
-			$this->db->where('hotel',0);
+			$this->db->where('hotel',1);
 			$this->db->join('categories','room.category = categories.cat_id','left');	
 			$this->db->order_by('roomid','Desc');
 			$query  = $this->db->get();
@@ -221,7 +221,7 @@ public function get_profile_details($id)
 			
 			$this->db->select('*');
 			$this->db->from('room');			
-			$this->db->where('hotel',1);
+			$this->db->where('hotel',2);
 			$this->db->join('categories','room.category = categories.cat_id','left');	
 			$this->db->order_by('roomid','Desc');
 			$query  = $this->db->get();

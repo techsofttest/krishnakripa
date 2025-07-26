@@ -20,10 +20,11 @@
     vertical-align: middle;
     text-align: center;
 		}
+
 	input{
 		height:34px;
     width: 100px;
-    text-align: center;
+    /*text-align: center;*/
     font-size: 26px;
 		border:1px solid #ddd;
 		border-radius:4px;
@@ -541,7 +542,7 @@
 
 
                   <div class="col-xs-12 col-sm-6 row-seperate">
-                    <label> Last Name <strong style="color:#F00;">*</strong></label>
+                    <label> Last Name <strong style="color:#F00;"></strong></label>
 							    <input class="form-control l_name_input" type="text" name="l_name" autocomplete="off">	
 							    </div>
 
@@ -616,12 +617,12 @@
 
                   <div class="row">
 
-                    <div class="col-xs-12 col-sm-6 row-seperate">
+                      <div class="col-xs-12 col-sm-6 row-seperate">
                           <label> Transaction Id <strong style="color:#F00;"></strong></label>
-							            <textarea class="form-control" name="payment_notes"></textarea>	
+							            <textarea class="form-control" placeholder="Enter transaction Id/Notes" name="payment_notes"></textarea>	
 							        </div>
 
-                       <div class="col-xs-12 col-sm-6 row-seperate">
+                      <div class="col-xs-12 col-sm-6 row-seperate">
                               <label> Special Requirements / Notes <strong style="color:#F00;"></strong></label>
 							                <textarea class="form-control" name="booking_notes"></textarea>	
 							        </div>
@@ -654,13 +655,36 @@
                   </tr>
 
 
-                   <tr>
+                  <tr id="extra_sec" style="display:none;">
+
+                    <th>Extras (Kids)</th>
+
+                    <td class="totals text-right" id="extra_price"></td>
+
+                  </tr>
+
+
+                  <tr>
+
+                    <th>Discounts</th>
+
+                    <td class="totals text-right" ><input class="text-right" value="0" name="discount" id="discount_amount"></td>
+
+                  </tr>
+
+
+
+
+                  <tr>
 
                     <th>Total Amount</th>
                     <td class="totals" id="total_amount">
 
                     </td>
                     <input type="hidden" id="total_amount_val" name="total_amount">
+                    <input type="hidden" id="tax_amount_val" name="tax_amount">
+                    <input type="hidden" id="extra_price_val" name="extra_price">
+                    <input type="hidden" id="extra_desc_val" name="extra_desc">
 
                   </tr>
 
@@ -784,6 +808,60 @@
                  });
 
 
+
+                 $(document).on('change input', '#discount_amount', function() {
+
+                  var discount = $(this).val();
+
+                  var room_id = $('input.room_select:checked').val();      
+                  
+                  var no_of_rooms = $('#no_of_rooms').val();
+
+                  var check_in_date = $('input[name="check_in"]').val();
+                 
+                  var check_out_date = $('input[name="check_out"]').val();
+
+                  var discounts = $('#discount_amount').val();
+
+                  var children = $('#childrens_input').val();
+
+                   $.ajax({
+                        url: '<?php echo base_url("admin/Bookings/CalculatePrice"); ?>',
+                        type: 'POST',
+                        data: { room_id: room_id,no_of_rooms:no_of_rooms,check_in:check_in_date,check_out:check_out_date,discounts:discounts,children:children},
+                        success: function(response) {
+                           var data = JSON.parse(response)
+                           if(data.status==1)
+                           {
+                           $('#room_total').html(data.subtotal);
+                           $('#tax').html(data.tax_amount);
+                           $('#total_amount').html(data.total);
+
+                           if(data.extra_price>0)
+                           {
+                            $('#extra_sec').show();
+                           }
+                           else
+                           {
+                            $('#extra_sec').hide();
+                           }
+
+                           $('#extra_price').html(data.extra_price);
+                           $('#extra_price_val').val(data.extra_price);
+                           $('#extra_desc_val').val(data.extra_desc);
+                           $('#total_amount_val').val(data.total);
+                           }
+                           else
+                           {
+
+                           }
+                          }
+                         })
+
+                  })
+
+
+
                 // Use event delegation for dynamically added elements
                 $(document).on('change', '.room_select', function() {
 
@@ -795,16 +873,35 @@
                  
                   var check_out_date = $('input[name="check_out"]').val();
 
+                  var discounts = $('#discount_amount').val();
+
+                   var children = $('#childrens_input').val();
+
                    $.ajax({
                         url: '<?php echo base_url("admin/Bookings/CalculatePrice"); ?>',
                         type: 'POST',
-                        data: { room_id: room_id,no_of_rooms:no_of_rooms,check_in:check_in_date,check_out:check_out_date},
+                        data: { room_id: room_id,no_of_rooms:no_of_rooms,check_in:check_in_date,check_out:check_out_date,discounts:discounts,children:children},
                         success: function(response) {
                            var data = JSON.parse(response)
                            if(data.status==1)
                            {
                            $('#room_total').html(data.subtotal);
                            $('#tax').html(data.tax_amount);
+                           $('#tax_amount_val').val(data.tax_amount);
+
+                           if(data.extra_price>0)
+                           {
+                            $('#extra_sec').show();
+                           }
+                           else
+                           {
+                            $('#extra_sec').hide();
+                           }
+
+                           $('#extra_price').html(data.extra_price);
+                           $('#extra_price_val').val(data.extra_price);
+                           $('#extra_desc_val').val(data.extra_desc);
+
                            $('#total_amount').html(data.total);
                            $('#total_amount_val').val(data.total);
                            }
@@ -812,7 +909,12 @@
                            {
                            $('#room_total').html('');
                            $('#tax').html('');
+                           $('#tax_amount_val').val('');
                            $('#total_amount').html('');
+                           $('#extra_sec').hide();
+                           $('#extra_price').html('');
+                           $('#extra_price_val').val(0);
+                           $('#extra_desc_val').val('');
                            $('#total_amount_val').val(0);
                            }
                         }

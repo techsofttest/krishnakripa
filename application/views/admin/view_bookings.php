@@ -47,10 +47,9 @@
         <section class="content">
           <div class="row">
             <div class="col-xs-12">  
-            
 
 
-            <div class="row" style="margin:10px 0px;">
+             <div class="row" style="margin:10px 0px;">
 
                     <div class="col-lg-3"></div>
                        
@@ -59,11 +58,11 @@
                        
         <div class="type-toggle-container">
 
-        <a href="<?= base_url(); ?>" class="type-toggle-btn active">All</a>
+        <a href="javascript:void(0);" data-id="" class="type-toggle-btn <?php if($this->input->get('hotel_type') == 0 || empty($this->input->get('hotel_type'))) { echo "active"; } ?>">All</a>
 
-        <a href="<?= base_url(); ?>" class="type-toggle-btn ">Residency</a>
+        <a href="javascript:void(0);" data-id="1" class="type-toggle-btn <?php if($this->input->get('hotel_type') == 1 ) { echo "active"; } ?>">Residency</a>
 
-        <a href="<?= base_url(); ?>" class="type-toggle-btn">Stay</a>
+        <a href="javascript:void(0);" data-id="2" class="type-toggle-btn <?php if($this->input->get('hotel_type') == 2 ) { echo "active"; } ?>">Stay</a>
 
         </div>
                       
@@ -73,6 +72,178 @@
             
             </div>
 
+
+            <div class="row">
+
+
+
+                <div class="col-xs-12" style="margin:10px 0px;">
+
+                <form action="" method="get" id="filter_form">
+
+                <input type="hidden" name="hotel_type" value="<?php if(!empty($hotel_type_get=$this->input->get('hotel_type'))) { echo $hotel_type_get; } ?>" id="hotel_type_input">
+
+                <div class="row">
+
+                    <div class="col-sm-3">
+                      <label>Date Filter</label>
+                      <select class="form-control" id="dateFilter" name="date">
+                        <option value="">Date</option>
+                        <option value="today">Today</option>
+                        <option value="week">Weekly</option>
+                        <option value="month">Monthly</option>
+                      </select>
+                    </div>
+
+                    <div class="col-sm-3">
+                      <label>Date From</label>
+                      <input class="form-control" type="date" value="<?php if(!empty($this->input->get('date_from'))) { echo $this->input->get('date_from'); } ?>" name="date_from" id="dateFrom" onclick="this.showPicker()">
+                    </div>
+
+                    <div class="col-sm-3">
+                      <label>Date To</label>
+                      <input class="form-control" type="date" value="<?php if(!empty($this->input->get('date_from'))) { echo $this->input->get('date_to'); } ?>" name="date_to" id="dateTo" onclick="this.showPicker()">
+                    </div>
+
+                    <script>
+                    function getMonday(d) {
+                      d = new Date(d);
+                      var day = d.getDay(),
+                        diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+                      return new Date(d.setDate(diff));
+                    }
+                    // Function to get today's date in YYYY-MM-DD format
+                    function getTodayDate() {
+                      var today = new Date();
+                      var dd = String(today.getDate()).padStart(2, '0');
+                      var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                      var yyyy = today.getFullYear();
+                      return yyyy + '-' + mm + '-' + dd;
+                    }
+                    function getSunday(d) {
+                      d = new Date(d);
+                      var day = d.getDay(),
+                          diff = d.getDate() - day + 7;
+                      return new Date(d.setDate(diff));
+                    }
+                    function pad(n) { return n < 10 ? '0' + n : n; }
+                    function formatDate(date) {
+                      return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
+                    }
+                    document.getElementById('dateFilter').addEventListener('change', function() {
+                      var filter = this.value;
+                      var today = new Date();
+                      var from = '', to = '';
+                      if (filter === 'week') {
+                        var monday = getMonday(today);
+                        var sunday = getSunday(today);
+                        from = formatDate(monday);
+                        to = formatDate(sunday);
+                      } else if (filter === 'month') {
+                        var first = new Date(today.getFullYear(), today.getMonth(), 1);
+                        var last = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                        from = formatDate(first);
+                        to = formatDate(last);
+                      } 
+                      else if(filter === 'today')
+                      {
+                      var todaydate = getTodayDate(today);
+                      from = todaydate;
+                      to = todaydate;
+                      }
+                      else {
+                        from = formatDate(today);
+                        to = formatDate(today);
+                      }
+                      document.getElementById('dateFrom').value = from;
+                      document.getElementById('dateTo').value = to;
+                    });
+                    </script>
+
+
+                    <div class="col-sm-3">
+
+                      <label>Payment</label>
+
+                      <select class="form-control" name="payment_status">
+
+                        <option value="" selected>Select Payment Status</option>
+
+                        <option value="2" <?php if($this->input->get('payment_status') == 2) { echo "selected"; } ?>>Paid</option>
+
+                        <option value="1" <?php if($this->input->get('payment_status') == 1) { echo "selected"; } ?>>Partially Paid</option>
+
+                        <option value="0" <?php if($this->input->get('payment_status') == 0) { echo "selected"; } ?>>Unpaid</option>
+
+                      </select>
+
+                    </div>
+
+
+
+
+
+                </div>
+
+                 <div class="row" style="">
+                    <div class="col-sm-3" style="">
+                    <label>Customer</label>
+                      <select class="form-control"  name="customer">
+                        <option value="" selected>Select Customer</option>
+                       
+                        <?php foreach($customers as $cus){ ?>
+
+                          <option value="<?= $cus->cus_id ?>" <?php if((!empty($_GET['customer'])) && $cus->cus_id==$_GET['customer']) { echo "selected"; } ?>><?= $cus->first_name ?> <?= $cus->last_name ?></option>
+
+                        <?php } ?>
+
+                      </select>
+                  
+                    </div>
+
+                    <div class="col-sm-3" style="">
+                    <label>Room</label>
+                      <select class="form-control" id="" name="room">
+                         <option value="" selected>Select Room</option>
+
+                        <?php foreach($rooms as $room){ ?>
+
+                          <option value="<?= $room->roomid ?>" <?php if((!empty($_GET['room'])) && $room->roomid==$_GET['room']) { echo "selected"; } ?>><?= $room->name ?></option>
+
+                        <?php } ?>
+                      
+
+                      </select>
+                    </div>
+                  
+                </div>
+
+
+
+
+                <div class="row" style="margin:10px 0px;">
+              
+                    <div class="col-sm-12" style="text-align:center">
+                      <button type="submit" class="btn btn-success">Filter</button>
+                      <a href="<?= base_url(); ?>admin/Bookings" class="btn btn-danger">Reset</a>
+                    </div>
+
+                
+                </div>
+
+
+
+
+                  </form>
+
+
+
+            </div>
+
+
+
+            </div>
+            
 
 
                       <div class="row" style="margin:10px 0px;">
@@ -354,7 +525,7 @@
           <label>Booking Status</label>
           <select class="form-control" name="booking_status" id="booking_status" required>
             <option value="">Select Booking Status</option>
-            <option value="pending">Pending</option>
+            <!--<option value="pending">Pending</option>-->
             <option value="confirmed">Confirmed</option>
             <option value="checked_in">Checked In</option>
             <option value="checked_out">Checked Out</option>
@@ -370,6 +541,35 @@
           <label>Time</label>
           <input onclick="this.showPicker();" value="<?= date('H:i') ?>" type="time" class="form-control" name="status_time" id="status_time" required>
           </div>
+
+          <section class="cancel-refund-sec" style="display:none;">
+
+          <label> Refund Amount</label>
+          <input type="number" class="form-control" placeholder="Enter Amount" name="amount">
+
+          <label>Payment Method</label>
+          <select class="form-control" name="payment_method">
+            <option value="">Select Payment Method</option>
+            <option value="cash">Cash</option>
+            <option value="card">Card</option>
+            <option value="upi">UPI</option>
+            <option value="online">Online</option>
+          </select>
+
+          <label>Payment Date</label>
+          <input type="date" class="form-control" name="payment_date" onclick="this.showPicker();" >
+
+          <label>Transaction Id</label>
+          <textarea class="form-control" placeholder="Enter transaction ID/Notes" name="payment_notes" ></textarea>
+
+          <input type="hidden" name="payment_type" value="debit">
+
+          </section>
+
+
+
+
+
 
       </div>
       <div class="modal-footer">
@@ -412,6 +612,12 @@
 
       $('.status_datetime').hide();
 
+      $('.cancel-refund-sec').hide();
+
+      $('.cancel-refund-sec input').removeAttr('required');
+
+      $('.cancel-refund-sec select').removeAttr('required');
+
       $('#status_booking_id').val(bookingId);
 
       $('#statusModal').modal('show');
@@ -431,6 +637,27 @@
     } else {
 
       $('.status_datetime').hide();
+
+    }
+
+    if(status == 'cancelled'){
+    
+    $('.cancel-refund-sec').show();
+
+    $('.cancel-refund-sec input').attr('required',true);
+
+    $('.cancel-refund-sec select').attr('required',true);
+
+    }
+    else
+    {
+
+    $('.cancel-refund-sec').hide();
+
+    $('.cancel-refund-sec input').removeAttr('required');
+
+    $('.cancel-refund-sec select').removeAttr('required');
+
     }
 
 
@@ -547,6 +774,17 @@ $( document ).ready(function() {
       oTable.search($(this).val()).draw() ;
 })
 });
+
+
+$('.type-toggle-btn').click(function(){
+
+  var type = $(this).data('id');
+
+  $('#hotel_type_input').val(type);
+
+  $('#filter_form').submit();
+
+})
 
 
 	

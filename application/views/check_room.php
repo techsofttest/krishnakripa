@@ -544,6 +544,7 @@ textarea.form-control, textarea {
                  'adults'      => $this->input->get('adults'),
                  'children'    => $this->input->get('children'),
                  'rooms_count' => $this->input->get('rooms_count'),
+                 'hotel_type' => $this->input->get('hotel_type'),
               ];
 
             // Generate URL-encoded query string

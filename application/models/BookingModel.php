@@ -217,7 +217,7 @@ class BookingModel extends CI_model {
 
 
 
-    public function ViewBookings()
+    public function ViewBookings($date_from,$date_to,$payment_status,$customer,$room,$hotel_type)
     {
 
     $this->db->select('*');
@@ -227,6 +227,38 @@ class BookingModel extends CI_model {
     $this->db->join('customers','customers.cus_id=bookings.booking_customer_id','left');
 
     $this->db->join('room','room.roomid=bookings.booking_room_id','left');
+
+ if($date_from!="")
+    {
+        $this->db->where('check_in_date >=', $date_from);
+    }
+
+    if($date_to!="")
+    {
+        $this->db->where('check_in_date <=', $date_to);
+    }
+
+    if($payment_status!="")
+    {
+        $this->db->where('payment_status', $payment_status);
+    }
+
+    if($customer!="")
+    {
+        $this->db->where('booking_customer_id', $customer);
+
+    }
+
+    if($room!="")
+    {
+        $this->db->where('booking_room_id', $room);
+    }
+    
+    if($hotel_type!="")
+    {
+        $this->db->where('room.hotel',$hotel_type);
+    }
+
 
     $this->db->order_by('bookings.created_at','desc');
 
@@ -315,6 +347,7 @@ class BookingModel extends CI_model {
     {
         $this->db->where('bp_type', $type);
     }
+
     $this->db->where('booking_payments.bp_booking', $id);
     $this->db->order_by('bp_paid_on', 'DESC');
     $query = $this->db->get();
@@ -346,20 +379,29 @@ class BookingModel extends CI_model {
 
 
 
-    public function ViewPayments($date_from="",$date_to="",$customer="")
+    public function ViewPayments($date_from="",$date_to="",$customer="",$hotel_type="")
     {
 
     $this->db->select('*');
     $this->db->from('booking_payments');    
     $this->db->join('bookings','bookings.booking_id=booking_payments.bp_booking','left');
     $this->db->join('customers','customers.cus_id=bookings.booking_customer_id','left');
+    $this->db->join('room','room.roomid=bookings.booking_room_id','left');
+
     if($date_from!="" && $date_to!=""){
         $this->db->where('bp_paid_on >=', $date_from);
         $this->db->where('bp_paid_on <=', $date_to);
     }
+    
     if($customer!=""){
         $this->db->where('customers.cus_id', $customer);
     }
+
+    if($hotel_type!="")
+    {
+        $this->db->where('room.hotel',$hotel_type);
+    }
+
     $this->db->order_by('bp_paid_on', 'DESC');
     $query = $this->db->get();
     if ($query->num_rows() > 0) {

@@ -276,8 +276,8 @@
 
 
                   <div class="col-xs-12 col-sm-6 row-seperate">
-                    <label> Last Name <strong style="color:#F00;">*</strong></label>
-							    <input class="form-control l_name_input" type="text" name="l_name" value="<?= $booking['customer_last_name']; ?>" autocomplete="off" required>	
+                    <label> Last Name <strong style="color:#F00;"></strong></label>
+							    <input class="form-control l_name_input" type="text" name="l_name" value="<?= $booking['customer_last_name']; ?>" autocomplete="off">	
 							    </div>
                    
 

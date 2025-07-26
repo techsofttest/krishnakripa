@@ -97,6 +97,7 @@ $query_params = [
                  'adults'      => $this->input->get('adults'),
                  'children'    => $this->input->get('children'),
                  'rooms_count' => $this->input->get('rooms_count'),
+                 'hotel_type' => $this->input->get('hotel_type'),
 ];
 ?>
 

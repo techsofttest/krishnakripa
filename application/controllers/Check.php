@@ -220,8 +220,8 @@ if($no_of_days <= 0) {
 }
 
 $total_price = $room['rate'] * $no_of_days * $rooms_count;	
-//$gst = ($total_price * $room_data['tax']) / 100;
-$gst  = 0;
+$gst = ($total_price * $room['tax']) / 100;
+//$gst  = 0;
 $data['booking_details'] =array(
 	'status' => 'success',
 	'room_name' => $room['name'],

@@ -405,8 +405,27 @@
             <table class="table payment-summary-table">
               <tbody>
              
+
               <tr>
-                <th>Total:</th>
+                <th>Total :</th>
+                <td><?= $booking['tax_excluded_total']-$booking['extra_amount']; ?></td>
+              </tr>
+
+              <?php if($booking['extra_amount']>0) {?>
+              <tr>
+                <th>Extra (Kids)</th>
+                <td><?= $booking['extra_amount']; ?></td>
+              </tr>
+              <?php } ?>
+
+              <tr>
+                <th>Tax :</th>
+                <td><?= $booking['tax_amount']; ?></td>
+              </tr>
+
+
+              <tr>
+                <th>Grand Total:</th>
                 <td><?= $booking['total_amount']; ?></td>
               </tr>
 

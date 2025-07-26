@@ -13,6 +13,7 @@ $adults=1;
 $rooms_count=1;
 
 
+
 if(!empty($_GET['checkin'])) 
 {
 
@@ -37,11 +38,11 @@ $adults = $_GET['adults'];
 
 }
 
-if(!empty($_GET['hotel'])) 
+if(!empty($_GET['hotel_type'])) 
 
 {
 
-$hotel = $_GET['hotel'];
+$hotel = $_GET['hotel_type'];
 
 }
 
@@ -166,10 +167,10 @@ $rooms_count = $_GET['rooms_count'];
 								<div class="col-lg-3">
 								<div class="form-group">
 								 
-						<select name="hotel_type" id="hotel_type" class="form-control">
+						<select name="hotel_type" id="hotel_type" class="form-control" required>
             <option value="">Select Hotel</option>             
-            <option value="1"> Premium Residency</option>             
-            <option value="2"> Excecutive Stay</option>
+            <option value="1" <?php if($hotel=="1") { echo "selected"; }  ?>> Premium Residency</option>             
+            <option value="2" <?php if($hotel=="2") { echo "selected"; }  ?>> Excecutive Stay</option>
            
            </select>
 					<i class="fas fa-bed"></i>

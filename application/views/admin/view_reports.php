@@ -26,10 +26,39 @@
           <div class="row">
 
 
+            <div class="row" style="margin:10px 0px;">
+
+
+                    <div class="col-lg-3"></div>
+
+                       
+          <div class="col-lg-6">
+                       
+          <div class="type-toggle-container">
+
+          <a href="javascript:void(0);" data-id="" class="type-toggle-btn <?php if($this->input->get('hotel_type') == 0 || empty($this->input->get('hotel_type'))) { echo "active"; } ?>">All</a>
+
+          <a href="javascript:void(0);" data-id="1" class="type-toggle-btn <?php if($this->input->get('hotel_type') == 1 ) { echo "active"; } ?>">Residency</a>
+
+          <a href="javascript:void(0);" data-id="2" class="type-toggle-btn <?php if($this->input->get('hotel_type') == 2 ) { echo "active"; } ?>">Stay</a>
+
+          </div>
+                      
+          </div>
+
+                       
+                    <div class="col-lg-3"></div>
+
+            
+            </div>
+
+
 
             <div class="col-xs-12" style="margin:10px 0px;">
 
-                <form action="" method="get">
+                <form action="" method="get" id="filter_form">
+
+                <input type="hidden" name="hotel_type" value="<?php if(!empty($hotel_type_get=$this->input->get('hotel_type'))) { echo $hotel_type_get; } ?>" id="hotel_type_input">
 
                 <div class="row">
 
@@ -326,6 +355,18 @@
     $('.loader').removeClass("loader");
    
 	});
+
+
+  $('.type-toggle-btn').click(function(){
+
+  var type = $(this).data('id');
+
+  $('#hotel_type_input').val(type);
+
+  $('#filter_form').submit();
+
+  })
+
 	
  	</script>
    

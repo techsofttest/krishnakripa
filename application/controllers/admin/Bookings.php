@@ -115,7 +115,51 @@ class Bookings extends MY_Controller {
 
 		{  
 		   
-		 	$data['bookings']	=	$this->BookingModel->ViewBookings();		   
+
+			$date_from = "";
+
+			$date_to = "";
+
+			$payment_status = "";
+
+			$customer = "";
+
+			$room = "";
+
+			$hotel_type = "";
+
+			if(!empty($this->input->get('date_from')))
+			{
+				$date_from = $this->input->get('date_from');
+			}
+
+			if(!empty($this->input->get('date_to')))
+			{
+				$date_to = $this->input->get('date_to');
+			}
+
+			if(!empty($this->input->get('payment_status')))
+			{
+				$payment_status = $this->input->get('payment_status');
+			}
+
+			if(!empty($this->input->get('customer')))
+			{
+				$customer = $this->input->get('customer');
+			}
+
+			if(!empty($this->input->get('room')))
+			{
+				$room = $this->input->get('room');
+			}
+
+			if(!empty($this->input->get('hotel_type')))
+			{
+				$hotel_type = $this->input->get('hotel_type');
+			}
+
+
+		 	$data['bookings']	=	$this->BookingModel->ViewBookings($date_from,$date_to,$payment_status,$customer,$room,$hotel_type);		   
 			$parent =  $this->uri->segment(4);				 
 			$data['seo_title'] 	= 	"View Bookings | ".$this->data['admin_title'].""; 			
 			$this->load->view('admin/view_bookings',$data);
@@ -136,7 +180,23 @@ class Bookings extends MY_Controller {
 			$data['hotels']	=	$this->Admin_model->fetch_all_order('hotels','hotel_name','asc');
 			
 			if($_POST):
-			 
+
+			$tax = (float) $this->input->post('tax_amount');
+
+			$extra_price = (float)$this->input->post('extra_price');
+
+			$extra_desc = $this->input->post('extra_desc');
+
+			$total = (float) $this->input->post('total_amount');
+
+			$tax_excluded_total = $total;
+
+			if ($tax>0) {
+				$tax_excluded_total = $total-$tax;
+			}
+
+			//$total = $total+$extra_price;
+
 			$booking_data  	= 	array(
 
 		    'check_in_date'  => date('Y-m-d',strtotime($this->input->post('check_in'))),
@@ -151,7 +211,17 @@ class Bookings extends MY_Controller {
 		    
 			'no_of_rooms'=>$this->input->post('rooms'),
 
-			'total_amount' => $this->input->post('total_amount'),
+			'tax_amount' => $this->input->post('tax_amount'),
+
+			'total_amount' => $total,
+
+			'tax_excluded_total' => $tax_excluded_total,
+
+			'extra_amount' => $extra_price,
+
+			'extra_desc' => $extra_desc,
+
+			'total_discounts' => $this->input->post('discount'),
 		      
 			'paid_amount'=> $this->input->post('current_payment'),
 
@@ -254,7 +324,13 @@ class Bookings extends MY_Controller {
 			'bp_type' => 'credit',
 			);
 
+			if(!empty($this->input->post('current_payment')))
+
+			{
+
 			$pay_id = $this->Admin_model->insertsection('booking_payments',$payment_data);
+
+			}
 
 
 
@@ -345,13 +421,15 @@ class Bookings extends MY_Controller {
 		$no_of_room = $this->input->post('no_of_rooms');
 		$check_in = $this->input->post('check_in');
 		$check_out = $this->input->post('check_out');
+		$discounts = intval($this->input->post('discounts')) ?: 0;
+		$children = intval($this->input->post('children')) ?: 0;
 
 		$room_det = $this->Admin_model->fetch_one_row('room',['roomid' => $room_id]);
 
 		$base_price = $room_det['rate'];
-		//$tax = isset($room_det['tax']) ? $room_det['tax'] : 0;
+		$tax = isset($room_det['tax']) ? $room_det['tax'] : 0;
 
-		$tax = 0;
+		//$tax = 0;
 
 		// Calculate number of nights
 		$check_in_date = new DateTime($check_in);
@@ -359,10 +437,22 @@ class Bookings extends MY_Controller {
 		$interval = $check_in_date->diff($check_out_date);
 		$nights = $interval->days;
 
+		$extra_price=0;
+		$extra_desc="";
+		if($children>0)
+		{
+		$extra_price = $room_det['kidPrice']*$children;
+		$extra_desc = "Kids";
+		}
+
 		// Calculate total price
 		$subtotal = $base_price * $no_of_room * $nights;
-		$tax_amount = ($subtotal * $tax) / 100;
-		$total = $subtotal + $tax_amount;
+		$tax_amount = (($subtotal+$extra_price) * $tax) / 100;
+
+
+		$total = $subtotal + $tax_amount + $extra_price;
+
+		$total = $total-$discounts;
 
 		echo json_encode([
 			'status' => 1,
@@ -372,6 +462,8 @@ class Bookings extends MY_Controller {
 			'subtotal' => $subtotal,
 			'tax' => $tax,
 			'tax_amount' => $tax_amount,
+			'extra_price' => $extra_price,
+			'extra_desc' => $extra_desc,
 			'total' => $total
 		]);
 
@@ -496,8 +588,8 @@ class Bookings extends MY_Controller {
 
 
 		$base_price = $data['booking']['rate'];
-		//$tax = isset($room_det['tax']) ? $room_det['tax'] : 0;
-		$tax = 0;
+		$tax = isset($room_det['tax']) ? $room_det['tax'] : 0;
+		//$tax = 0;
 
 		// Calculate number of nights
 		$check_in_date = new DateTime($check_in);
@@ -723,15 +815,34 @@ class Bookings extends MY_Controller {
 
 			$this->Admin_model->update_all($update_data,$update_cond,'bookings');
 
+
+			if($booking_status=="cancelled")
+			{
+
+			$payment_data = array(
+			'bp_booking' => $booking_id,
+			'bp_pay_method' => $this->input->post('payment_method'),
+			'bp_paid_on' => date('Y-m-d', strtotime($this->input->post('payment_date'))),
+			'bp_notes' => $this->input->post('payment_notes'),
+			'bp_amount' => $this->input->post('amount'),
+			'bp_type' => $this->input->post('payment_type')
+			);
+
+			$pay_id = $this->Admin_model->insertsection('booking_payments',$payment_data);
+
+
+			}
+
+
+
 			$this->session->set_flashdata('success', 'Booking status updated successfully');
 
 			redirect(base_url().'admin/Bookings');
-		}
-
 
 		}
 
 
+		}
 
 
 

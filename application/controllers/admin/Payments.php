@@ -26,6 +26,7 @@ class Payments extends MY_Controller {
 		$date_from = "";
 		$date_to = "";
 		$customer = "";
+		$hotel_type ="";
 	
 
 		if(!empty($this->input->get('date_from')))
@@ -43,10 +44,14 @@ class Payments extends MY_Controller {
 			$customer = $this->input->get('customer');
 		}
 
+		if(!empty($this->input->get('hotel_type')))
+		{
+			$hotel_type = $this->input->get('hotel_type');
+		}
 
 		$data['customers'] = $this->Admin_model->fetch_where_order('customers',array(),'first_name','asc');
 
-    	$data['payments']  =  $this->BookingModel->ViewPayments($date_from,$date_to,$customer);	
+    	$data['payments']  =  $this->BookingModel->ViewPayments($date_from,$date_to,$customer,$hotel_type);	
 
     	$data['seo_title'] = "View Payments | ".$this->data['admin_title'].""; 
 
