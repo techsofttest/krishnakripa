@@ -81,9 +81,18 @@ class BookingModel extends CI_model {
     }
     */
 
+
+    /*
     public function get_available_rooms($room_count, $check_in, $check_out, $category,$hotel)
     {
-    $this->db->select('r.*, (r.avail_room - IFNULL(b.booked_rooms, 0)) as available_rooms', false);
+    //$this->db->select('r.*, (r.avail_room - IFNULL(b.booked_rooms, 0)) as available_rooms', false);
+    
+    $this->db->select('
+        r.*, 
+        (r.avail_room - IFNULL(b.booked_rooms, 0)) as available_rooms,
+        COALESCE(rr.rate, rr_ordinary.rate, 0) as current_rate
+    ', false);
+
     $this->db->from('room r');
 
     if ($category != 0) {
@@ -106,8 +115,19 @@ class BookingModel extends CI_model {
                   GROUP BY booking_room_id
                 ) as b";
 
+     // Subquery for special rates
+    $rate_subquery = "(SELECT rroom_id, MIN(rate) as rate
+                       FROM {$this->db->dbprefix('room_rates')}
+                       WHERE from_date <= '$check_in'
+                       AND to_date >= '$check_out'
+                       GROUP BY rroom_id
+                     ) as rr";
+
+
     // Join subquery
     $this->db->join($subquery, 'b.booking_room_id = r.roomid', 'left');
+
+    $this->db->join($rate_subquery, 'rr.rroom_id = r.roomid', 'left');
 
     // Ensure enough rooms are available
     $this->db->having('available_rooms >=', $room_count);
@@ -115,6 +135,71 @@ class BookingModel extends CI_model {
     $query = $this->db->get();
     return $query->result();
     }
+
+    */
+
+
+
+    public function get_available_rooms($room_count, $check_in, $check_out, $category, $hotel)
+    {
+    $this->db->select('
+        r.*, 
+        (r.avail_room - IFNULL(b.booked_rooms, 0)) as available_rooms,
+        COALESCE(rr_special.rate, r.rate, 0) as rate
+    ', false);
+
+    $this->db->from('room r');
+
+    if ($category != 0) {
+        $this->db->where('r.category', $category);
+    }
+
+    if($hotel != "") {
+        $this->db->where('r.hotel', $hotel);
+    }
+
+    // Subquery to calculate total booked rooms for each room in the date range
+    $booking_subquery = "(SELECT booking_room_id, SUM(no_of_rooms) as booked_rooms
+                          FROM {$this->db->dbprefix('bookings')}
+                          WHERE booking_status != 'cancelled'
+                          AND (
+                              ('$check_in' < check_out_date AND '$check_out' > check_in_date)
+                          )
+                          GROUP BY booking_room_id
+                        ) as b";
+
+    // Subquery for special rates (date-specific rates)
+    $special_rate_subquery = "(SELECT rroom_id as category_id, MIN(rate) as rate
+                               FROM {$this->db->dbprefix('room_rates')}
+                               WHERE from_date <= '$check_in'
+                               AND to_date >= '$check_out'
+                               AND from_date > '1970-01-01'
+                               GROUP BY rroom_id
+                             ) as rr_special";
+
+    // Subquery for ordinary rates (default rates with old dates)
+    /*$ordinary_rate_subquery = "(SELECT rroom_id as category_id, MIN(rate) as rate
+                                FROM {$this->db->dbprefix('room_rates')}
+                                WHERE from_date <= '1970-01-01'
+                                GROUP BY rroom_id
+                              ) as rr_ordinary";*/
+
+    // Join subqueries
+    $this->db->join($booking_subquery, 'b.booking_room_id = r.roomid', 'left');
+    $this->db->join($special_rate_subquery, 'rr_special.category_id = r.category', 'left');
+    //$this->db->join($ordinary_rate_subquery, 'rr_ordinary.category_id = r.category', 'left');
+   
+
+    // Ensure enough rooms are available
+    $this->db->having('available_rooms >=', $room_count);
+
+    $query = $this->db->get();
+    return $query->result();
+    }
+
+
+
+
 
 
     public function room_available_check_edit($room_id, $check_in, $check_out, $room_count, $current_booking_id)
@@ -392,7 +477,7 @@ class BookingModel extends CI_model {
         $this->db->where('bp_paid_on >=', $date_from);
         $this->db->where('bp_paid_on <=', $date_to);
     }
-    
+
     if($customer!=""){
         $this->db->where('customers.cus_id', $customer);
     }

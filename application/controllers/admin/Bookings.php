@@ -231,7 +231,7 @@ class Bookings extends MY_Controller {
 
 			'booking_notes'=>$this->input->post('booking_notes'),
 
-			'booking_status'=>$this->input->post('booking_status'),
+			'booking_status'=> 'confirmed',
 
 			'customer_first_name' => $this->input->post('f_name'),
 
@@ -344,26 +344,57 @@ class Bookings extends MY_Controller {
 			$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
 
 
-			if($_FILES['id_proof']['tmp_name']!='')
-					{
-					
-					$filename 	= 	basename($_FILES["id_proof"]["name"]);
-					$ext 		= 	@end(explode('.', $filename));
-					$ext 		= 	strtolower($ext);			
-					$gallery    = 	$bid."id".rand().'.'.$ext;			
-					$uploadfile = 	"uploads/Booking";
-					
-					move_uploaded_file($_FILES["id_proof"]["tmp_name"],  $uploadfile."/".$gallery);
-					
-					$update_id_proof_data = array(
-					'id_proof' => $gallery,
-					);
+		if(isset($_FILES['id_proof']) && !empty($_FILES['id_proof']['tmp_name'][0])) {
+    
+    	$uploaded_files = array();
+    	$uploadfile = "uploads/Booking";
+    
+    	// Create directory if it doesn't exist
+    	if (!file_exists($uploadfile)) {
+        mkdir($uploadfile, 0777, true);
+    	}
+    
+    	// Loop through each uploaded file
+    	for($i = 0; $i < count($_FILES['id_proof']['tmp_name']); $i++) {
+        
+        // Check if file was actually uploaded
+        if($_FILES['id_proof']['tmp_name'][$i] != '' && $_FILES['id_proof']['error'][$i] == 0) {
+            
+            $filename = basename($_FILES["id_proof"]["name"][$i]);
+            $ext = pathinfo($filename, PATHINFO_EXTENSION);
+            $ext = strtolower($ext);
+            
+            // Generate unique filename
+            $gallery = $bid . "id" . rand() . '_' . ($i + 1) . '.' . $ext;
+            
+            // Validate file extension (optional security measure)
+            $allowed_extensions = array('jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx');
+            if(in_array($ext, $allowed_extensions)) {
+                
+                // Move uploaded file
+                if(move_uploaded_file($_FILES["id_proof"]["tmp_name"][$i], $uploadfile . "/" . $gallery)) {
+                    $uploaded_files[] = $gallery;
+                	}
+            	}
+        	}
+    	}
+    
+    	// Update database if files were uploaded
+    	if(!empty($uploaded_files)) {
+        
+        // Convert array to JSON string for storage
+        $id_proof_json = json_encode($uploaded_files);
+        
+        $update_id_proof_data = array(
+            'id_proof' => $id_proof_json,
+        );
 
-					$update_booking_cond = array('booking_id' => $bid);
+        $update_booking_cond = array('booking_id' => $bid);
 
-					$this->Admin_model->update_all($update_id_proof_data,$update_booking_cond,'bookings');
+        $this->Admin_model->update_all($update_id_proof_data, $update_booking_cond, 'bookings');
+    	}
 
-					}
+		}
 
 					
 			$this->session->set_flashdata('success', 'Booking Added Successfully.'); 
@@ -425,6 +456,17 @@ class Bookings extends MY_Controller {
 		$children = intval($this->input->post('children')) ?: 0;
 
 		$room_det = $this->Admin_model->fetch_one_row('room',['roomid' => $room_id]);
+
+		if(empty($room_det))
+		{
+
+		echo json_encode([
+			'status' => 0
+		]);
+
+		exit;
+
+		}
 
 		$base_price = $room_det['rate'];
 		$tax = isset($room_det['tax']) ? $room_det['tax'] : 0;
@@ -493,29 +535,34 @@ class Bookings extends MY_Controller {
 				{
 				foreach($available_rooms as $room)
 				{
-				$data['html'] .= "<tr>
-				
-							<td><input class='room_select' type='radio' name='room_select' value='".$room->roomid."' required></td>
 
-							<td><img src='".base_url()."/uploads/Rooms/".$room->image."' style='height:80px;width:80px;'></td>
+				$data['html'] .= "
 
-							<td>{$room->name}</td>
+						<div class='col-sm-6'>
 
-							<td>{$room->avail_room}</td>
+						<div class='room-container'>
+							<div class='row'>
 
-							<td>{$room->rate}</td>
+							<div class='col-sm-4'>{$room->name}</div>
 
-							</tr>";
+							<div class='col-sm-4'>Rs <b>{$room->rate}</b> /-</div>
+
+							<div class='col-sm-4'><input class='room_select' type='radio' name='room_select' value='".$room->roomid."' required></div>
+
+							</div>
+						</div>
+						</div>";
 				}
 				}
 				else
 				{
 
-							$data['html'] .= "<tr>
+							$data['html'] .= "
+							<div class='col-sm-12' style='text-align:center'>
 				
-							<td colspan='5' style='color:red;text-align:center'>No Rooms Available</td>
+							<p style='color:red;text-align:center'>No Rooms Available</p>
 
-							</tr>";
+							</div>";
 
 				}	
 
@@ -644,16 +691,47 @@ class Bookings extends MY_Controller {
 		}
 
 
-
+		
 		public function Delete($id)
 		{
-
-		$this->db->where('booking_id',$id);
 		
+		$this->db->where('booking_id', $id);
+		$booking_query = $this->db->get('bookings');
+		$booking_data = $booking_query->row_array();
+		
+		
+		if(!empty($booking_data['id_proof'])) {
+			$uploadfile = "uploads/Booking";
+			
+			
+			$id_proofs = array();
+			
+			// Try to decode as JSON first
+			$json_decoded = json_decode($booking_data['id_proof'], true);
+			if(json_last_error() === JSON_ERROR_NONE && is_array($json_decoded)) {
+				// It's JSON format
+				$id_proofs = $json_decoded;
+			} else {
+				// It's comma-separated string or single file
+				$id_proofs = explode(',', $booking_data['id_proof']);
+			}
+			
+			// Delete each file
+			foreach($id_proofs as $proof) {
+				$proof = trim($proof); 
+				if(!empty($proof)) {
+					$file_path = $uploadfile . "/" . $proof;
+					if(file_exists($file_path)) {
+						unlink($file_path); // Delete the file
+					}
+				}
+			}
+		}
+    
+		$this->db->where('booking_id', $id);
 		$this->db->delete('bookings');
 
-		$this->db->where('bp_booking',$id);
-		
+		$this->db->where('bp_booking', $id);
 		$this->db->delete('booking_payments');
 
 		redirect(base_url().'admin/Bookings');

@@ -179,14 +179,30 @@
       
         <div class="col-xs-12">
 
-          <?php if(!empty($booking['id_proof'])){ ?>
-          <a download href="<?= base_url(); ?>uploads/Booking/<?= $booking['id_proof']; ?>" class="btn btn-warning"><i class="fa fa-print"></i> ID Proof</a>
-          <?php } ?>
+          <?php
+          // If stored as JSON:
+          $id_proofs = json_decode($booking['id_proof'], true);
+          $ipn=1;
+          foreach($id_proofs as $proof) {
+          ?>
+            <a download href="<?= base_url(); ?>uploads/Booking/<?= $proof; ?>" class="btn btn-warning"><i class="fa fa-print"></i> ID Proof <?= $ipn++; ?></a>
+          <?php
+          }
+
+          ?>
+
+
+
           <!--<button type="button" class="btn btn-success pull-right"><i class="fa fa-credit-card"></i>Add Payment-->
           </button>
           <a href="<?= base_url(); ?>admin/Bookings/Invoice/<?= $booking['booking_id']; ?>" target="_blank" class="btn btn-primary pull-right" style="margin-right: 5px;">
             <i class="fa fa-download"></i> Invoice
           </a>
+
+
+        
+
+
         </div>
      
 

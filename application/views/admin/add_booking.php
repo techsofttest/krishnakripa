@@ -86,7 +86,7 @@
 .guests-input__options.open {
 	opacity: 1;
 	height: 146px;
-  z-index:1;
+  z-index:3;
 }
 .guests-input__options>div {
 	padding: 10px 0;
@@ -148,6 +148,74 @@
 	-moz-appearance: none;
 	appearance: none
 }
+
+
+  .room-container {
+      box-shadow: 0px 0px 1px 1px black;
+      margin: 10px 0px;
+      padding: 3px 15px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 10px;
+      text-align: center;
+  }
+
+  .room_select
+  {
+    height:unset;
+  }
+
+
+
+/* Repeater CSS Start */
+
+        .file-input-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .input-with-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .input-with-button input[type="file"] {
+            flex: 1;
+        }
+        
+        .btn-action {
+            min-width: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-add {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-add:hover {
+            background-color: #218838;
+        }
+        
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+        
+
+/* Repeater CSS End */
 
 
 </style>
@@ -226,7 +294,7 @@
 	               <input id="checkout" class="form-control room_check" name="check_out"  type="date" onclick="this.showPicker()" required>	
 							   -->
 
-                <div class="col-xs-12 col-sm-4 row-seperate">
+                <div class="col-xs-12 col-sm-3 row-seperate">
 
                 <label>Date Range<strong style="color:#F00;">*</strong></label>
 
@@ -240,7 +308,7 @@
 
                 
 
-                 <div class="col-xs-12 col-sm-4 row-seperate">
+                 <div class="col-xs-12 col-sm-3 row-seperate">
                   <label for="guests-input-btn">Guests</label>
                     <div class="booking-form__input guests-input">
                         
@@ -272,7 +340,7 @@
 
 
 
-                 <div class="col-xs-12 col-sm-4 row-seperate">
+                 <div class="col-xs-12 col-sm-3 row-seperate">
                   <label for="">Hotel</label>
 
                   <select class="form-control room_check" id="hotel_type" name="hotel_type" required>
@@ -286,6 +354,25 @@
                   <?php } ?>
 
                   </select>
+
+                </div>
+
+
+                <div class="col-xs-12 col-sm-3 row-seperate">
+
+                <label>Room Type<strong style="color:#F00;"></strong></label>
+
+                <select class="form-control room_check type_select" name="room_type" required>
+
+                <option value="0">All</option>
+
+                <?php foreach($room_types as $rt){ ?>
+
+                <option value="<?= $rt->cat_id ?>"><?= $rt->cat_title; ?></option>
+
+                <?php } ?>
+
+                </select>
 
                 </div>
 
@@ -379,61 +466,54 @@
 
 
 
-                <div class="row"> 
-                <div class="col-xs-12 col-sm-12 row-seperate text-center">
+              <?php /*
 
-                <h3>Room</h3>
+              <div class="row"> 
+              <div class="col-xs-12 col-sm-12 row-seperate text-center">
+              <h3>Room</h3>
+              </div>
+              </div>
 
-                </div>
-                </div>
-
-                          
 
               <div class="row"> 
 
-                <div class="col-xs-12 col-sm-12 row-seperate">
+              <div class="col-xs-12 col-sm-12 row-seperate">
 
-                 <label>Room Type <strong style="color:#F00;">*</strong> </label>
+              <label>Room Type <strong style="color:#F00;">*</strong> </label>
                              
-                <div class="row"> 
+              <div class="row"> 
 
-                <div class="col-sm-2">
-                <label class="w-100">
-                <input type="radio" name="room_type" class="card-input-element room_check type_select" value="0" checked/>
-                <div class="panel panel-default card-input">
-                <div class="panel-heading"> All</div>
-                   
-                  </div>
-                </label>
+              <div class="col-sm-2">
+              <label class="w-100">
+              <input type="radio" name="room_type" class="card-input-element room_check type_select" value="0" checked/>
+              <div class="panel panel-default card-input">
+              <div class="panel-heading"> All</div>
+              </div>
+              </label>
+              </div>
 
-                </div>
+							<?php
+              foreach($room_types as $rt){
+              ?>
 
+              <div class="col-sm-2">
+              <label class="w-100">
+              <input type="radio" name="room_type" class="card-input-element room_check type_select" value="<?= $rt->cat_id ?>" />
+              <div class="panel panel-default card-input">
+              <div class="panel-heading"> <?= $rt->cat_title; ?></div>
+              </div>
+              </label>
 
-							  <?php
-                foreach($room_types as $rt){
-                ?>
-               
-                <div class="col-sm-2">
-                <label class="w-100">
-                <input type="radio" name="room_type" class="card-input-element room_check type_select" value="<?= $rt->cat_id ?>" />
-                <div class="panel panel-default card-input">
-                <div class="panel-heading"> <?= $rt->cat_title; ?></div>
-                   
-                  </div>
-                </label>
+              </div>
+              <?php
+              }
+              ?>
+              </div>
 
-                </div>
-                <?php
-                }
-                ?>
-                </div>
+              </div>
+							</div>
 
-
-
-
-                </div>
-
-							  </div>
+              */ ?>
 
 
 
@@ -449,21 +529,19 @@
                   
                 <div class="col-sm-12">
 
+
+                <!--                 
                 <table class="table table-striped table-bordered">
 
                   <thead>
 
                   <tr>
 
-                  <th>Choose</th>
-
-                  <th>Image</th>
-
                   <th>Room Name</th>
 
-                  <th>Available Rooms</th>
-
                   <th>Rate</th>
+
+                  <th>Choose</th> 
 
                   </tr>
 
@@ -475,8 +553,19 @@
 
                   </tbody>
 
+                </table> 
+                -->
 
-                </table>
+
+                <div class="row" id="room-sec">
+
+
+
+
+                </div>
+
+
+
 
                 </div>
               
@@ -561,8 +650,19 @@
 							    </div>
 
                    <div class="col-xs-12 col-sm-6 row-seperate">
-                          <label> ID Proof <strong style="color:#F00;"></strong></label>
-							            <input class="form-control" type="file" name="id_proof">
+                        <label> ID Proof <strong style="color:#F00;"></strong></label>
+
+							          <div id="fileInputsContainer">
+                        <div class="file-input-container">
+                            <div class="input-with-button">
+                                <input class="form-control" type="file" name="id_proof[]">
+                                <button type="button" class="btn-action btn-add" onclick="addFileInput()">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        </div>
+
 							     </div>
 
 
@@ -585,7 +685,6 @@
 						 
                     <div class="col-xs-12 col-sm-6 row-seperate">
                               <label> Payment Method <strong style="color:#F00;">*</strong></label>
-
                               <select class="form-control" name="payment_method" required>
                                   <option value="">Select Payment Method</option>
                                   <option value="cash">Cash</option>
@@ -596,17 +695,10 @@
 							  
 							        </div>
 
-
-
-                       <div class="col-xs-12 col-sm-6 row-seperate">
-                              <label> Booking Status <strong style="color:#F00;">*</strong></label>
-                              <select class="form-control" name="booking_status" required>
-                                  <option value="">Select Booking Status</option>
-                                  <option value="confirmed">Confirmed</option>
-                                  <option value="cancelled">Cancelled</option>  
-                              </select>
-							  
-							        </div>
+                      <div class="col-xs-12 col-sm-6 row-seperate">
+                        <label> Transaction Id <strong style="color:#F00;"></strong></label>
+                         <input class="form-control" placeholder="Enter transaction Id/Notes" name="payment_notes">
+                      </div>
 
                      
 
@@ -617,12 +709,8 @@
 
                   <div class="row">
 
-                      <div class="col-xs-12 col-sm-6 row-seperate">
-                          <label> Transaction Id <strong style="color:#F00;"></strong></label>
-							            <textarea class="form-control" placeholder="Enter transaction Id/Notes" name="payment_notes"></textarea>	
-							        </div>
 
-                      <div class="col-xs-12 col-sm-6 row-seperate">
+                      <div class="col-xs-12 col-sm-12 row-seperate">
                               <label> Special Requirements / Notes <strong style="color:#F00;"></strong></label>
 							                <textarea class="form-control" name="booking_notes"></textarea>	
 							        </div>
@@ -735,7 +823,7 @@
 
 
                 $('.room_check').on('change input', function() {
-                    var selectedType = $('.type_select:checked').val();
+                    var selectedType = $('.type_select').val();
                     //$('.type_select').val()('change');
                     var check_in_date = $('input[name="check_in"]').val();
                     var check_out_date = $('input[name="check_out"]').val();
@@ -809,7 +897,7 @@
 
 
 
-                 $(document).on('change input', '#discount_amount', function() {
+                  $(document).on('change input', '#discount_amount', function() {
 
                   var discount = $(this).val();
 
@@ -853,7 +941,12 @@
                            }
                            else
                            {
-
+                            $('#room_total').html('-');
+                            $('#tax').html('-');
+                            $('#total_amount').html('-');
+                            $('#extra_sec').hide();
+                            $('#extra_desc_val').val(0);
+                            $('#total_amount_val').val(0);
                            }
                           }
                          })
@@ -989,6 +1082,16 @@ guestBtn.addEventListener('click', function (e) {
 	isGuestInputOpen = isGuestInputOpen ? false : true;
 	e.preventDefault();
 });
+
+// Close guest options when clicking outside
+document.addEventListener('click', function (e) {
+  if (!guestBtn.contains(e.target) && !guestOptions.contains(e.target)) {
+    guestBtn.classList.remove("open");
+    guestOptions.classList.remove("open");
+    isGuestInputOpen = false;
+  }
+});
+
 adultsAddBtn.addEventListener('click', function () {
 	adultsCount = addValues(adultsCount);
 	updateValues();
@@ -1105,6 +1208,55 @@ function updateValues() {
 
 
         </script>
+
+
+
+
+<script>
+        function addFileInput() {
+            const container = document.getElementById('fileInputsContainer');
+            
+            // Remove plus button from current last input and add delete button
+            const lastInput = container.lastElementChild;
+            const lastButton = lastInput.querySelector('.btn-action');
+            lastButton.className = 'btn-action btn-delete';
+            lastButton.innerHTML = '<i class="fa fa-trash"></i>';
+            lastButton.setAttribute('onclick', 'removeFileInput(this)');
+            
+            // Create new input container with plus button
+            const newInputContainer = document.createElement('div');
+            newInputContainer.className = 'file-input-container';
+            newInputContainer.innerHTML = `
+                <div class="input-with-button">
+                    <input class="form-control" type="file" name="id_proof[]">
+                    <button type="button" class="btn-action btn-add" onclick="addFileInput()">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(newInputContainer);
+        }
+        
+        function removeFileInput(button) {
+            const inputContainer = button.closest('.file-input-container');
+            const container = document.getElementById('fileInputsContainer');
+            
+            // Don't remove if it's the only input left
+            if (container.children.length > 1) {
+                inputContainer.remove();
+                
+                // Make sure the last remaining input has the plus button
+                const lastInput = container.lastElementChild;
+                const lastButton = lastInput.querySelector('.btn-action');
+                if (!lastButton.classList.contains('btn-add')) {
+                    lastButton.className = 'btn-action btn-add';
+                    lastButton.innerHTML = '<i class="fas fa-plus"></i>';
+                    lastButton.setAttribute('onclick', 'addFileInput()');
+                }
+            }
+        }
+    </script>
 
 
 
