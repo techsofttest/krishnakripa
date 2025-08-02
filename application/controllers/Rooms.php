@@ -34,7 +34,7 @@ $captcha   = $this->input->post('g-recaptcha-response'); // Captcha response
     $responseKeys = json_decode($response, true);
 
     if (intval($responseKeys["success"]) !== 1) {
-        echo "<script>alert('CAPTCHA validation failed. Please try again.');</script>";
+        echo "<scrpit>alert('CAPTCHA validation failed. Please try again.');</scrpit>";
         redirect(base_url().'Rooms');
         exit;
     }

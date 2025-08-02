@@ -198,9 +198,9 @@ Ambalamedu PO, Kuzhikkadu-682 303
     All Js File
 ============================== --> 
 <!-- Jquery --> 
-<script src="<?php echo base_url()?>assets/js/jquery-3.6.0.min.js"></script> 
+
 <!-- Slick Slider --> 
-<script src="<?php echo base_url()?>assets/js/slick.min.js"></script> 
+
 <!-- Bootstrap --> 
 <script src="<?php echo base_url()?>assets/js/bootstrap.min.js"></script> 
 <!-- Magnific Popup --> 

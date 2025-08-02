@@ -1,7 +1,15 @@
 <?php $this->load->view("header")?>
 
 
+<!-- Magnific Popup -->
+<link rel="stylesheet" href="<?php echo base_url()?>assets/css/magnific-popup.min.css">
+
+
 <style>
+
+.buy-theme{
+  z-index:0px;
+}
 
 .nav-tabs
 {
@@ -40,7 +48,7 @@
 	<div class="col-lg-8 col-md-8">
    <div class="product-about Poo-detail">
 		<div class="title-area   mb-10 "> 
-          <h2 class="sec-title"> Suite with Garden View</h2>
+          <h2 class="sec-title"><?= $room['name']; ?></h2>
         
  
     </div>
@@ -57,183 +65,115 @@
 	     </div>
 	  <div class="col-auto mb-30">
 	  
-	   <p class="priceee">RS 2500 / NIGHT</p>
+	   <p class="priceee">RS <?= $room['rate']; ?> / NIGHT</p>
 	  </div>
 	     
     </div>
     <div class="row ">
 	
 	<div class="col-xl-8 col-lg-8">
-	 <div class="row hh-dd-row">
+
+	<div class="row hh-dd-row">
   
-  <div class="col-lg-8 col-md-8 col-8">
+  <div class="col-lg-12 col-md-12 col-12">
   <div class="hh-gal-img">
   
-  <a href="#" data-bs-toggle="modal" data-bs-target="#SigninModal" class="image-open"><img class="hh-hal-left" src="assets/img/room/room1.jpg "></a>
+  <a href="#" data-bs-toggle="modal" data-bs-target="#SigninModal" class="image-open"><img class="hh-hal-left" src="<?php echo base_url(); ?>uploads/Rooms/<?= $room['image'] ?>"></a>
   </div>
   
   </div>
-  <div class="col-lg-4 col-md-4 col-4 hh-right-imgsec">
   
-   <div class="row">
-     <div class="col-lg-12">
+
+  <?php foreach($moreimages as $mimage){ ?>
+
+  <div class="col-lg-2">
   <div class="hh-gal-img">
-  
-  <a href="#" data-bs-toggle="modal" data-bs-target="#SigninModal" class="image-open"><img class="hh-hal-right" src="assets/img/room/g1.jpg"></a>
+  <a href="#" data-bs-toggle="modal" data-bs-target="#SigninModal" class="image-open"><img class="hh-hal-bottom" src="<?= base_url(); ?>uploads/Rooms/<?= $mimage->more_image ?>"></a>
   </div>
-  
   </div>
-    <div class="col-lg-12">
-  <div class="hh-gal-img">
-  
-  <a href="#" data-bs-toggle="modal" data-bs-target="#SigninModal" class="image-open"><img class="hh-hal-right" src="assets/img/room/g2.jpg"></a>
-  </div>
-  
-  </div>
- 
- 
-  
-  
-  
-   </div>
-  </div>
-  
-     <div class="col-lg-2  ">
-  <div class="hh-gal-img">
-  
-  <a href="#" data-bs-toggle="modal" data-bs-target="#SigninModal" class="image-open"><img class="hh-hal-bottom" src="assets/img/room/g3.jpg"></a>
-  </div>
-  
-  </div>
-    <div class="col-lg-2">
-  <div class="hh-gal-img">
-  
-  <a href="#" data-bs-toggle="modal" data-bs-target="#SigninModal" class="image-open"><img class="hh-hal-bottom" src="assets/img/room/g4.jpg"></a>
-  </div>
-  
-  </div>
-    <div class="col-lg-2">
-  <div class="hh-gal-img">
-  
-  <a href="#" data-bs-toggle="modal" data-bs-target="#SigninModal" class="image-open"><img class="hh-hal-bottom" src="assets/img/room/g5.jpg"></a>
-  </div>
-  
-  </div>
-    <div class="col-lg-2">
-  <div class="hh-gal-img">
-  
-  <a href="#" data-bs-toggle="modal" data-bs-target="#SigninModal" class="image-open"><img class="hh-hal-bottom" src="assets/img/room/g6.jpg"></a>
-  </div>
-  
-  </div>
-    <div class="col-lg-2">
-  <div class="hh-gal-img">
-  
-  <a href="#" data-bs-toggle="modal" data-bs-target="#SigninModal" class="image-open"><span>More Photos</span><img class="hh-hal-bottom" src="assets/img/room/g7.jpg"></a>
-  </div>
-  
-  </div>
+
+  <?php } ?>
+
+
+
   </div>
   
   
   
   
 <div class="Price-sec">
+
+
+<?php if(!empty($room['description'])){ ?>
+
 <h3>Room Details</h3>
   
-<p>Lorem ipsum dolor sit amet labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-<p>Lorem ipsum dolor sit amet labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-  
-  <h3>Most popular facilities</h3>
- <ul>
+<p><?= $room['description']; ?></p>
 
-<li><img src="assets/img/fe1.png" alt="">Air Conditioner
-
-</li>
-
-<li><img src="assets/img/fe2.png" alt="">Bathrobes
-
-</li>
-
-<li><img src="assets/img/fe3.png" alt="">Daily Newspaper
-
-</li>
-
-<li><img src="assets/img/fe4.png" alt="">Fan
-
-</li>
-
-<li><img src="assets/img/fe5.png" alt="">Mirror
-
-</li>
-
-<li><img src="assets/img/fe6.png" alt="">Free bottled water
-
-</li>
-
-<li><img src="assets/img/fe7.png" alt="">Window
-
-</li>
-
-<li><img src="assets/img/fe8.png" alt="">Shower
-
-</li>
-
-<li><img src="assets/img/fe9.png" alt="">Satellite/cable channels
-
-</li>
-
-<li><img src="assets/img/fe10.png" alt="">Internet access – wireless</li></ul>
+<?php } ?>
 
 
  
- 
+<h3>Room Facilities</h3>
 
+<ul>
 
+<?php foreach($fac as $facility){ ?>
 
-  </div>
-	</div>
+<li><img src="<?= base_url(); ?>uploads/Rooms/<?= $facility->Facimage ?>" alt=""><?= $facility->Factitle ?></li>
+
+<?php } ?>
+
+</ul>
+
+</div>
+
+</div>
+
 <div class="col-lg-4 col-md-8">
 
 <div class="rooright">
 
-<form action="check-now.html" method="POST" class="RContactpage-form  ">
+<?php echo form_open(base_url().'Check/Confirm',array('method'=>"GET",'class' => "RContactpage-form"))?>
+
+<input name="hotel_type" value="<?= $room['hotel'] ?>" type="hidden">
+
+<input name="room_id" value="<?= $room['roomid']; ?>" type="hidden">
+
 <h3>Book Now</h3>
+
           <div class="row">
-		     
+         
+          
           <div class="form-group col-md-12">
-              <label>Building</label>
-			 
-	 
-           <select name="hotel" id="hotel_search" class="form-control">
-               
- 
-            <option value=""> Hotel</option>             
-                       
-            <option value="1" selected> Excecutive Stay</option>
-                             
-                            </select>
-			 </div>
-            <div class="form-group col-md-12">
-			 <label>Check In & Check Out</label>
-            <input type="text" name="checkindate" placeholder="Check In - Check Out" value="" />
+			    <label>Check In & Check Out</label>
+
+            <input type="text" id="daterangepikr"  placeholder="Check In - Check Out" class="form-control" value="" autocomplete="off" readonly/>
+				   
+            <input type="hidden" class="form-control" name="checkin" id="checkin_value" autocomplete="off"
+                            placeholder="Check In"  value="" required>
+
+            <input type="hidden" class="form-control" name="checkout" id="checkout_value" autocomplete="off"
+                            value="" required>
 			 
               </div>
 			  
 		 
 			 
-			 
 			 		    <div class="form-group col-md-12">
-													  <div class="form-group">
+												
+                        <div class="form-group">
 								 
-										 	 <div class=" room-adults" onclick="myFunction()">
-											 <span ><span id="room-id">1</span> adult · <span id="adult-id">0</span> children · <span id="children-id">1</span> room</span>
+										 	 <div class=" room-adults" onclick="qtySelector()">
+											 <span ><span id="adult-id">1</span> adult · <span id="children-id">0</span> children · <span id="room-id">1</span> room</span>
 											  
 			
  
-</div>
+              </div>
 											
-											<div class="Viewmorezsec dropdowna-list" id="myDIV" style="display:none" >
+
+
+                    <div class="Viewmorezsec dropdowna-list" id="myDIV" style="display:none" >
 						<div class="row">
 						<div class="col-lg-12">
 							<div class="row justify-content-between align-items-center">
@@ -243,10 +183,10 @@
 							</div>
 								<div class="col-lg-6 col-6 col-sm-5 form-groups">
 								<div id="field1" class="field"> 
-    <button type="button" id="sub" class="sub">-</button>
-    <input type="text" id="1" name="adults" value="1" class="field" />
-    <button type="button" id="add" class="add">+</button>
-</div>
+                <button type="button" id="sub" class="sub" data-id="adult-id">-</button>
+                <input type="text" id="1" name="adults" value="1" class="field" />
+                <button type="button" id="add" class="add" data-id="adult-id">+</button>
+              </div>
 							
 							</div>
 							</div>
@@ -254,17 +194,18 @@
 						</div>
 							<div class="col-lg-12">
 							<div class="row justify-content-between align-items-center">
+
 							<div class="col-lg-6 col-6 col-sm-7 form-groups">
-							
-							<label>children</label>
+							<label>Childrens</label>
 							</div>
-								<div class="col-lg-6 col-6 col-sm-5 form-groups">
-								<div id="field2" class="field"> 
-    <button type="button" id="sub2" class="sub">-</button>
-    <input type="text" id="2" name="children" value="0" class="field" />
-    <button type="button" id="add2" class="add">+</button>
-</div>
-							
+
+								  <div class="col-lg-6 col-6 col-sm-5 form-groups">
+                  <div id="field2" class="field"> 
+                  <button type="button" id="sub2" class="sub" data-id="children-id">-</button>
+                  <input type="text" id="2" name="children" value="0" class="field" />
+                  <button type="button" id="add2" class="add" data-id="children-id">+</button>
+                  </div>
+
 							</div>
 							</div>
 						
@@ -277,10 +218,10 @@
 							</div>
 								<div class="col-lg-6 col-sm-5 col-6 form-groups">
 								<div id="field3" class="field"> 
-    <button type="button" id="sub3" class="sub">-</button>
-    <input type="text" id="3" name="rooms_count" value="1" class="field" />
-    <button type="button" id="add3" class="add">+</button>
-</div>
+                <button type="button" id="sub3" class="sub" data-id="room-id">-</button>
+                <input type="text" id="3" name="rooms_count" value="1" class="field" />
+                <button type="button" id="add3" class="add" data-id="room-id">+</button>
+                </div>
 							
 							</div>
 							</div>
@@ -290,17 +231,29 @@
 						</div>
 						
 						</div>
+
+
+
+
+
+											
+
+
 				  </div>
+
+
+
 				 </div>
 
                
 			      
-                <div class="  col-12 mt-10  ">
-              <button class="as-btn">Book Now</button>
+                <div class="col-12 mt-10">
+              <button type="submit" class="as-btn">Book Now</button>
             </div>
           </div>
-        
-        </form>
+
+        <?php echo form_close()?>
+
 </div>
 
 </div>
@@ -313,10 +266,189 @@
 
 
 
+ <div class="modal fade singnup-modal" id="SigninModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      <div class="modelcontainer right-panel-active" id="container">
+	  
+	  <h3 class="ttyii"><?= $room['name']; ?></h3>
+	      <div class="row  gal-rows  "  >
+
+          <?php foreach($moreimages as $mimage){ ?>
+ 
+            <div class="col-lg-4 col-md-4 col-sm-6 rounded img-hover-wrap" >
+              
+              <div class="img-hover-card" > <a href="javascript:void(0);"   data-fancybox="gallery"><img src="<?= base_url(); ?>uploads/Rooms/<?= $mimage->more_image ?>" alt=""></a>
+              
+              <div class="img-hover-detail">
+                <h3 class="img-hover-title"><a href="javascript:void(0);" >   </a></h3>
+              </div>
+
+              </div>
+            </div>
+
+            <?php } ?>
+            
+          </div>
+	  
+        <div class="form-container sign-up-container">
+		
+		
+		<div class="formsecrr">
+         
+		  <h2>  </h2>
+          
+        
+		  
+		 
+		  </div>
+        </div>
+       
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
 
 
 
         <?php $this->load->view("footer")?>
+
+
+
+        <script type="text/javascript">
+
+document.addEventListener("DOMContentLoaded", function() {
+
+  
+$('.add').click(function () {
+    $(this).prev().val(+$(this).prev().val() + 1);
+    var targetId = $(this).data('id');
+    $('#'+targetId+'').html($(this).prev().val());
+});
+
+$('.sub').click(function () {
+    if ($(this).next().val() > 0) 
+    {
+    $(this).next().val(+$(this).next().val() - 1);
+    var targetId = $(this).data('id');
+    $('#'+targetId+'').html($(this).next().val());
+    }
+   
+});
+
+
+/*
+
+$('#adult_count_search,#child_count_search').change(function(){
+
+var adults = parseInt($('#adult_count_search').val()) || 0;
+
+var childs = parseInt($('#child_count_search').val()) || 0;
+
+var rooms_count1 = Math.ceil(adults/2);
+
+if((rooms_count1 == 1) && (childs > 2)){
+
+  var rooms_count = rooms_count1+1;
+  
+} else {
+    
+  var rooms_count = Math.ceil(adults/2);
+}
+
+$("#rooms_count_search").val(rooms_count).change();
+
+$('#rooms_count_search option').each(function() {
+    $(this).prop('disabled', Number($(this).val()) < rooms_count)
+})
+
+});
+
+
+$('#adult_count_search_modal,#child_count_search_modal').change(function(){
+
+var adults = parseInt($('#adult_count_search_modal').val()) || 0;
+
+var childs = parseInt($('#child_count_search_modal').val()) || 0; 
+
+var adults_count = adults;
+
+var child_count = childs;
+
+var rooms_count = Math.ceil((adults_count+child_count)/3);
+
+$("#rooms_count_search_modal").val(rooms_count).change();
+
+$('#rooms_count_search_modal option').each(function() {
+    $(this).prop('disabled', Number($(this).val()) < rooms_count)
+})
+
+});
+
+*/
+
+
+      $('#daterangepikr').daterangepicker({
+      startDate: moment().startOf('day'),
+      endDate: moment().endOf('day'),
+      minDate: moment().startOf('day'),
+      opens: 'left',
+      autoUpdateInput: false,
+      autoApply:true,
+      locale: {
+      cancelLabel: 'Clear'
+      }
+      },function(start, end) {
+        $('#checkin_value').val(start.format('YYYY-MM-DD'));
+        $('#checkout_value').val(end.format('YYYY-MM-DD'));
+        });
+
+      $('#daterangepikr').on('apply.daterangepicker', function(ev, picker) {
+          $(this).val(picker.startDate.format('ddd DD MMM YYYY') + ' - ' + picker.endDate.format('ddd DD MMM YYYY'));
+      });
+
+      $('#daterangepikr').on('cancel.daterangepicker', function(ev, picker) {
+          $(this).val('');
+      });
+
+
+      // Set values on load if already selected (optional)
+      let initialVal = $('#daterange').val();
+      if (initialVal) {
+          let parts = initialVal.split(' - ');
+          $('#checkin_value').val(parts[0]);
+          $('#checkout_value').val(parts[1]);
+      }
+
+
+});
+
+
+ function qtySelector() {
+
+  var x = document.getElementById("myDIV");
+  if (x.style.display === "none") {
+   
+    x.style.display = "block";
+  } else {
+ 
+    x.style.display = "none";
+  }
+}
+
+
+</script>
+
         
         
         

@@ -179,11 +179,12 @@ $adults = $_GET['adults'];
 
 }
 
-if(!empty($_GET['hotel'])) 
+if(!empty($_GET['hotel_type'])) 
 
 {
 
-$hotel = $_GET['hotel'];
+$hotel = $_GET['hotel_type'];
+
 
 }
 
@@ -203,6 +204,8 @@ $rooms_count = $_GET['rooms_count'];
 $data['room'] = $this->Admin_model->fetch_one_row('room',['roomid' => $room_id]);
 
 $room = $data['room'];
+
+$data['hotel_details'] = $this->Admin_model->fetch_one_row('hotels',['hotel_id' => $hotel]);
 
 $data['facilities'] = $this->Admin_model->fetch_where_order('room_facility',['roomid' => $room_id],'Factitle','ASC');
 

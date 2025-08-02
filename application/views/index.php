@@ -2,14 +2,13 @@
 <?php $this->load->view("header")?>
 
 
+<!-- Slick Slider -->
+<link rel="stylesheet" href="<?php echo base_url()?>assets/css/slick.min.css">
+
+<script src="<?php echo base_url()?>assets/js/slick.min.js"></script> 
 
 
 <style>
-    
-    
-    
-
-
 
 
 
@@ -685,6 +684,8 @@ About Area
         
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js" integrity="sha512-jNDtFf7qgU0eH/+Z42FG4fw3w7DM/9zbgNPe3wfJlCylVDTT3IgKW5r92Vy9IHa6U50vyMz5gRByIu4YIXFtaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+
+        
 
 <script>
 

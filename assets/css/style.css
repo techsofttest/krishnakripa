@@ -6386,6 +6386,7 @@ a.text-theme:hover,
     background: #fff;
     padding: 0px 20px;
     margin-top: 20px;
+    border-radius:10px;
 }
 .header-layout2 .sticky-wrapper.sticky .menu-area{
 	 padding: 0px 0px;
@@ -30744,8 +30745,8 @@ background-color: transparent;
 	position:relative
 }
 .booki-box1 p{
-	margin-bottom:10px;
-	font-size:15px
+	margin-bottom:5px;
+	font-size:13px
 }
 .booki-box1 p a{
 	color:var(--title-color)

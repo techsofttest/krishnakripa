@@ -257,6 +257,8 @@ $rooms_count = $_GET['rooms_count'];
 						</div>
 						
 						</div>
+
+            
 				  </div>
 				 </div>
 				 		 

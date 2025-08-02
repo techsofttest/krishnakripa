@@ -28,15 +28,16 @@
 <link rel="stylesheet" href="<?php echo base_url()?>assets/css/bootstrap.min.css">
 <!-- Fontawesome Icon -->
 <link rel="stylesheet" href="<?php echo base_url()?>assets/css/fontawesome.min.css">
-<!-- Magnific Popup -->
-<link rel="stylesheet" href="<?php echo base_url()?>assets/css/magnific-popup.min.css">
-<!-- Slick Slider -->
-<link rel="stylesheet" href="<?php echo base_url()?>assets/css/slick.min.css">
+
+
 <!-- nice-select -->
  <link rel="stylesheet" href="<?= base_url(); ?>assets/css/datetimepicker.min.css">
 
 <!-- Theme Custom CSS -->
 <link rel="stylesheet" href="<?php echo base_url()?>assets/css/style.css">
+
+<script src="<?php echo base_url()?>assets/js/jquery-3.6.0.min.js"></script> 
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 

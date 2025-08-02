@@ -473,7 +473,7 @@ class Bookings extends MY_Controller {
 
 		//$tax = 0;
 
-		// Calculate number of nights
+		// Calculate number of nights 	
 		$check_in_date = new DateTime($check_in);
 		$check_out_date = new DateTime($check_out);
 		$interval = $check_in_date->diff($check_out_date);

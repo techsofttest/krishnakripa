@@ -114,9 +114,10 @@ $query_params = [
 
  
 									
-<h3>Krishnakripa Premium Residency</h3>
-<p>Building no: XV/421, XV/422
-Ambalamedu PO, Kuzhikkadu-682 303</p>
+<h3><?= $hotel_details['hotel_name']; ?></h3>
+<p><?= $hotel_details['address_line_1'] ?></p>
+<p><?= $hotel_details['address_line_2'] ?></p>
+<p>Pin : <?= $hotel_details['address_pincode']; ?></p>
 
 
 <ul>
