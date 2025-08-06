@@ -222,8 +222,20 @@ if($no_of_days <= 0) {
 	return;
 }
 
+$extra_price=0;
+$extra_desc="";
+if($children>0)
+{
+$extra_price = $room['kidPrice']*$children;
+$extra_desc = "Kids Extra";
+}
+
 $total_price = $room['rate'] * $no_of_days * $rooms_count;	
+
 $gst = ($total_price * $room['tax']) / 100;
+
+$grand_total = $total_price + $gst + $extra_price;
+
 //$gst  = 0;
 $data['booking_details'] =array(
 	'status' => 'success',
@@ -232,8 +244,10 @@ $data['booking_details'] =array(
 	'no_of_rooms' => $rooms_count,
 	'no_of_days' => $no_of_days,
 	'total_price' => $total_price,
+	'extra_desc' => $extra_desc,
+	'extra_price' => $extra_price,
 	'gst' => $gst,
-	'grand_total' => $total_price + $gst
+	'grand_total' => $grand_total
 );
 			
 

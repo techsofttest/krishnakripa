@@ -174,10 +174,43 @@ $query_params = [
 
 <div class="booki-box3">
 <h3>Your price summary</h3>
+
+<table class="table table-bordered">
+
+<tr>
+
+<th>Room</th>
+
+<td class="text-end"><?= $booking_details['total_price'] ?></td>
+
+</tr>
+
+<tr>
+
+<th>Tax</th>
+
+<td class="text-end"><?= $booking_details['gst'] ?></td>
+
+</tr>
+
+
+<?php if(!empty($booking_details['extra_price'])) { ?>
+<tr>
+
+<th><?= $booking_details['extra_desc'] ?></th>
+
+<td class="text-end"><?= $booking_details['extra_price'] ?></td>
+
+</tr>
+
+<?php } ?>
+
+</table>
+
 <div class="price-bbg ">
 
 <div class="pps-1">Price</div>
-<div class="pps-2">RS <?= $booking_details['grand_total']; ?>
+<div class="pps-2 text-end" >RS <?= $booking_details['grand_total']; ?>
 <span> Includes taxes and fees</span></div>
 </div>
 

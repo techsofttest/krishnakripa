@@ -181,6 +181,8 @@
 
           <?php
           // If stored as JSON:
+          if(!empty($booking['id_proof']))
+          {
           $id_proofs = json_decode($booking['id_proof'], true);
           $ipn=1;
           foreach($id_proofs as $proof) {
@@ -188,6 +190,8 @@
             <a download href="<?= base_url(); ?>uploads/Booking/<?= $proof; ?>" class="btn btn-warning"><i class="fa fa-print"></i> ID Proof <?= $ipn++; ?></a>
           <?php
           }
+
+        }
 
           ?>
 

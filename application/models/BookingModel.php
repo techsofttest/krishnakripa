@@ -356,18 +356,36 @@ class BookingModel extends CI_model {
 
 
 
-    public function ViewBookingsToday()
+    public function ViewBookingsToday($date="")
     {
 
     $this->db->select('*');
 
     $this->db->from('bookings');
 
+    if($date!="")
+    {
+
+    $this->db->where('check_in_date',date('Y-m-d',strtotime($date)));
+
+    $this->db->or_where('check_in_date',date('Y-m-d',strtotime($date)));
+
+    }
+
+    else
+    {
+
+    $this->db->where('check_in_date',date('Y-m-d'));
+
+    $this->db->or_where('check_in_date',date('Y-m-d'));
+
+    }
+
     $this->db->join('customers','customers.cus_id=bookings.booking_customer_id','left');
 
     $this->db->join('room','room.roomid=bookings.booking_room_id','left');
 
-    $this->db->where('check_in_date',date('Y-m-d'));
+    
 
     $query = $this->db->get();
 

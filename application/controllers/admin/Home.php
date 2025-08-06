@@ -71,6 +71,53 @@ class Home extends MY_Controller {
 
 	$data['summary'] = $this->BookingModel->get_daily_booking_summary($date);
 
+	$check_in_out =	$this->BookingModel->ViewBookingsToday($date);
+
+	$data['booking_rows'] = "";
+
+	$i=1;
+
+	if(!empty($check_in_out))
+
+	{
+
+	foreach($check_in_out as $val)
+	{
+
+	$data['booking_rows'] .='
+
+	 					<tr>
+                       			
+                        <td class="">'.$i.'</td>
+                                        
+                        <td>'.date("d M Y",strtotime($val->check_in_date)).'</td>    
+                    
+                        <td>'.date('d M Y',strtotime($val->check_out_date)).'</td>
+
+                        <td>'.$val->name.'</td>
+
+                        <td>'.$val->first_name.' '.$val->last_name.'</td>
+
+                        <td>'. $val->phone_number .'</td>
+
+                        <td><b style="color:red;">'. $val->total_amount-$val->paid_amount.'</b></td>
+                        
+                        </tr>';
+
+						$i++;
+	}
+
+	}
+
+	else
+	{
+
+	$data['booking_rows'] = "<tr>
+		<td align='center' colspan='7'>No Bookings Gound</td>
+	</tr>";
+
+	}
+
 	echo json_encode($data);
 
 	}

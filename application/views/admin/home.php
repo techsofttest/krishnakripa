@@ -316,7 +316,7 @@
                     			</thead>
                     			
                         
-                       <tbody>
+                       <tbody id="booking_rows">
                                 
                     		<?php $i=1;?>
                     				
@@ -524,6 +524,10 @@ $(function() {
       $('#booking_count').html(response.summary.booked_count);
       $('#checkin_count').html(response.summary.checkin_count);
       $('#checkout_count').html(response.summary.checkout_count);
+
+      $('#booking_rows').html('');
+
+      $('#booking_rows').html(response.booking_rows);
 
 
       }
