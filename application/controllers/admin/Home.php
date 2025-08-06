@@ -113,7 +113,7 @@ class Home extends MY_Controller {
 	{
 
 	$data['booking_rows'] = "<tr>
-		<td align='center' colspan='7'>No Bookings Gound</td>
+		<td align='center' colspan='7'>No Bookings Found</td>
 	</tr>";
 
 	}
