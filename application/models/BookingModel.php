@@ -368,7 +368,7 @@ class BookingModel extends CI_model {
 
     $this->db->where('check_in_date',date('Y-m-d',strtotime($date)));
 
-    $this->db->or_where('check_in_date',date('Y-m-d',strtotime($date)));
+    $this->db->or_where('check_out_date',date('Y-m-d',strtotime($date)));
 
     }
 
@@ -377,7 +377,7 @@ class BookingModel extends CI_model {
 
     $this->db->where('check_in_date',date('Y-m-d'));
 
-    $this->db->or_where('check_in_date',date('Y-m-d'));
+    $this->db->or_where('check_out_date',date('Y-m-d'));
 
     }
 
