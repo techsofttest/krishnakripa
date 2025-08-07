@@ -1089,6 +1089,12 @@ class Bookings extends MY_Controller {
 				font-size:10px;
 				}
 
+				.amount
+				{
+				font-size:13px;
+				text-align:right;
+				}
+
 				</style>
 
 				<table cellpadding="10">
@@ -1188,25 +1194,51 @@ class Bookings extends MY_Controller {
 
 				$item_sec="";
 		
-				$item_sec .="
+				$item_sec .='
 				
 				<tr>
 
-				<td>{$booking['name']}</td>
+				<td align="left" style="font-size:13px;">'.$booking['name'].' x '.$booking['no_of_rooms'].'</td>
 
-				<td>{$booking['rate']}</td>
-
-				<td>".date('d-M-Y',strtotime($booking['check_in_date']))."</td>
-				
-				<td>".date('d-M-Y',strtotime($booking['check_out_date']))."</td>
-
-				<td>{$booking['no_of_rooms']}</td>
-
-				<td align=\"right\">Rs. ".$booking['total_amount']."</td>
+				<td align="right" style="font-size:13px;">'.number_format(($booking['tax_excluded_total']-$booking['extra_amount']),2,'.').'</td>
 				
 				</tr>
 				
-				";
+				';
+
+
+				
+
+
+				$extra_sec ="";
+
+				if(!empty($booking['extra_amount']) && $booking['extra_amount']>0)
+				{
+
+				$extra_sec .='
+					<tr>
+					<td align="left" style="font-size:13px;">'.$booking['extra_desc'].'</td>
+					<td align="right" style="font-size:13px;">'.number_format($booking['extra_amount'],2,'.').'</td>
+					</tr>';
+				}
+
+
+
+
+				$tax_sec ="";
+				
+				if(!empty($booking['tax_amount']) && $booking['tax_amount']>0)
+				{
+
+				$tax_sec .='
+					<tr>
+					<td align="left" style="font-size:13px;">Tax</td>
+					<td align="right" style="font-size:13px;">'.number_format($booking['tax_amount'],2,'.').'</td>
+					</tr>';
+				}
+
+
+
 
 
 				$html .='
@@ -1215,17 +1247,9 @@ class Bookings extends MY_Controller {
 
 					<tr style="">
 						
-						<th width="20%"><b>Room</b></th>
+						<th width="60%" align="center"><b>Description</b></th>
 
-						<th width="20%"><b>Price / Day</b></th>
-
-						<th width="15%"><b>Check In</b></th>
-
-						<th width="15%"><b>Check Out</b></th>
-
-						<th width="10%"><b>No Of Rooms</b></th>
-
-						<th width="20%"><b>Amount</b></th>
+						<th width="40%" align="center"><b>Amount</b></th>
 					
 					</tr>
 					
@@ -1233,12 +1257,34 @@ class Bookings extends MY_Controller {
 					'.$item_sec.'
 
 
+
+					'.$extra_sec.'
+
+
+					'.$tax_sec.'
+
+
 					<tr>
-					<td align="right" colspan="5" style="font-size:16px;"><b>Grand Total</b></td>
-					<td align="right" style="font-size:16px;"><b>Rs. '.$booking['total_amount'].'</b></td>
+					<td align="left" style="font-size:13px;"><b>Grand Total</b></td>
+					<td align="right" style="font-size:13px;color:red">'.number_format($booking['total_amount'],2,'.').'</td>
 					</tr>
 
+
+
+
 				</table>
+
+
+					<table cellpadding="10" border="0" style="margin-top:40px;">
+
+					<tr style="">
+
+						<td align="center">Thank you for choosing Krishnakripa,Looking forward to your next visit!</td>
+					
+					</tr>
+				
+					</table>
+
 
 				';
 

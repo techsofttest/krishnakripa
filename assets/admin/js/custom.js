@@ -131,7 +131,8 @@ $(function () {
 	
 	var table = $('#datatable').DataTable({
 	 processing: true,
-   'aoColumnDefs': [{
+	 "order": [],
+   	'aoColumnDefs': [{
         'bSortable': false,		
         'aTargets': [-1,0] /* 1st one, start by the right */
     }],
@@ -141,7 +142,7 @@ $(function () {
     "aTargets" : ["no-sort"]
 } ]
 	});
-	$('#datatable thead tr th:first-child').removeClass('sorting_asc');
+	//$('#datatable thead tr th:first-child').removeClass('sorting_asc');
     
     //$("#add_banner").validationEngine();   
     

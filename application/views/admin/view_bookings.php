@@ -769,7 +769,10 @@
 
 
 $( document ).ready(function() {
-      oTable = $('#datatable').DataTable(); 
+      oTable = $('#datatable').DataTable(
+       
+      ); 
+      
       $('#custom_search').keyup(function(){
       oTable.search($(this).val()).draw() ;
 })
