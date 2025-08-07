@@ -1200,14 +1200,12 @@ class Bookings extends MY_Controller {
 
 				<td align="left" style="font-size:13px;">'.$booking['name'].' x '.$booking['no_of_rooms'].'</td>
 
-				<td align="right" style="font-size:13px;">'.number_format(($booking['tax_excluded_total']-$booking['extra_amount']),2,'.').'</td>
+				<td align="right" style="font-size:13px;">'.number_format(($booking['tax_excluded_total']-$booking['extra_amount']+$booking['total_discounts']),2,'.').'</td>
 				
 				</tr>
 				
 				';
 
-
-				
 
 
 				$extra_sec ="";
@@ -1234,6 +1232,20 @@ class Bookings extends MY_Controller {
 					<tr>
 					<td align="left" style="font-size:13px;">Tax</td>
 					<td align="right" style="font-size:13px;">'.number_format($booking['tax_amount'],2,'.').'</td>
+					</tr>';
+				}
+
+
+
+				$discount_sec ="";
+
+				if(!empty($booking['total_discounts']) && $booking['total_discounts']>0)
+				{
+
+				$discount_sec .='
+					<tr>
+					<td align="left" style="font-size:13px;">Discounts</td>
+					<td align="right" style="font-size:13px;">-'.number_format($booking['total_discounts'],2,'.').'</td>
 					</tr>';
 				}
 
