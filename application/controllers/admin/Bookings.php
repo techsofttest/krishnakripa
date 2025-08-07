@@ -1275,6 +1275,8 @@ class Bookings extends MY_Controller {
 
 					'.$tax_sec.'
 
+					'.$discount_sec.'
+
 
 					<tr>
 					<td align="left" style="font-size:13px;"><b>Grand Total</b></td>
