@@ -393,7 +393,7 @@ $('#rooms_count_search_modal option').each(function() {
       <?php } ?>
       minDate: moment().startOf('day'),
       opens: 'left',
-      autoUpdateInput: true,
+      autoUpdateInput: false,
       autoApply:true,
       locale: {
       cancelLabel: 'Clear'
