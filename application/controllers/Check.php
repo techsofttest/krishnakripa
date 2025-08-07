@@ -205,6 +205,14 @@ $data['room'] = $this->Admin_model->fetch_one_row('room',['roomid' => $room_id])
 
 $room = $data['room'];
 
+$data['price_breakdown'] = $this->BookingModel->get_price_per_day($room_id,$check_in_date,$check_out_date);
+
+$room_total = 0;
+$room_price_bd = "";
+foreach ($data['price_breakdown'] as $item) {
+    $room_total += $item['rate'];
+}
+
 $data['hotel_details'] = $this->Admin_model->fetch_one_row('hotels',['hotel_id' => $hotel]);
 
 $data['facilities'] = $this->Admin_model->fetch_where_order('room_facility',['roomid' => $room_id],'Factitle','ASC');
@@ -230,11 +238,13 @@ $extra_price = $room['kidPrice']*$children;
 $extra_desc = "Kids Extra";
 }
 
-$total_price = $room['rate'] * $no_of_days * $rooms_count;	
+//$total_price = $room['rate'] * $no_of_days * $rooms_count;	
+
+$total_price = $room_total + $extra_price;
 
 $gst = ($total_price * $room['tax']) / 100;
 
-$grand_total = $total_price + $gst + $extra_price;
+$grand_total = $total_price + $gst;
 
 //$gst  = 0;
 $data['booking_details'] =array(
@@ -243,7 +253,7 @@ $data['booking_details'] =array(
 	'room_rate' => $room['rate'],
 	'no_of_rooms' => $rooms_count,
 	'no_of_days' => $no_of_days,
-	'total_price' => $total_price,
+	'total_price' => $room_total,
 	'extra_desc' => $extra_desc,
 	'extra_price' => $extra_price,
 	'gst' => $gst,
@@ -341,7 +351,9 @@ function BookNow()
 
 	$checkout = $this->input->post('check_out');
 
-	$room_cond = array('roomid' => $this->input->post('room_id'));
+	$children = $this->input->post('children') ?? 0;
+
+	$room_cond = array('roomid' => $room_id = $this->input->post('room_id'));
 	$room_data = $this->Admin_model->fetch_one_row('room', $room_cond);
 
 	//No of days calculation
@@ -359,7 +371,30 @@ function BookNow()
 
 	$no_of_days = $interval->days;
 
-	$total_price = $room_data['rate'] * $no_of_days * $room_count;
+	//$total_price = $room_data['rate'] * $no_of_days * $room_count;
+
+	$data['price_breakdown'] = $this->BookingModel->get_price_per_day($room_id,$checkin_date,$checkout_date);
+
+	$room_total = 0;
+	$room_price_bd = "";
+	foreach ($data['price_breakdown'] as $item) {
+		$room_total += $item['rate'];
+	}
+
+	$extra_price=0;
+	$extra_desc="";
+	if($children>0)
+	{
+	$extra_price = $room_data['kidPrice']*$children;
+	$extra_desc = "Kids Extra";
+	}
+
+	$total_price = $room_total + $extra_price;
+
+	$gst = ($total_price * $room_data['tax']) / 100;
+
+	$grand_total = $total_price + $gst;
+
 
 	$booking_data  	= 	array(
 
@@ -371,11 +406,19 @@ function BookNow()
 
 		    'adults'=>$this->input->post('adults'),
 		    
-			'children'=> $this->input->post('childrens') ?? 0,
+			'children'=> $this->input->post('children') ?? 0,
 		    
 			'no_of_rooms'=>$this->input->post('no_of_rooms'),
 
-			'total_amount' => $total_price,
+			'extra_amount' => $extra_price,
+
+			'extra_desc' => $extra_desc,
+
+			'total_amount' => $grand_total,
+
+			'tax_amount' => $gst,
+
+			'tax_excluded_total' => $total_price,
 
 			'payment_notes'=> "-",
 

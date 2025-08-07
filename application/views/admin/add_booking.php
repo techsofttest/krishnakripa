@@ -735,6 +735,15 @@
                   </tr>
 
 
+                   <tr id="extra_sec" style="display:none;">
+
+                    <th>Extras (Kids)</th>
+
+                    <td class="totals text-right" id="extra_price"></td>
+
+                  </tr>
+
+
                   <tr>
 
                     <th>Tax</th>
@@ -743,13 +752,7 @@
                   </tr>
 
 
-                  <tr id="extra_sec" style="display:none;">
-
-                    <th>Extras (Kids)</th>
-
-                    <td class="totals text-right" id="extra_price"></td>
-
-                  </tr>
+                 
 
 
                   <tr>
@@ -921,7 +924,7 @@
                            var data = JSON.parse(response)
                            if(data.status==1)
                            {
-                           $('#room_total').html(data.subtotal);
+                           $('#room_total').html(data.base_price);
                            $('#tax').html(data.tax_amount);
                            $('#total_amount').html(data.total);
 
@@ -978,7 +981,7 @@
                            var data = JSON.parse(response)
                            if(data.status==1)
                            {
-                           $('#room_total').html(data.subtotal);
+                           $('#room_total').html(data.base_price);
                            $('#tax').html(data.tax_amount);
                            $('#tax_amount_val').val(data.tax_amount);
 

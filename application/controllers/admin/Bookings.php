@@ -479,6 +479,15 @@ class Bookings extends MY_Controller {
 		$interval = $check_in_date->diff($check_out_date);
 		$nights = $interval->days;
 
+		$data['price_breakdown'] = $this->BookingModel->get_price_per_day($room_id,$check_in,$check_out);
+
+		$room_total = 0;
+		$room_price_bd = "";
+		foreach ($data['price_breakdown'] as $item) {
+			$room_total += $item['rate'];
+		}
+
+
 		$extra_price=0;
 		$extra_desc="";
 		if($children>0)
@@ -488,17 +497,18 @@ class Bookings extends MY_Controller {
 		}
 
 		// Calculate total price
-		$subtotal = $base_price * $no_of_room * $nights;
-		$tax_amount = (($subtotal+$extra_price) * $tax) / 100;
 
+		$subtotal = $room_total+$extra_price;
 
-		$total = $subtotal + $tax_amount + $extra_price;
+		$tax_amount = (($subtotal) * $tax) / 100;
+
+		$total = $subtotal + $tax_amount;
 
 		$total = $total-$discounts;
 
 		echo json_encode([
 			'status' => 1,
-			'base_price' => $base_price,
+			'base_price' => $room_total,
 			'nights' => $nights,
 			'rooms' => $no_of_room,
 			'subtotal' => $subtotal,

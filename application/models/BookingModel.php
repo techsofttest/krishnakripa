@@ -563,6 +563,48 @@ class BookingModel extends CI_model {
 
 
 
+
+
+    public function get_price_per_day($room_id, $checkin_date, $checkout_date) {
+            $price_list = [];
+            $start = new DateTime($checkin_date);
+            $end = new DateTime($checkout_date);
+
+            // Load default room rate
+            $this->db->select('rate,category');
+
+            $this->db->where('roomid', $room_id);
+            $row = $this->db->get('room')->row();
+            $default_rate = $row->rate;
+            $category_id = $row->category;
+
+            while ($start < $end) {
+                $current_date = $start->format('Y-m-d');
+
+                // Check for special rate
+                $this->db->select('rate');
+                $this->db->where('rroom_id', $category_id);
+                $this->db->where('from_date <=', $current_date);
+                $this->db->where('to_date >=', $current_date);
+                $query = $this->db->get('room_rates');
+
+                if ($query->num_rows() > 0) {
+                    $rate = $query->row()->rate;
+                } else {
+                    $rate = $default_rate;
+                }
+
+                $price_list[] = [
+                    'date' => $current_date,
+                    'rate' => $rate
+                ];
+
+                $start->modify('+1 day');
+            }
+
+            return $price_list;
+        }
+
     
 
 

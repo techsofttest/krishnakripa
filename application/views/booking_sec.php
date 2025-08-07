@@ -290,11 +290,33 @@ $rooms_count = $_GET['rooms_count'];
 
 document.addEventListener("DOMContentLoaded", function() {
 
-  
+/*
 $('.add').click(function () {
     $(this).prev().val(+$(this).prev().val() + 1);
     var targetId = $(this).data('id');
     $('#'+targetId+'').html($(this).prev().val());
+});
+*/
+
+$('.add').click(function () {
+    var input = $(this).prev();
+    var currentVal = parseInt(input.val()) || 0;
+    var targetId = $(this).data('id');
+
+    if (targetId === 'adult-id') {
+        var roomCount = parseInt($("input[name='rooms_count']").val()) || 1;
+        var maxAdults = roomCount * 2;
+
+        if (currentVal < maxAdults) {
+            input.val(currentVal + 1);
+            $('#' + targetId).html(input.val());
+        } else {
+            alert('Maximum of ' + maxAdults + ' adults allowed for ' + roomCount + ' room(s).');
+        }
+    } else {
+        input.val(currentVal + 1);
+        $('#' + targetId).html(input.val());
+    }
 });
 
 $('.sub').click(function () {
@@ -360,11 +382,18 @@ $('#rooms_count_search_modal option').each(function() {
 
 
       $('#daterangepikr').daterangepicker({
+      //startDate: moment().startOf('day'),
+      //endDate: moment().endOf('day'),
+      <?php if(!empty($check_in_date) && !empty($check_out_date)) { ?>
+      startDate: moment('<?= $check_in_date ?>'),
+      endDate: moment('<?= $check_out_date ?>'),
+      <?php } else{ ?>
       startDate: moment().startOf('day'),
       endDate: moment().endOf('day'),
+      <?php } ?>
       minDate: moment().startOf('day'),
       opens: 'left',
-      autoUpdateInput: false,
+      autoUpdateInput: true,
       autoApply:true,
       locale: {
       cancelLabel: 'Clear'

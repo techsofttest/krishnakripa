@@ -428,13 +428,13 @@
 
               <tr>
                 <th>Total :</th>
-                <td><?= $booking['tax_excluded_total']-$booking['extra_amount']+$booking['total_discounts']; ?></td>
+                <td><?= number_format($booking['tax_excluded_total']-$booking['extra_amount']+$booking['total_discounts'],2,'.'); ?></td>
               </tr>
 
               <?php if($booking['extra_amount']>0) {?>
               <tr>
                 <th>Extra (Kids)</th>
-                <td><?= $booking['extra_amount']; ?></td>
+                <td><?= number_format($booking['extra_amount'],2,'.'); ?></td>
               </tr>
               <?php } ?>
 

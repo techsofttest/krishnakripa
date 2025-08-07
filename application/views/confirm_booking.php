@@ -185,14 +185,6 @@ $query_params = [
 
 </tr>
 
-<tr>
-
-<th>Tax</th>
-
-<td class="text-end"><?= $booking_details['gst'] ?></td>
-
-</tr>
-
 
 <?php if(!empty($booking_details['extra_price'])) { ?>
 <tr>
@@ -204,6 +196,17 @@ $query_params = [
 </tr>
 
 <?php } ?>
+
+
+
+<tr>
+
+<th>Tax</th>
+
+<td class="text-end"><?= $booking_details['gst'] ?></td>
+
+</tr>
+
 
 </table>
 
