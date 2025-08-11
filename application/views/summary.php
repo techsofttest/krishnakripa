@@ -57,11 +57,54 @@
 
         <?php if($booking['payment_status']==2 || 1==1) { ?>
 
-       <div class="message-box _success">
+                    <div class="message-box _success ">
 
-                    <i class="fa fa-check-circle" aria-hidden="true"></i>
+                    <i class="fa fa-clock text-warning" aria-hidden="true"></i>
 
-                    <h2> Your payment was successful </h2>
+                    <h2> Make Payment To Confirm Booking! </h2>
+
+
+                    <table class="table table-striped">
+
+                    <tr>
+                    <td colspan="2">Please make payment to the mentioned account<br>and send the receipt to whatsapp on +91 8086100806</td>
+
+                    <tr>
+                    <td>Account Name</td>
+                    <td>KRISHNAKRIPA RESIDENCY</td>
+                    </tr>
+
+                    <tr>
+                    <td>Account Number</td>
+                    <td>201028708134</td>
+                    </tr>
+
+                    <tr>
+                    <td>Account Type</td>
+                    <td>CURRENT</td>
+                    </tr>
+
+                    <tr>
+                    <td>BANK NAME</td>
+                    <td>INDUS BANK</td>
+                    </tr>
+
+                    <tr>
+                    <td>IFSC CODE</td>
+                    <td>INDB0000091</td>
+                    </tr>
+
+                    <tr>
+                    <td>BRANCH</td>
+                    <td>KAKKANAD</td>
+                    </tr>
+
+                    </table>
+
+
+
+                    <h3>Booking Details</h3>
+
 
                     <table class="table table-striped">
 
@@ -94,7 +137,7 @@
                     </table>
 
                    <p> Thank you for choosing Krishnakripa</p>
-                    <p>Booking details has been sent to <?= $booking['email_address']; ?></p>   
+                   <p>Booking details has been sent to <?= $booking['email_address']; ?></p>   
 
         </div> 
 
