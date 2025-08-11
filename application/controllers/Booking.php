@@ -11,7 +11,7 @@ class Booking extends MY_Controller {
 	 			$this->load->model("BookingModel");
 				$this->load->library('session');	
 				
-				$this->session->set_userdata('b_id',41);
+				//$this->session->set_userdata('b_id',41);
 				if(empty($this->session->userdata('b_id')))
 				{
 				redirect(base_url());
