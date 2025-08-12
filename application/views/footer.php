@@ -68,6 +68,10 @@ Ambalamedu PO, Kuzhikkadu-682 303
                 <p class="info-box_text"><?php echo $con_data['maddress']?></p>
               </div>
               <div class="info-box">
+                <div class="info-box_icon"> <i class="fa-solid fa-phone"></i> </div>
+                <p class="info-box_text"> <a href="tel:<?php echo $con_data['phone3']?>" class="info-box_link"><?php echo $con_data['phone3']?></a>  </p>
+              </div>
+              <div class="info-box">
                 <div class="info-box_icon"> <i class="fa-solid fa-envelope"></i> </div>
                 <p class="info-box_text"> <a href="mailto:<?php echo $con_data['email']?>" class="info-box_link"><?php echo $con_data['email']?></a> </p>
               </div>
