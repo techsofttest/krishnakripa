@@ -108,7 +108,7 @@ height:100px !important;
                 <li><i class="fat fa-phone"></i><a href="tel:+91 8086100803">+91 8086100803</a></li>
 				<li><i class="fat fa-phone"></i><a href="tel:+91 8086100806">+91 8086100806</a></li>
                
-                <li><i class="fat fa-envelope"></i><a href="mailto:krishnakriparesidency@gmail.com">krishnakriparesidency@gmail.com</a></li>
+                <li><i class="fat fa-envelope"></i><a href="mailto:residency@krishnakripagroup.com">residency@krishnakripagroup.com</a></li>
               </ul>
             </div>
           </div>
