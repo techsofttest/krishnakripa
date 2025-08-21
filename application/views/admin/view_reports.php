@@ -66,6 +66,7 @@
                       <label>Date Filter</label>
                       <select class="form-control" id="dateFilter" name="date">
                         <option value="">Date</option>
+                        <option value="today">Today</option>
                         <option value="week">Weekly</option>
                         <option value="month">Monthly</option>
                       </select>
@@ -82,11 +83,19 @@
                     </div>
 
                     <script>
-                    function getMonday(d) {
+                   function getMonday(d) {
                       d = new Date(d);
                       var day = d.getDay(),
-                          diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+                        diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
                       return new Date(d.setDate(diff));
+                    }
+                    // Function to get today's date in YYYY-MM-DD format
+                    function getTodayDate() {
+                      var today = new Date();
+                      var dd = String(today.getDate()).padStart(2, '0');
+                      var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                      var yyyy = today.getFullYear();
+                      return yyyy + '-' + mm + '-' + dd;
                     }
                     function getSunday(d) {
                       d = new Date(d);
@@ -112,7 +121,14 @@
                         var last = new Date(today.getFullYear(), today.getMonth() + 1, 0);
                         from = formatDate(first);
                         to = formatDate(last);
-                      } else {
+                      } 
+                      else if(filter === 'today')
+                      {
+                      var todaydate = getTodayDate(today);
+                      from = todaydate;
+                      to = todaydate;
+                      }
+                      else {
                         from = formatDate(today);
                         to = formatDate(today);
                       }
