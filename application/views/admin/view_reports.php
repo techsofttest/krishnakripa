@@ -202,7 +202,7 @@
               
                     <div class="col-sm-12" style="text-align:center">
                       <button type="submit" class="btn btn-success">Filter</button>
-                      <a class="btn btn-warning" href="<?= base_url(); ?>admin/Reports/Print<?php '?' . $_SERVER['QUERY_STRING']; ?>" target="_blank">Print</a>
+                      <a class="btn btn-warning" href="<?= base_url(); ?>admin/Reports/Print<?= '?' . $_SERVER['QUERY_STRING']; ?>" target="_blank">Print</a>
                       <a href="<?= base_url(); ?>admin/Reports/View" class="btn btn-danger">Reset</a>
                     </div>
 
