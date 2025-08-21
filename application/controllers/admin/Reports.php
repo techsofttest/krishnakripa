@@ -192,24 +192,83 @@ class Reports extends MY_Controller {
 
 				foreach($bookings as $bookin)
 				{
+
+				$payments = $this->BookingModel->ViewPaymentsByBookingId($bookin->booking_id,"credit");
+
+
+				//Checkin & Time
+				if(!empty($bookin->actual_check_in_date))
+				{
+					$check_in = date('d-m-y',strtotime($bookin->actual_check_in_date))."<br>".date('h:i a',strtotime($bookin->actual_check_in_date));
+				}
+				else
+				{
+					$check_in = date('d-m-y',strtotime($bookin->check_in_date));
+				}
+
+				if(!empty($bookin->actual_check_out_date))
+				{
+					$check_out = date('d-m-y',strtotime($bookin->actual_check_out_date))."<br>".date('h:i a',strtotime($bookin->actual_check_out_date));
+				}
+				else
+				{
+					$check_out = date('d-m-y',strtotime($bookin->check_out_date));
+				}
+
+
+
+				//Payments Table Rows
+				
+				$payment_rows = "";
+
+				if(!empty($payments))
+				{
+				foreach($payments as $payment)
+				{
+
+				$payment_rows .=
+				"<tr>
+				<td>".date('d-m-y',strtotime($payment->bp_paid_on))."</td>
+				<td>".$payment->bp_amount."</td>
+				<td>".$payment->bp_pay_method."</td>
+				<td>".$payment->bp_notes."</td>
+				</tr>";
+				
+				}
+				}
+
 				
 				$item_sec .='
 				
 				<tr>
-						
-					<th>'.$bookin->uid.'</th>
-
-					<th>'.date('d M Y',strtotime($bookin->check_in_date)).'</th>
-
-					<th>'.date('d M Y',strtotime($bookin->check_out_date)).'</th>
 
 					<th>'.$bookin->name.'</th>
 
 					<th>'.$bookin->first_name.' '.$bookin->last_name.' <br> '.$bookin->phone_number.'</th>
 
-					<th>'.$bookin->total_amount.'</th>
+					<th>
+					'.$check_in.'
+					
+					</th>
+
+					<th>
+					'.$check_out.'
+					
+					</th>
+
+
+					<th>'.$bookin->uid.'</th>
+						
+
+					<th align="right">
+					<table>
+					'.$payment_rows.'
+					</table>
+					</th>
 
 					<th>'.$bookin->booking_status.'</th>
+
+					
 					
 				</tr>
 
@@ -218,27 +277,42 @@ class Reports extends MY_Controller {
 
 				}
 				
+				//<th>'.$bookin->booking_status.'</th>
 
+				//<th>'.$bookin->uid.'</th>
 
 				$html .='
 
 					<table cellpadding="5" border="1">
 
 					<tr style="background-color:white">
+
+						<th width="10%" style="text-align:center"><b>Room</b></th>
+
+						<th width="20%" style="text-align:center"><b>Customer</b></th>
+
+						<th width="10%" style="text-align:center"><b>Check In</b></th>
+
+						<th width="10%" style="text-align:center"><b>Check Out</b></th>
+
+						<th width="10%" style="text-align:center"><b>Book ID</b></th>
+
+						<th width="30%">
+						<table>
+
+						<tr><td colspan="4" style="text-align:center"><b>Amount</b></td></tr>
 						
-						<th><b>ID</b></th>
+						<tr>
+						<td style="text-align:center">Date</td>
+						<td style="text-align:center">Amount</td>
+						<td style="text-align:center">Method</td>
+						<td style="text-align:center">UTR No</td>
+						</tr>
 
-						<th><b>Check In</b></th>
+						</table>
+						</th>
 
-						<th><b>Check Out</b></th>
-
-						<th><b>Room</b></th>
-
-						<th><b>Customer</b></th>
-
-						<th><b>Amount</b></th>
-
-						<th><b>Status</b></th>
+						<th width="10%" style="text-align:center"><b>Status</b></th>
 					
 					</tr>
 					
