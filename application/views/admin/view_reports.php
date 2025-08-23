@@ -192,6 +192,17 @@
 
                       </select>
                     </div>
+
+
+                    <div class="col-sm-3" style="">
+
+                    <label>Room Number</label>
+
+                     <input class="form-control" type="text" name="room_no_search" value="<?= $_GET['room_no_search'] ?? "" ?>">
+
+                    </div>
+
+
                   
                 </div>
 
@@ -289,7 +300,7 @@
                       
                         </td>
 
-                        <td><?= $val->name ?></td>
+                        <td><?= $val->name ?> <br><b><?= $val->booking_room_no ?? "" ?></b></td>
 
                         <td>
                         <?= $val->first_name ?> <?= $val->last_name ?><br>
@@ -306,19 +317,29 @@
                         <?php
                         if($val->booking_status=="pending"){
                         ?>
-                        <span class="btn btn-warning">Pending</span>
+                        <span class="btn btn-warning status_btn" data-id="<?= $val->booking_id ?>"><i class="fa fa-clock-o" ></i> Pending</span>
                         <?php 
                         }
                         else if($val->booking_status=="confirmed"){
                         ?>
-                        <span class="btn btn-success">Confirmed</span>
+                        <span class="btn btn-success status_btn" data-id="<?= $val->booking_id ?>"><i class="fa fa-check" ></i> Confirmed</span>
                         <?php 
-                        } else {
+                        } else if($val->booking_status=="cancelled"){
                         ?>
-                        <span class="btn btn-danger">Cancelled</span>
+                        <span class="btn btn-danger status_btn" data-id="<?= $val->booking_id ?>"><i class="fa fa-times" ></i> Cancelled</span>
                         <?php
                         }
+                        else if($val->booking_status=="checked_in"){
                         ?>
+                        <span class="btn btn-success status_btn" data-id="<?= $val->booking_id ?>"><i class="fa fa-sign-in" ></i> Checked In</span>
+                        <br><b><?= !empty($val->actual_check_in_date) ? date('d-m-Y', strtotime($val->actual_check_in_date)) : '' ?></b>
+                        <br><b><?= !empty($val->actual_check_in_date) ? date('h:i a', strtotime($val->actual_check_in_date)) : '' ?></b>
+                        <?php } 
+                        else if($val->booking_status=="checked_out") { ?>
+                        <span class="btn btn-success status_btn" data-id="<?= $val->booking_id ?>"><i class="fa fa-sign-out" ></i> Checked Out</span>
+                        <br><b><?= !empty($val->actual_check_out_date) ? date('d-m-Y', strtotime($val->actual_check_out_date)) : '' ?></b>
+                        <br><b><?= !empty($val->actual_check_out_date) ? date('h:i a', strtotime($val->actual_check_out_date)) : '' ?></b>
+                        <?php } ?>
                         
                         </td>
                        

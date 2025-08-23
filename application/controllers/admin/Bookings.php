@@ -126,6 +126,8 @@ class Bookings extends MY_Controller {
 
 			$room = "";
 
+			$room_no = "";
+
 			$hotel_type = "";
 
 			if(!empty($this->input->get('date_from')))
@@ -159,8 +161,17 @@ class Bookings extends MY_Controller {
 			}
 
 
-		 	$data['bookings']	=	$this->BookingModel->ViewBookings($date_from,$date_to,$payment_status,$customer,$room,$hotel_type);		   
-			$parent =  $this->uri->segment(4);				 
+			if(!empty($this->input->get('room_no_search')))
+			{
+				$room_no = $this->input->get('room_no_search');
+			}
+
+
+
+		 	$data['bookings']	=	$this->BookingModel->ViewBookings($date_from,$date_to,$payment_status,$customer,$room,$room_no,$hotel_type);		   
+			$parent =  $this->uri->segment(4);	
+			$data['customers'] = $this->Admin_model->fetch_where_order('customers',array(),'first_name','asc');
+			$data['rooms'] = $this->Admin_model->fetch_where_order('room',array(),'name','asc');			 
 			$data['seo_title'] 	= 	"View Bookings | ".$this->data['admin_title'].""; 			
 			$this->load->view('admin/view_bookings',$data);
 		

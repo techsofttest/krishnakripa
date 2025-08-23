@@ -65,7 +65,6 @@
 
                                          <th>Address</th>
 
-                                         <th>Total Bookings</th>
 
                                          <th>Actions</th>
                                        
@@ -92,8 +91,6 @@
                         <td><?= $val->email_address ?? "" ?></td>
 
                         <td><?= $val->address ?> </td>
-
-                        <td><b>0</b></td>
 
                         <td>
                           <a class="btn btn-danger"><i class="fa fa-ban"></i> Block</a>

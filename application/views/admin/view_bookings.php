@@ -215,6 +215,18 @@
 
                       </select>
                     </div>
+
+
+
+                    <div class="col-sm-3" style="">
+
+                    <label>Room Number</label>
+
+                     <input class="form-control" type="text" name="room_no_search" value="<?= $_GET['room_no_search'] ?? "" ?>">
+
+                    </div>
+
+
                   
                 </div>
 
