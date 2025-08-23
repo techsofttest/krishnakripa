@@ -638,6 +638,10 @@
 
       $('.status_datetime').hide();
 
+      $('.cancel-refund-status').hide();
+
+      $('.cancel-refund-status select').removeAttr('required');
+
       $('.cancel-refund-sec').hide();
 
       $('.cancel-refund-sec input').removeAttr('required');
@@ -657,6 +661,8 @@
     $('.cancel-refund-status').hide();
 
     $('.cancel-refund-status select').removeAttr('required');
+
+    $('.room_no').hide();
 
     var status = $(this).val();
 
