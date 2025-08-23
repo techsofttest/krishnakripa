@@ -880,8 +880,18 @@ class Bookings extends MY_Controller {
 				redirect(base_url().'admin/Bookings');
 			}
 
+			if(!empty($this->input->post('room_no')))
+			{
+				$room_no_update = $this->input->post('room_no');
+			}
+			else
+			{
+				$room_no_update = NULL;
+			}
+
 			$update_data = array(
-				'booking_status' => $booking_status = $this->input->post('booking_status')
+				'booking_status' => $booking_status = $this->input->post('booking_status'),
+				'booking_room_no' => $room_no_update
 			);
 
 			if($booking_status=="checked_in")
@@ -904,7 +914,7 @@ class Bookings extends MY_Controller {
 			$this->Admin_model->update_all($update_data,$update_cond,'bookings');
 
 
-			if($booking_status=="cancelled")
+			if($booking_status=="cancelled" && $this->input->post('refund_eligible')=="yes")
 			{
 
 			$payment_data = array(

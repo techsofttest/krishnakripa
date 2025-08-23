@@ -337,7 +337,7 @@
                       
                         </td>
 
-                        <td><?= $val->name ?></td>
+                        <td><?= $val->name ?><br><b><?= $val->booking_room_no ?? "" ?></b></td>
 
                         <td>
                         <?= $val->first_name ?> <?= $val->last_name ?><br>
@@ -531,6 +531,13 @@
             <option value="checked_out">Checked Out</option>
             <option value="cancelled">Cancelled</option>
           </select>
+
+
+          <div class="room_no" style="display:none;">
+          <label>Room No</label>
+          <input class="form-control" name="room_no" value="">
+          </div>
+
             
           <div class="status_datetime">
           <label>Date</label>
@@ -541,6 +548,23 @@
           <label>Time</label>
           <input onclick="this.showPicker();" value="<?= date('H:i') ?>" type="time" class="form-control" name="status_time" id="status_time" required>
           </div>
+
+
+          <section class="cancel-refund-status" style="display:none;">
+
+          <label> Refund Eligible</label>
+
+          <select class="form-control cancel_refund_eligible" name="refund_eligible" required>
+
+          <option value="" selected>Select Refund Status</option>
+
+          <option value="yes">Yes</option>
+
+          <option value="no" >No</option>
+
+          </select>
+
+          </section>
 
           <section class="cancel-refund-sec" style="display:none;">
 
@@ -610,6 +634,8 @@
 
       $('#status_form')[0].reset();
 
+      $('.room_no').hide();
+
       $('.status_datetime').hide();
 
       $('.cancel-refund-sec').hide();
@@ -628,9 +654,22 @@
 
     $('body').on('change', '#booking_status', function() {
 
+    $('.cancel-refund-status').hide();
+
+    $('.cancel-refund-status select').removeAttr('required');
+
     var status = $(this).val();
 
     if(status == 'checked_in' || status == 'checked_out'){
+
+      if(status=='checked_in')
+      {
+      $('.room_no').show();
+      }
+      else
+      {
+      $('.room_no').hide();
+      }
 
       $('.status_datetime').show();
 
@@ -642,11 +681,9 @@
 
     if(status == 'cancelled'){
     
-    $('.cancel-refund-sec').show();
+    $('.cancel-refund-status').show();
 
-    $('.cancel-refund-sec input').attr('required',true);
-
-    $('.cancel-refund-sec select').attr('required',true);
+    $('.cancel-refund-status select').attr('required',true);
 
     }
     else
@@ -660,6 +697,35 @@
 
     }
 
+
+    });
+
+
+
+    $('body').on('change', '.cancel_refund_eligible', function() {
+
+    if($(this).val()=="yes")
+
+    {
+
+    $('.cancel-refund-sec').show();
+
+    $('.cancel-refund-sec input').attr('required',true);
+
+    $('.cancel-refund-sec select').attr('required',true);
+
+    }
+
+    else
+    {
+
+    $('.cancel-refund-sec').hide();
+
+    $('.cancel-refund-sec input').attr('required',false);
+
+    $('.cancel-refund-sec select').attr('required',false);
+    
+    }
 
     });
 
