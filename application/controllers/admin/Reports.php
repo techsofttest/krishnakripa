@@ -102,6 +102,11 @@ class Reports extends MY_Controller {
 
 		$room = "";
 
+		$room_no = "";
+
+		$hotel_type ="";
+		
+
 		if(!empty($this->input->get('date_from')))
 		{
 			$date_from = $this->input->get('date_from');
@@ -127,7 +132,17 @@ class Reports extends MY_Controller {
 			$room = $this->input->get('room');
 		}
 
-    	$bookings	=	$this->BookingModel->ViewBookingReport($date_from,$date_to,$payment_status,$customer,$room);
+		if(!empty($this->input->get('room_no_search')))
+		{
+				$room_no = $this->input->get('room_no_search');
+		}
+
+		if(!empty($this->input->get('hotel_type')))
+		{
+			$hotel_type = $this->input->get('hotel_type');
+		}
+
+    	$bookings	=	$this->BookingModel->ViewBookingReport($date_from,$date_to,$payment_status,$customer,$room,$room_no,$hotel_type);
 
 		
 				$this->load->library('Pdf');

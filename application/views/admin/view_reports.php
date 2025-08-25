@@ -213,7 +213,9 @@
               
                     <div class="col-sm-12" style="text-align:center">
                       <button type="submit" class="btn btn-success">Filter</button>
+                      <?php if(!empty($bookings)){ ?>
                       <a class="btn btn-warning" href="<?= base_url(); ?>admin/Reports/Print<?= '?' . $_SERVER['QUERY_STRING']; ?>" target="_blank">Print</a>
+                      <?php } ?>
                       <a href="<?= base_url(); ?>admin/Reports/View" class="btn btn-danger">Reset</a>
                     </div>
 
