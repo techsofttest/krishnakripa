@@ -148,7 +148,7 @@
                     <div class="col-sm-12" style="text-align:center">
                       <button type="submit" class="btn btn-success">Filter</button>
                       <?php if(!empty($payments)) { ?>
-                      <a class="btn btn-warning" href="<?= base_url(); ?>admin/Payments/Print<?php '?' . $_SERVER['QUERY_STRING']; ?>">Print</a>
+                      <a class="btn btn-warning" href="<?= base_url(); ?>admin/Payments/Print<?= '?'.$_SERVER['QUERY_STRING']; ?>">Print</a>
                       <?php } ?>
                       <a href="<?= base_url(); ?>admin/Payments" class="btn btn-danger">Reset</a>
                     </div>
