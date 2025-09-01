@@ -213,6 +213,8 @@ foreach ($data['price_breakdown'] as $item) {
     $room_total += $item['rate'];
 }
 
+$room_total = $room_total*$rooms_count;
+
 $data['hotel_details'] = $this->Admin_model->fetch_one_row('hotels',['hotel_id' => $hotel]);
 
 $data['facilities'] = $this->Admin_model->fetch_where_order('room_facility',['roomid' => $room_id],'Factitle','ASC');

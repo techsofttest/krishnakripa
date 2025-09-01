@@ -479,7 +479,7 @@ class Bookings extends MY_Controller {
 
 		}
 
-		$base_price = $room_det['rate'];
+		$base_price = $room_det['rate'] * $no_of_room;
 		$tax = isset($room_det['tax']) ? $room_det['tax'] : 0;
 
 		//$tax = 0;
@@ -498,6 +498,7 @@ class Bookings extends MY_Controller {
 			$room_total += $item['rate'];
 		}
 
+		$room_total = $room_total*$no_of_room;
 
 		$extra_price=0;
 		$extra_desc="";
