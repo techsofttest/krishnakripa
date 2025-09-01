@@ -479,7 +479,7 @@ class Bookings extends MY_Controller {
 
 		}
 
-		$base_price = $room_det['rate'] * $no_of_room;
+		$base_price = $room_det['rate'];
 		$tax = isset($room_det['tax']) ? $room_det['tax'] : 0;
 
 		//$tax = 0;
@@ -499,6 +499,7 @@ class Bookings extends MY_Controller {
 		}
 
 		$room_total = $room_total*$no_of_room;
+
 
 		$extra_price=0;
 		$extra_desc="";
@@ -698,6 +699,68 @@ class Bookings extends MY_Controller {
 
 		$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
 
+
+  /**
+             * -------------------------
+             * Handle ID proof uploads
+             * -------------------------
+             */
+            if (isset($_FILES['id_proof']) && !empty($_FILES['id_proof']['tmp_name'][0])) {
+
+                $uploaded_files = [];
+                $upload_path = "uploads/Booking";
+
+                if (!file_exists($upload_path)) {
+                    mkdir($upload_path, 0777, true);
+                }
+
+                // loop through each uploaded file
+                for ($i = 0; $i < count($_FILES['id_proof']['tmp_name']); $i++) {
+                    if ($_FILES['id_proof']['tmp_name'][$i] != '' && $_FILES['id_proof']['error'][$i] == 0) {
+
+                        $filename = basename($_FILES["id_proof"]["name"][$i]);
+                        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+                        $allowed_extensions = ['jpg','jpeg','png','pdf','doc','docx'];
+
+                        if (in_array($ext, $allowed_extensions)) {
+                            $new_name = $id . "_id_" . uniqid() . '_' . ($i + 1) . '.' . $ext;
+
+                            if (move_uploaded_file($_FILES["id_proof"]["tmp_name"][$i], $upload_path . "/" . $new_name)) {
+                                $uploaded_files[] = $new_name;
+                            }
+                        }
+                    }
+                }
+
+                if (!empty($uploaded_files)) {
+                    // get existing files from DB
+                    $current = $this->db->select('id_proof')
+                                        ->from('bookings')
+                                        ->where('booking_id', $id)
+                                        ->get()
+                                        ->row();
+
+                    $existing_files = [];
+                    if ($current && !empty($current->id_proof)) {
+                        $existing_files = json_decode($current->id_proof, true);
+                        if (!is_array($existing_files)) {
+                            $existing_files = [];
+                        }
+                    }
+
+                    // merge new + old
+                    $all_files = array_merge($existing_files, $uploaded_files);
+
+                    $this->Admin_model->update_all(
+                        ['id_proof' => json_encode($all_files)],
+                        ['booking_id' => $id],
+                        'bookings'
+                    );
+                }
+            }
+            
+            
 		$this->session->set_flashdata('success', 'Booking Updated.'); 
 				
 		redirect(base_url().'admin/Bookings/Edit/'.$id);
