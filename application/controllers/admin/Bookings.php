@@ -460,7 +460,7 @@ class Bookings extends MY_Controller {
 		{
 
 		$room_id = $this->input->post('room_id');
-		$no_of_room = $this->input->post('no_of_rooms');
+		$no_of_room = $this->input->post('no_of_rooms')?: 0;
 		$check_in = $this->input->post('check_in');
 		$check_out = $this->input->post('check_out');
 		$discounts = intval($this->input->post('discounts')) ?: 0;
@@ -633,7 +633,7 @@ class Bookings extends MY_Controller {
 		if(!empty($this->input->post()))
 		{
 
-		$room_count = $this->input->post('room_count');
+		$room_count = $data['booking']['no_of_rooms'];
 
 		$check_in = $this->input->post('check_in');
 
