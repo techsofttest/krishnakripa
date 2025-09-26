@@ -1,0 +1,14 @@
+CREATE TABLE krishna_addons (
+    ao_id INT AUTO_INCREMENT PRIMARY KEY,
+    ao_name VARCHAR(100) NOT NULL,              -- e.g., Bike Rent, Drinks, Early Checkin
+    ao_description TEXT NULL,                   -- optional, addon details
+    ao_price DECIMAL(10,2) NOT NULL,            -- base price
+    charge_type ENUM('per_booking','per_room','per_person','per_night','custom') DEFAULT 'per_booking',
+    status TINYINT(1) DEFAULT 1,             -- 1=active, 0=inactive
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE `krishna_bookings` ADD `addon_amount` DECIMAL(10,2) NOT NULL AFTER `tax_amount`;
+ALTER TABLE `krishna_bookings` ADD `room_total` DECIMAL(10,2) NOT NULL AFTER `addon_amount`;
+ALTER TABLE `krishna_bookings` ADD `booking_source` INT NOT NULL DEFAULT '0' AFTER `uid`;

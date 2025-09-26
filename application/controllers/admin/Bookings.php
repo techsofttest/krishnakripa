@@ -171,6 +171,7 @@ class Bookings extends MY_Controller {
 		 	$data['bookings']	=	$this->BookingModel->ViewBookings($date_from,$date_to,$payment_status,$customer,$room,$room_no,$hotel_type);		   
 			$parent =  $this->uri->segment(4);	
 			$data['customers'] = $this->Admin_model->fetch_where_order('customers',array(),'first_name','asc');
+			$data['addons'] = $this->Admin_model->fetch_where_order('addons',array(),'ao_name','asc');
 			$data['rooms'] = $this->Admin_model->fetch_where_order('room',array(),'name','asc');			 
 			$data['seo_title'] 	= 	"View Bookings | ".$this->data['admin_title'].""; 			
 			$this->load->view('admin/view_bookings',$data);
@@ -188,7 +189,12 @@ class Bookings extends MY_Controller {
 
 			$data['room_types']	=	$this->Admin_model->fetch_all_order('categories','cat_title','asc');	
 
+			$data['sources'] = $this->Admin_model->fetch_where_order('sources',array(),'source_name','asc');
+
 			$data['hotels']	=	$this->Admin_model->fetch_all_order('hotels','hotel_name','asc');
+
+			$data['addons']	=	$this->BookingModel->get_all_addons();
+			
 			
 			if($_POST):
 
@@ -214,6 +220,8 @@ class Bookings extends MY_Controller {
 		
 		    'check_out_date' => date('Y-m-d',strtotime($this->input->post('check_out'))),
 
+			'booking_source' => $this->input->post('booking_source'),
+
 			'booking_room_id' => $this->input->post('room_select'),
 
 		    'adults'=>$this->input->post('adults'),
@@ -222,7 +230,11 @@ class Bookings extends MY_Controller {
 		    
 			'no_of_rooms'=>$this->input->post('rooms'),
 
+			'addon_amount' => $this->input->post('addon_amount'),
+
 			'tax_amount' => $this->input->post('tax_amount'),
+
+			'room_total' => $this->input->post('room_total'),
 
 			'total_amount' => $total,
 
@@ -289,23 +301,6 @@ class Bookings extends MY_Controller {
 
 			$update_booking_cond = array('booking_id' => $bid);
 
-			$update_booking_no = array('no' => 'means no or maybe yes');
-
-			$update_booking_yes = array('yes' => 'means maybe not');
-
-			$uptodate_nothing = array('nothing' => "means nothing to update");
-
-			$in_progress = array('class' => "lower middle class or low class");
-
-			$changes = array('back fendor,oil seal,left indicator,stand,');
-
-			$upstox = array('fendor_design');
-
-			$feend = array('fendor_type' => 24);
-
-			$cost_to_company = array('no_cost_emi');
-
-
 			$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
 
 			}
@@ -341,6 +336,34 @@ class Bookings extends MY_Controller {
 
 			$pay_id = $this->Admin_model->insertsection('booking_payments',$payment_data);
 
+			}
+
+
+			$add_on   = $this->input->post('add_on');     // array of addon ids
+    		$quantity = $this->input->post('quantity');   // array of qty
+    		$amount   = $this->input->post('amount');     // array of price
+    		$ao_remarks  = $this->input->post('remarks');    // array of remarks
+
+    		if (!empty($add_on)) {
+        	foreach ($add_on as $index => $ao_id) {
+            	$qty   = !empty($quantity[$index]) ? (int)$quantity[$index] : 0;
+            	$amt   = !empty($amount[$index])   ? (float)$amount[$index] : 0;
+            	$rem   = !empty($ao_remarks[$index])  ? $ao_remarks[$index] : '';
+
+            // Skip empty rows
+            if ($qty > 0 || $amt > 0) {
+
+                $data = [
+                    'booking_main_id' => $bid,
+                    'addon_id'   => $ao_id,
+                    'quantity'   => $qty,
+                    'total_price'     => $amt,
+                    'add_on_remarks'    => $rem
+                ];
+
+                $this->db->insert('booking_addons', $data);
+           	 	}
+        	}
 			}
 
 
@@ -466,6 +489,24 @@ class Bookings extends MY_Controller {
 		$discounts = intval($this->input->post('discounts')) ?: 0;
 		$children = intval($this->input->post('children')) ?: 0;
 
+		$addons_total = 0;
+		$addons = $this->input->post('addons') ?: [];
+
+		foreach($addons as $addon){
+			$ao_id = intval($addon['id']);
+			$qty = intval($addon['quantity']);
+			$price = intval($addon['price']);
+			$ao_det = $this->Admin_model->fetch_one_row('addons', ['ao_id' => $ao_id]);
+			if($ao_det){
+				$addons_total += $price;
+			}
+		}
+
+		if(!empty($this->input->post('addon_total')))
+		{
+			$addons_total = $this->input->post('addon_total');
+		}
+
 		$room_det = $this->Admin_model->fetch_one_row('room',['roomid' => $room_id]);
 
 		if(empty($room_det))
@@ -480,6 +521,8 @@ class Bookings extends MY_Controller {
 		}
 
 		$base_price = $room_det['rate'];
+
+
 		$tax = isset($room_det['tax']) ? $room_det['tax'] : 0;
 
 		//$tax = 0;
@@ -498,7 +541,14 @@ class Bookings extends MY_Controller {
 			$room_total += $item['rate'];
 		}
 
+		if($this->input->post('booking_source')==0)
+		{
 		$room_total = $room_total*$no_of_room;
+		}
+		else
+		{
+		$room_total = $this->input->post('room_total');
+		}
 
 
 		$extra_price=0;
@@ -511,7 +561,7 @@ class Bookings extends MY_Controller {
 
 		// Calculate total price
 
-		$subtotal = $room_total+$extra_price;
+		$subtotal = $room_total+$extra_price+$addons_total;
 
 		$tax_amount = (($subtotal) * $tax) / 100;
 
@@ -524,6 +574,8 @@ class Bookings extends MY_Controller {
 			'base_price' => $room_total,
 			'nights' => $nights,
 			'rooms' => $no_of_room,
+			'room_total' => $room_total,
+			'addon_total' => $addons_total,
 			'subtotal' => $subtotal,
 			'tax' => $tax,
 			'tax_amount' => $tax_amount,
@@ -610,6 +662,8 @@ class Bookings extends MY_Controller {
 
 		$data['booking'] = $this->BookingModel->ViewBookingById($id);
 
+		$data['addons'] = $this->BookingModel->get_single_booking_addons($id);
+
 		$data['payments'] = $this->BookingModel->ViewPaymentsByBookingId($id,"credit"); 
 
 		$data['refunds'] = $this->BookingModel->ViewPaymentsByBookingId($id,"debit");
@@ -627,6 +681,8 @@ class Bookings extends MY_Controller {
 		{
 
 		$data['booking'] = $this->BookingModel->ViewBookingById($id);
+
+		$room_det = $this->Admin_model->fetch_one_row('room',['roomid' => $data['booking']['booking_room_id']]);
 
 		$data['room_types']	=	$this->Admin_model->fetch_all_order('categories','cat_title','asc');
 
@@ -661,7 +717,7 @@ class Bookings extends MY_Controller {
 		$tax = isset($room_det['tax']) ? $room_det['tax'] : 0;
 		//$tax = 0;
 
-		// Calculate number of nights
+			// Calculate number of nights
 		$check_in_date = new DateTime($check_in);
 		$check_out_date = new DateTime($check_out);
 		$interval = $check_in_date->diff($check_out_date);
@@ -679,9 +735,16 @@ class Bookings extends MY_Controller {
 		
 		'check_out_date' => date('Y-m-d',strtotime($this->input->post('check_out'))),
 
-		'no_of_rooms'=> $room_count,
+		//'no_of_rooms'=> $room_count,
+		//'tax_excluded_total' => $subtotal,
 
-		'total_amount' => $total,
+		'tax_amount' => $this->input->post('tax_amount'),
+
+		'total_discounts' => $this->input->post('discount'),
+
+		'total_amount' => $this->input->post('total_amount'),
+
+		'room_total' => $this->input->post('room_total'),
 
 		'customer_first_name' => $this->input->post('f_name'),
 
@@ -695,12 +758,13 @@ class Bookings extends MY_Controller {
 
 		);
 
+
 		$update_booking_cond = array('booking_id' => $id);
 
 		$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
 
 
-  /**
+  			/**
              * -------------------------
              * Handle ID proof uploads
              * -------------------------
@@ -1125,6 +1189,8 @@ class Bookings extends MY_Controller {
 			
 				$booking = $this->BookingModel->ViewBookingById($id);
 
+				$addons = $this->BookingModel->get_single_booking_addons($id);
+
 				$this->load->library('Pdf');
 				$pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
 				// set document information
@@ -1276,7 +1342,6 @@ class Bookings extends MY_Controller {
 				
 			';
 
-
 				$item_sec="";
 		
 				$item_sec .='
@@ -1285,11 +1350,40 @@ class Bookings extends MY_Controller {
 
 				<td align="left" style="font-size:13px;">'.$booking['name'].' x '.$booking['no_of_rooms'].'</td>
 
-				<td align="right" style="font-size:13px;">'.number_format(($booking['tax_excluded_total']-$booking['extra_amount']+$booking['total_discounts']),2,'.').'</td>
+				<td align="right" style="font-size:13px;">'.number_format(($booking['room_total']),2,'.').'</td>
 				
 				</tr>
 				
 				';
+
+
+				if(!empty($addons))
+				{
+
+				foreach($addons as $ao)
+				{
+
+					if($ao->total_price>0)
+					{
+					$item_sec .='
+					
+					<tr>
+
+					<td align="left" style="font-size:13px;">'.$ao->ao_name.' x '.$ao->quantity.'</td>
+
+					<td align="right" style="font-size:13px;">'.$ao->total_price.'</td>
+					
+					</tr>
+
+					';
+					}
+
+				}
+
+				
+				}
+
+				
 
 
 
@@ -1407,6 +1501,125 @@ class Bookings extends MY_Controller {
 			$pdf->writeHTML($html, true, false, true, false, '');
 
 			$pdf->Output("{$booking['uid']}.pdf", "I");
+
+
+			}
+
+
+
+			public function GetAddOns()
+			{
+
+			$booking_id = $this->input->post('bid');
+
+			$add_ons = $this->BookingModel->get_booking_addons($booking_id);
+
+			echo json_encode([
+        	'status' => 'success',
+        	'data'   => $add_ons
+    		]);
+
+			}
+
+
+
+			public function AddOn()
+			{
+
+			if(!empty($this->input->post()))
+			{
+
+			 $booking_id = $this->input->post('bid');
+
+			 $add_on   = $this->input->post('add_on');     // array of addon ids
+    		 $quantity = $this->input->post('quantity');   // array of qty
+    		 $amount   = $this->input->post('amount');     // array of price
+    		 $remarks  = $this->input->post('remarks');    // array of remarks
+
+    		// Clear existing addons for this booking
+    		$this->db->where('booking_main_id', $booking_id)->delete('booking_addons');
+
+    		if (!empty($add_on)) {
+        		foreach ($add_on as $index => $ao_id) {
+            	$qty   = !empty($quantity[$index]) ? (int)$quantity[$index] : 0;
+            	$amt   = !empty($amount[$index])   ? (float)$amount[$index] : 0;
+            	$rem   = !empty($remarks[$index])  ? $remarks[$index] : '';
+
+            // Skip empty rows
+            if ($qty > 0 || $amt > 0) {
+
+                $data = [
+                    'booking_main_id' => $booking_id,
+                    'addon_id'   => $ao_id,
+                    'quantity'   => $qty,
+                    'total_price'     => $amt,
+                    'add_on_remarks'    => $rem
+                ];
+
+                $this->db->insert('booking_addons', $data);
+           	 	}
+
+        	}
+    		}
+			else
+			{
+			
+			$data = [
+				'addon_amount' => 0,
+			];
+
+			$this->db->where('booking_id', $booking_id);
+			$this->db->update('bookings', $data);
+
+			}
+
+			$this->RecalculateBooking($booking_id);
+
+    		$this->session->set_flashdata('success', 'Add-ons saved successfully.');
+    		//redirect(base_url().'admin/Bookings/View/'.$booking_id);
+			redirect(base_url().'admin/Bookings');
+
+			
+
+			}
+
+
+			}
+
+
+
+			public function RecalculateBooking($booking_id)
+			{
+
+			$booking = $this->BookingModel->ViewBookingById($booking_id);
+
+    		if(!$booking) return false;
+
+    		// 2. Get addon total
+    		$addon_total = $this->db->select_sum('total_price')
+                            ->where('booking_main_id', $booking_id)
+                            ->get('booking_addons')
+                            ->row()->total_price ?? 0;
+
+			// 3. Subtotal before tax
+    		$subtotal = $booking['room_total'] + $booking['extra_amount'] + $addon_total - $booking['total_discounts'];
+
+			// 4. Tax
+    		$tax_amount = ($subtotal * $booking['tax']) / 100;
+
+			// 5. Update booking
+			$data = [
+				'addon_amount' => $addon_total,
+				'tax_amount' => $tax_amount,
+				'tax_excluded_total' => $subtotal,
+				'total_amount' => $subtotal + $tax_amount
+			];
+
+			$this->db->where('booking_id', $booking_id);
+			$this->db->update('bookings', $data);
+
+			return true;
+
 
 
 			}

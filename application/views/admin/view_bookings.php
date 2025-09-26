@@ -20,11 +20,64 @@
         display:none;
         }
         
-          
-        
         #datatable_filter
         {
         display:none;	
+        }
+
+
+
+
+        .quantity {
+          display: flex;
+          border-radius: 4px;
+          overflow: hidden;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .quantity button {
+          background-color: #3498db;
+          color: #fff;
+          border: none;
+          cursor: pointer;
+          font-size: 20px;
+          width: 40%;
+          height: auto;
+          text-align: center;
+          transition: background-color 0.2s;
+        }
+
+        button.minus
+        {
+        background: #800000;
+        }
+
+        button.plus {
+        background: #005300;
+        }
+
+        .quantity button:hover {
+          background-color: #2980b9;
+        }
+
+        .input-box {
+          width: 100%;
+          text-align: center;
+          border: none;
+          padding: 8px 10px;
+          font-size: 16px;
+          outline: none;
+        }
+
+        /* Hide the number input spin buttons */
+        .input-box::-webkit-inner-spin-button,
+        .input-box::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        .input-box[type="number"] {
+          -moz-appearance: textfield;
         }
 
       </style>
@@ -341,7 +394,7 @@
 
                         <tr>
                                         
-                        <td><?= $val->uid; ?></td>    
+                        <td><?= $val->uid; ?><br><br><?php if(!empty($val->source_name)) { echo $val->source_name; } ?></td>    
                     
                         <td>
 
@@ -358,6 +411,10 @@
                       
                         <td class="text-right">
                         <b style="font-size:20px"><?= $val->total_amount; ?></b>
+                        <br>
+                        
+                        <a class="btn btn-primary add_addon_btn" data-id="<?= $val->booking_id;?>"  title="Add on to booking"><i class="fa fa-plus"></i> Add On</a>
+
                         </td>
 
 
@@ -461,6 +518,77 @@
         
         <!-- /.content -->
       </div><!-- /.content-wrapper -->
+
+
+
+
+      <!-- Add On Modal Start -->
+
+  <div class="modal fade modal-xl" id="addOnModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <form action="<?= base_url(); ?>admin/Bookings/AddOn" id="addon-form" method="post">
+    <input type="hidden" id="addon_booking_id" name="bid" value="">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add On To Booking <span></span></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+
+          <div class="row"> 
+
+
+          <table class="table table-bordered">
+
+          <thead>
+
+              <tr>
+
+              <th>Name</th>
+
+              <th>Quantity</th>
+
+              <th>Price</th>
+
+              <th>Remarks</th>
+
+              </tr>
+
+          </thead>
+
+
+          <tbody id="addon-table-body">
+
+          </tbody>
+          
+
+          </table>
+
+
+          </div>
+
+      </div>
+
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" onclick="return confirm('Update Add Ons?')">Update</button>
+      </div>
+
+      </form>
+
+    </div>
+      </form>
+  </div>
+</div>
+
+    <!-- Add On Modal End -->
+
+
+
 
 
 
@@ -751,6 +879,69 @@
 
 
 
+      $('body').on('click', '.add_addon_btn', function() {
+    
+      var bookingId = $(this).data('id');
+
+      $('#addon-form')[0].reset();
+
+      $('#addon_booking_id').val(bookingId);
+
+      $.ajax({
+      url : base_url + 'admin/Bookings/GetAddOns',
+      type : 'POST',
+      data : {bid: bookingId},  
+      success : function(response){
+    
+      response = JSON.parse(response);
+
+      if(response.status == 'success'){
+
+      
+ var addons = response.data;
+        var tbody = $('#addon-table-body'); // tbody inside your modal table<td><input name="quantity[]" type="number" class="form-control" 
+                               //value="${ao.quantity ? ao.quantity : 0}" placeholder="Quantity"></td>
+        tbody.empty();
+
+        $.each(addons, function(i, ao){
+            var row = `
+                <tr>  
+                    <input type="hidden" name="add_on[]" value="${ao.ao_id}">
+                    <td><input class="form-control" value="${ao.ao_name}" readonly></td>
+
+                    <td>
+                        <div class="quantity">
+                          <button type="button" class="minus" aria-label="Decrease">&minus;</button>
+                          <input type="number" data-price="${ao.ao_price ? ao.ao_price : 0}" class="input-box ao_quantity" value="${ao.quantity ? ao.quantity : 0}" min="0" name="quantity[]">
+                          <button type="button" class="plus" aria-label="Increase">&plus;</button>
+                        </div>
+                    </td>
+
+                    <td><input name="amount[]" type="number" class="form-control ao_total_price" 
+                               value="${ao.total_price ? ao.total_price : 0}" placeholder="Amount"></td>
+                    <td><input name="remarks[]" type="text" class="form-control" 
+                               value="${ao.add_on_remarks ? ao.add_on_remarks : ''}" placeholder="Remarks"></td>
+                </tr>`;
+            tbody.append(row);
+        });
+    } else {
+        alertify.error(response.message);
+    }
+
+    }
+
+    });
+    $('#addOnModal').modal('show');
+  });
+
+
+
+
+
+
+      
+
+
       
 
 
@@ -873,6 +1064,43 @@ $('.type-toggle-btn').click(function(){
 
 })
 
+
+/* Add On Quantity Buttons Start */
+
+$(document).on("click", ".quantity .minus", function() {
+    const inputBox = $(this).siblings(".input-box");
+    let value = parseInt(inputBox.val()) || 0;
+    value = Math.max(value - 1, 0);
+    inputBox.val(value).trigger("change");
+});
+
+$(document).on("click", ".quantity .plus", function() {
+    const inputBox = $(this).siblings(".input-box");
+    let max = parseInt(inputBox.attr("max")) || 999;
+    let value = parseInt(inputBox.val()) || 0;
+    value = Math.min(value + 1, max);
+    inputBox.val(value).trigger("change");
+});
+
+$(document).on("input", ".quantity .input-box", function() {
+    let value = parseInt($(this).val()) || 0;
+    //console.log("Quantity changed:", value);
+});
+
+
+$(document).on("change", ".ao_quantity", function() {
+
+const row = $(this).closest("tr");
+const qty = parseInt($(this).val()) || 0;
+const price = parseFloat($(this).data("price")) || 0;
+const total = qty * price;
+
+row.find(".ao_total_price").val(total.toFixed(2));
+
+
+});
+
+/* Add On Quantity Buttons End */
 
 	
  	</script>

@@ -414,6 +414,8 @@ function BookNow()
 
 			'extra_amount' => $extra_price,
 
+			'room_total' => $room_total,
+
 			'extra_desc' => $extra_desc,
 
 			'total_amount' => $grand_total,

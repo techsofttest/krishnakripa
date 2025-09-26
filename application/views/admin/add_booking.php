@@ -217,14 +217,70 @@
 
 /* Repeater CSS End */
 
+        .quantity {
+          display: flex;
+          border-radius: 4px;
+          overflow: hidden;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .quantity button {
+            background-color: black;
+            color: black;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            padding:0px;
+            width: 40%;
+            height: auto;
+            text-align: center;
+            transition: background-color 0.2s;
+        }
+
+       
+
+        button.minus
+        {
+        background: #d5d5d5;
+        }
+
+        button.plus {
+        background: #d5d5d5;
+        }
+
+        .quantity button:hover {
+          background-color: white;
+        }
+
+        .input-box {
+          width: 100%;
+          text-align: center;
+          border: none;
+          padding: 8px 10px;
+          font-size: 16px;
+          outline: none;
+        }
+
+        /* Hide the number input spin buttons */
+        .input-box::-webkit-inner-spin-button,
+        .input-box::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        .input-box[type="number"] {
+          -moz-appearance: textfield;
+        }
+
+
 
 </style>
 
-<?php $this->load->view('admin/includes/header');?>
+      <?php $this->load->view('admin/includes/header');?>
       <!-- Left side column. contains the logo and sidebar -->
       <aside class="main-sidebar">
         <!-- sidebar: style can be found in sidebar.less -->
-       <?php $this->load->view('admin/includes/sidebar');?>
+      <?php $this->load->view('admin/includes/sidebar');?>
       </aside>
 
       <!-- Content Wrapper. Contains page content -->
@@ -279,7 +335,23 @@
 
                   
                          
-                 <div class="row">
+                <div class="row">
+
+                <div class="col-xs-12 col-sm-12 row-seperate">
+
+                <label>Booking Source<strong style="color:#F00;">*</strong></label>
+
+                <select class="form-control" name="booking_source" id="booking_source_select"> 
+
+                <option value="0" selected>Direct</option>
+
+                <?php foreach($sources as $source){ ?>
+                <option value="<?= $source->source_id ?>"><?= $source->source_name ?></option>
+                <?php } ?>
+
+                </select>
+
+                </div>
 						                   
                  <!--
                  <div class="col-xs-12 col-sm-6 row-seperate">
@@ -313,6 +385,7 @@
                     <div class="booking-form__input guests-input">
                         
                         <button type="button" name="guests-btn" id="guests-input-btn" class="form-control">1 guest</button>
+
                         <div class="guests-input__options" id="guests-input-options">
                             <div>
                                 <span class="guests-input__ctrl minus" id="adults-subs-btn">-</span><!-- /.guests-input__ctrl -->
@@ -333,6 +406,7 @@
 
 
                         </div><!-- /.guests-input__options -->
+
                     </div><!-- /.booking-form__input -->
 
                 
@@ -584,20 +658,20 @@
 
 
 
-                 <div class="row"> 
-                  <div class="col-xs-12 col-sm-12 row-seperate text-center">
+              <div class="row"> 
+                <div class="col-xs-12 col-sm-12 row-seperate text-center">
 
-                  <h3>Customer</h3>
+                <h3>Customer</h3>
 
-                 </div>
-                 </div>
+              </div>
+              </div>
 
 
     
                 <div class="row">
 
 
-                 <div class="col-xs-12 col-sm-6 row-seperate">
+                <div class="col-xs-12 col-sm-6 row-seperate">
                 
                 <label> Phone <strong style="color:#F00;">*</strong></label>
                 <div class="input-group">
@@ -670,6 +744,225 @@
 
 
 
+
+                  <style>
+
+   .addon_checkbox
+	 {
+		
+	  display:inline-block !important;
+	  padding-bottom:15px; 
+	  
+	 }
+
+	.checkbox-group {
+	 display: flex;
+	 flex-wrap: wrap;
+	 justify-content: center;
+	 width: 90%;
+	 margin-left: auto;
+	 margin-right: auto;
+	 max-width: 640px;
+	 padding-bottom: 30px;
+	 user-select: none;
+	 border-radius: 8px;
+	 border: 3px solid #e5e8f0;
+}
+ .checkbox-group > * {
+	 margin: 0.5rem 0.5rem;
+}
+ .checkbox-group-legend {
+	 font-size: 1.5rem;
+	 font-weight: 700;
+	 color: #9c9c9c;
+	 text-align: center;
+	 line-height: 1.125;
+	 margin-bottom: 1.25rem;
+}
+ .checkbox-input {
+	 clip: rect(0 0 0 0);
+	 clip-path: inset(100%);
+	 height: 1px;
+	 overflow: hidden;
+	 position: absolute;
+	 white-space: nowrap;
+	 width: 1px;
+}
+ .checkbox-input:checked + .checkbox-tile {
+	 border-color: #2260ff;
+	 box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+	 color: #2260ff;
+}
+ .checkbox-input:checked + .checkbox-tile:before {
+	 transform: scale(1);
+	 opacity: 1;
+	 background-color: #2260ff;
+	 border-color: #2260ff;
+}
+ .checkbox-input:checked + .checkbox-tile .checkbox-icon, .checkbox-input:checked + .checkbox-tile .checkbox-label {
+	 color: #2260ff;
+}
+ .checkbox-input:focus + .checkbox-tile {
+	 border-color: #2260ff;
+	 box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1), 0 0 0 4px #b5c9fc;
+}
+ .checkbox-input:focus + .checkbox-tile:before {
+	 transform: scale(1);
+	 opacity: 1;
+}
+
+ .checkbox-tile {
+	  display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 15rem;
+    padding: 10px;
+    min-height: 8rem;
+    border-radius: 0.5rem;
+    border: 2px solid #dde2f2;
+    background-color: #fff;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    transition: 0.15s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+ .checkbox-tile:before {
+	 content: "";
+	 position: absolute;
+	 display: block;
+	 width: 1.25rem;
+	 height: 1.25rem;
+	 border: 2px solid #b5bfd9;
+	 background-color: #fff;
+	 border-radius: 50%;
+	 top: 0.25rem;
+	 left: 0.25rem;
+	 opacity: 0;
+	 transform: scale(0);
+	 transition: 0.25s ease;
+	 background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='192' height='192' fill='%23FFFFFF' viewBox='0 0 256 256'%3E%3Crect width='256' height='256' fill='none'%3E%3C/rect%3E%3Cpolyline points='216 72.005 104 184 48 128.005' fill='none' stroke='%23FFFFFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='32'%3E%3C/polyline%3E%3C/svg%3E");
+	 background-size: 12px;
+	 background-repeat: no-repeat;
+	 background-position: 50% 50%;
+}
+ .checkbox-tile:hover {
+	 border-color: #2260ff;
+}
+ .checkbox-tile:hover:before {
+	 transform: scale(1);
+	 opacity: 1;
+}
+ .checkbox-icon {
+	 transition: 0.375s ease;
+	 color: #494949;
+}
+ .checkbox-icon svg {
+	 width: 3rem;
+	 height: 3rem;
+}
+ .checkbox-label {
+	 color: #707070;
+	 transition: 0.375s ease;
+	 text-align: center;
+}
+ 
+
+                  </style>
+
+
+
+                  
+                <div class="row"> 
+                <div class="col-xs-12 col-sm-12 row-seperate text-center">
+
+                <h3>Add On's</h3>
+
+                </div>
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-lg-12">
+
+                    <?php foreach($addons as $ao){ ?>
+
+                    <div class="checkbox addon_checkbox">
+                              
+      						  <label class="checkbox-wrapper">
+                              
+        					  <input type="checkbox" class="checkbox-input addon_checkbox_element" name="checkaddon[]" value="<?= $ao->ao_id ?>"/>
+                              
+        					  <span class="checkbox-tile">
+          					  
+                    <span class="checkbox-label"><?= $ao->ao_name ?></span>
+        					
+                    </span>
+      						  
+                    </label>
+    						  
+                    </div>
+
+                    <?php } ?>
+
+                    </div>
+
+                </div>
+
+
+                 <div class="row">
+
+
+                   <table class="table table-bordered">
+
+                    <thead>
+
+                        <tr>
+
+                        <th>Name</th>
+
+                        <th>Quantity</th>
+
+                        <th>Price</th>
+
+                        <th>Remarks</th>
+
+                        </tr>
+
+
+
+                  <tbody>
+
+
+                 <?php foreach($addons as $ao){ ?>
+
+                  <tr class="addon_row" data-id="<?= $ao->ao_id ?>" style="display:none;">  
+                      <input type="hidden" name="add_on[]" value="<?= $ao->ao_id ?>">
+                      <td><input class="form-control" value="<?= $ao->ao_name ?>" readonly></td>
+                      <td>
+                          <div class="quantity">
+                            <button type="button" class="minus" aria-label="Decrease">&minus;</button>
+                            <input type="number" data-price="<?= $ao->ao_price ?>" class="input-box ao_quantity" value="0" min="0" name="quantity[]">
+                            <button type="button" class="plus" aria-label="Increase">&plus;</button>
+                          </div>
+                      </td>
+                      <td><input name="amount[]" type="number" class="form-control ao_total_price" value="" placeholder="Amount"></td>
+                      <td><input name="remarks[]" type="text" class="form-control" value="" placeholder="Remarks"></td>
+                  </tr>
+
+                  <?php } ?>
+
+
+
+                  </table>
+
+
+                </div>
+
+
+
                    <div class="row"> 
                 <div class="col-xs-12 col-sm-12 row-seperate text-center">
 
@@ -730,7 +1023,21 @@
                   <tr>
 
                     <th>Room Total</th>
-                    <td  class="totals" id="room_total"></td>
+                    <td  class="totals" id="room_total0">
+
+                    <input class="text-right numeric-only" type="text" id="room_total_val" name="room_total" readonly>
+
+                    </td>
+
+                  </tr>
+
+
+                  <tr>
+
+                    <th>Additional</th>
+                    <td  class="totals" id="addon_total">
+
+                    </td>
 
                   </tr>
 
@@ -774,6 +1081,8 @@
                     </td>
                     <input type="hidden" id="total_amount_val" name="total_amount">
                     <input type="hidden" id="tax_amount_val" name="tax_amount">
+                    <!--<input type="hidden" id="room_total_val" name="room_total">-->
+                    <input type="hidden" id="addon_total_val" name="addon_amount">
                     <input type="hidden" id="extra_price_val" name="extra_price">
                     <input type="hidden" id="extra_desc_val" name="extra_desc">
 
@@ -848,7 +1157,7 @@
                            else
                            {
                              $('.room_details').hide();
-                            alert(data.msg);
+                            //alert(data.msg);
                            }
                         }
                     });
@@ -900,9 +1209,13 @@
 
 
 
-                  $(document).on('change input', '#discount_amount', function() {
+                  $(document).on('change input', '#discount_amount, .ao_quantity,.ao_total_price, #room_total_val', function() {
 
-                  var discount = $(this).val();
+                  var booking_source = $('#booking_source_select').val() ?? 0;
+
+                  var room_total = $('#room_total_val').val() ?? 0;
+
+                  var discount = $('#discount_amount').val();
 
                   var room_id = $('input.room_select:checked').val();      
                   
@@ -916,16 +1229,32 @@
 
                   var children = $('#childrens_input').val();
 
+                   var addons = [];
+
+                  $('.addon_row:visible').each(function(){
+                      var ao_id = $(this).data('id'); // from data-id
+                      var qty = parseInt($(this).find('.ao_quantity').val()) || 0;
+                      var price = parseInt($(this).find('.ao_total_price').val()) || 0;
+                      if(qty > 0){
+                          addons.push({id: ao_id, quantity: qty,price:price});
+                      }
+                  });
+
+
                    $.ajax({
                         url: '<?php echo base_url("admin/Bookings/CalculatePrice"); ?>',
                         type: 'POST',
-                        data: { room_id: room_id,no_of_rooms:no_of_rooms,check_in:check_in_date,check_out:check_out_date,discounts:discounts,children:children},
+                        data: {booking_source:booking_source,room_id: room_id,no_of_rooms:no_of_rooms,check_in:check_in_date,check_out:check_out_date,discounts:discounts,children:children,room_total:room_total,addons:addons},
                         success: function(response) {
                            var data = JSON.parse(response)
                            if(data.status==1)
                            {
                            $('#room_total').html(data.base_price);
+                           $('#room_total_val').val(data.base_price);
+                           $('#addon_total').html(data.addon_total);
+                           $('#addon_total_val').val(data.addon_total);
                            $('#tax').html(data.tax_amount);
+                           $('#tax_amount_val').val(data.tax_amount);
                            $('#total_amount').html(data.total);
 
                            if(data.extra_price>0)
@@ -946,7 +1275,10 @@
                            {
                             $('#room_total').html('-');
                             $('#tax').html('-');
+                            $('#tax_amount_val').val(0);
                             $('#total_amount').html('-');
+                            $('#addon_total').html('');
+                            $('#addon_total_val').val(0);
                             $('#extra_sec').hide();
                             $('#extra_desc_val').val(0);
                             $('#total_amount_val').val(0);
@@ -958,10 +1290,14 @@
 
 
 
-                // Use event delegation for dynamically added elements
-                $(document).on('change', '.room_select', function() {
+                  // Use event delegation for dynamically added elements
+                  $(document).on('change', '.room_select', function() {
 
                   var room_id = $(this).val();
+
+                  var booking_source = $('#booking_source_select').val() ?? 0;
+
+                  var room_total = $('#room_total_val').val() ?? 0;
 
                   var no_of_rooms = $('#no_of_rooms').val();
 
@@ -973,15 +1309,29 @@
 
                    var children = $('#childrens_input').val();
 
+                  var addons = [];
+
+                  $('.addon_row:visible').each(function(){
+                      var ao_id = $(this).data('id'); // from data-id
+                      var qty = parseInt($(this).find('.ao_quantity').val()) || 0;
+                      if(qty > 0){
+                          addons.push({id: ao_id, quantity: qty});
+                      }
+                  });
+
+
                    $.ajax({
                         url: '<?php echo base_url("admin/Bookings/CalculatePrice"); ?>',
                         type: 'POST',
-                        data: { room_id: room_id,no_of_rooms:no_of_rooms,check_in:check_in_date,check_out:check_out_date,discounts:discounts,children:children},
+                        data: {booking_source:booking_source,room_id: room_id,no_of_rooms:no_of_rooms,check_in:check_in_date,check_out:check_out_date,discounts:discounts,children:children,room_total:room_total,addons:addons},
                         success: function(response) {
                            var data = JSON.parse(response)
                            if(data.status==1)
                            {
                            $('#room_total').html(data.base_price);
+                           $('#room_total_val').val(data.base_price);
+                           $('#addon_total').html(data.addon_total);
+                           $('#addon_total_val').val(data.addon_total);
                            $('#tax').html(data.tax_amount);
                            $('#tax_amount_val').val(data.tax_amount);
 
@@ -1005,8 +1355,10 @@
                            {
                            $('#room_total').html('');
                            $('#tax').html('');
-                           $('#tax_amount_val').val('');
+                           $('#tax_amount_val').val(0);
                            $('#total_amount').html('');
+                           $('#addon_total').html('');
+                           $('#addon_total_val').val(0);
                            $('#extra_sec').hide();
                            $('#extra_price').html('');
                            $('#extra_price_val').val(0);
@@ -1260,6 +1612,92 @@ function updateValues() {
             }
         }
     </script>
+
+
+<script>
+
+        $('#booking_source_select').change(function(){
+
+          var selected = $(this).val();
+
+          if(selected==0)
+            {
+              $('#room_total_val').attr('readonly',true);
+            }
+            else
+            {
+              $('#room_total_val').removeAttr('readonly');
+            }
+
+        })
+
+
+        $(document).ready(function() {
+        // When an addon checkbox is changed
+        $('.addon_checkbox_element').change(function() {
+            var addonId = $(this).val(); // Get checkbox value
+
+            if ($(this).is(':checked')) {
+                // Show the corresponding table row
+                $('.addon_row[data-id="' + addonId + '"]').show();
+            } else {
+                // Hide the table row
+                $('.addon_row[data-id="' + addonId + '"]').hide();
+                // Optionally reset quantity/amount/remarks
+                var row = $('.addon_row[data-id="' + addonId + '"]');
+                row.find('.ao_quantity').val(0).trigger('change');
+                row.find('.ao_total_price').val('');
+                row.find('input[name="remarks[]"]').val('');
+            }
+        });
+        });
+
+
+
+    /* Add On Quantity Buttons Start */
+
+    $(document).on("click", ".quantity .minus", function() {
+        const inputBox = $(this).siblings(".input-box");
+        let value = parseInt(inputBox.val()) || 0;
+        value = Math.max(value - 1, 0);
+        inputBox.val(value).trigger("change");
+    });
+
+    $(document).on("click", ".quantity .plus", function() {
+        const inputBox = $(this).siblings(".input-box");
+        let max = parseInt(inputBox.attr("max")) || 999;
+        let value = parseInt(inputBox.val()) || 0;
+        value = Math.min(value + 1, max);
+        inputBox.val(value).trigger("change");
+    });
+
+    $(document).on("input", ".quantity .input-box", function() {
+        let value = parseInt($(this).val()) || 0;
+        //console.log("Quantity changed:", value);
+    });
+
+
+    $(document).on("change", ".ao_quantity", function() {
+
+    const row = $(this).closest("tr");
+    const qty = parseInt($(this).val()) || 0;
+    const price = parseFloat($(this).data("price")) || 0;
+    const total = qty * price;
+
+    row.find(".ao_total_price").val(total.toFixed(2));
+
+    });
+
+    /* Add On Quantity Buttons End */
+
+
+    $(document).on('input', '.numeric-only', function() {
+    this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+    });
+
+
+
+</script>
 
 
 

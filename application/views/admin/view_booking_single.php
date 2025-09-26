@@ -300,10 +300,54 @@
 
         <!-- Room Details End -->
 
-
-
       </div>
 
+
+      <?php if(!empty($addons)) { ?>
+
+       <div class="row">
+        <div class="col-xs-12">
+
+          <h3 class="text-center">Add Ons</h3>
+          
+          <div class="table-responsive">
+
+            <table class="table ">
+
+              <thead>
+
+              <tr>
+                <td align="left">Name</td>
+                <td align="left">Quantity</td>
+                <td align="right">Price</td>
+                <td align="right">Remarks</td>
+              </tr>
+                
+              </thead>
+
+              <tbody>
+
+              <?php foreach($addons as $ao){ ?>
+
+              <tr>
+                <td align="left"><?= $ao->ao_name; ?></td>
+                <td align="left"><?= $ao->quantity ?></td>
+                <td align="right"><?= $ao->total_price ?></td>
+                <td align="right"><?= $ao->add_on_remarks ?></td>
+              </tr>
+
+              <?php } ?>
+
+              </tbody>
+
+              </table>
+
+          </div>
+
+        </div>
+        </div>
+
+        <?php } ?>
 
 
       <?php if(!empty($payments)) { ?>
@@ -426,10 +470,30 @@
               <tbody>
              
 
+
               <tr>
-                <th>Total :</th>
+                <th>Room Total :</th>
+                <td><?= number_format($booking['room_total'],2,'.'); ?></td>
+              </tr>
+
+
+              <?php if($booking['addon_amount']>0) {?>
+
+              <tr>
+                <th>Additional :</th>
+                <td><?= number_format($booking['addon_amount'],2,'.'); ?></td>
+              </tr>
+
+              <?php } ?>
+
+
+
+              <?php /*
+              <tr>
+                <th>Sub Total :</th>
                 <td><?= number_format($booking['tax_excluded_total']-$booking['extra_amount']+$booking['total_discounts'],2,'.'); ?></td>
               </tr>
+              */ ?>
 
               <?php if($booking['extra_amount']>0) {?>
               <tr>

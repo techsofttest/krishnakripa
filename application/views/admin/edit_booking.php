@@ -8,6 +8,53 @@
     font-weight: 600;
 }
 
+/* Repeater CSS Start */
+
+        .file-input-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .input-with-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .input-with-button input[type="file"] {
+            flex: 1;
+        }
+        
+        .btn-action {
+            min-width: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-add {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-add:hover {
+            background-color: #218838;
+        }
+        
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+        
 </style>
 
 <?php $this->load->view('admin/includes/header');?>
@@ -71,14 +118,14 @@
 						                     
                  <div class="col-xs-12 col-sm-6 row-seperate">
                  <label>Check In<strong style="color:#F00;">*</strong></label>
-	               <input id="checkin" class="form-control" name="check_in"   type="date" min="" value="<?= date('Y-m-d',strtotime($booking['check_in_date'])) ?>" onclick="this.showPicker()" required>	
+	               <input id="checkin" class="form-control date_select" name="check_in"  type="date" min="<?= date('Y-m-d') ?>" value="<?= date('Y-m-d',strtotime($booking['check_in_date'])) ?>" onclick="this.showPicker()" required>	
 							    
                  </div>
 
 
                  <div class="col-xs-12 col-sm-6 row-seperate">
                  <label>Check Out<strong style="color:#F00;">*</strong></label>
-	               <input id="checkout" class="form-control room_check" name="check_out" value="<?= date('Y-m-d',strtotime($booking['check_out_date'])) ?>"  type="date" onclick="this.showPicker()" required>	
+	               <input id="checkout" class="form-control date_select" name="check_out" min="<?= date('Y-m-d') ?>" value="<?= date('Y-m-d',strtotime($booking['check_out_date'])) ?>"  type="date" onclick="this.showPicker()" required>	
 							    
                  </div>
 
@@ -296,13 +343,42 @@
 
 							    </div>
 
-                  <div class="col-xs-12 col-sm-6 row-seperate">
-                      <label>Update ID Proof <strong style="color:#F00;"></strong></label>
-							        <input class="form-control" type="file" name="id_proof">
-							    </div>
+                        <div class="col-xs-12 col-sm-6 row-seperate">
+                        <label> Update ID Proof <strong style="color:#F00;"></strong></label>
+
+							          <div id="fileInputsContainer">
+                        <div class="file-input-container">
+                            <div class="input-with-button">
+                                <input class="form-control" type="file" name="id_proof[]">
+                                <button type="button" class="btn-action btn-add" onclick="addFileInput()">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        </div>
+
+                        <?php
+          // If stored as JSON:
+          if(!empty($booking['id_proof']))
+          {
+          $id_proofs = json_decode($booking['id_proof'], true);
+          $ipn=1;
+          foreach($id_proofs as $proof) {
+          ?>
+            <a download href="<?= base_url(); ?>uploads/Booking/<?= $proof; ?>" class="btn btn-warning"><i class="fa fa-print"></i> ID Proof <?= $ipn++; ?></a>
+          <?php
+          }
+
+        }
+
+          ?>
+          
+          
 
 
                   </div>
+
+      </div>
 
 
                 <div class="row"> 
@@ -333,13 +409,73 @@
                   
                   <table class="table table-striped">
 
+
+                    <tr>
+
+                    <th>Room Total</th>
+                    <td class="totals" id="room_total">
+                    <?= round($booking['room_total']); ?>
+                    </td>
+
+                    </tr>
+
+
+                     <tr>
+
+                    <th>Additional</th>
+                    <td class="totals" id="addon_total">
+                    <?= round($booking['addon_amount']); ?>
+                    </td>
+
+                    </tr>
+
+
+
+                    <tr id="extra_sec" style="display:none;">
+
+                    <th>Extras (Kids)</th>
+
+                    <td class="totals text-right" id="extra_price"></td>
+
+                    </tr>
+
+
+
+                    <tr>  
+
+                    <th>Tax</th>
+                    <td class="totals" id="tax">
+                    <?= round($booking['tax_amount']); ?>
+                    </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                    <th>Discounts</th>
+                    <td class="totals text-right" >
+                      <input class="text-right" name="discount" id="discount_amount" value="<?= round($booking['total_discounts']); ?>">
+                    </td>
+                    
+                    </tr>
+
                 
                    <tr>
 
                     <th>Total Amount</th>
                     <td class="totals" id="total_amount">
-                    <?= $booking['total_amount']; ?>
-                    </td>
+                    <?= round($booking['total_amount']); ?>
+                  
+                  </td>
+
+                  <input type="hidden" name="room_total" id="room_total_val" value="<?= $booking['room_total']; ?>">
+                  <input type="hidden" id="total_amount_val" name="total_amount" value="<?= $booking['total_amount']; ?>">
+                  <input type="hidden" id="tax_amount_val" name="tax_amount" value="<?= $booking['tax_amount']; ?>">
+                  <!--<input type="hidden" id="room_total_val" name="room_total">-->
+                  <input type="hidden" id="addon_total_val" name="addon_amount" value="">
+                  <input type="hidden" id="extra_price_val" name="extra_price">
+                  <input type="hidden" id="extra_desc_val" name="extra_desc">
 
                   </tr>
 
@@ -454,27 +590,71 @@
                  });
 
 
-                // Use event delegation for dynamically added elements
-                $(document).on('change', '.room_select', function() {
+                */
 
-                  var room_id = $(this).val();
 
-                  var no_of_rooms = $('#no_of_rooms').val();
+                  // Use event delegation for dynamically added elements
+                  $(document).on('change input', '.room_select,#discount_amount,.date_select', function() {
+
+                  var room_id = <?= $booking['booking_room_id'] ?>;
+
+                  var booking_source = $('#booking_source_select').val() ?? 0;
+
+                  var room_total = $('#room_total_val').val() ?? 0;
+
+                  var no_of_rooms = <?= $booking['no_of_rooms'] ?>;
 
                   var check_in_date = $('input[name="check_in"]').val();
                  
                   var check_out_date = $('input[name="check_out"]').val();
 
+                  var discounts = $('#discount_amount').val();
+
+                  var children = $('#childrens_input').val();
+
+                  var addons = [];
+
+                  /*
+                  $('.addon_row:visible').each(function(){
+                      var ao_id = $(this).data('id'); // from data-id
+                      var qty = parseInt($(this).find('.ao_quantity').val()) || 0;
+                      if(qty > 0){
+                          addons.push({id: ao_id, quantity: qty});
+                      }
+                  });
+                  */
+
+                  var addon_total = <?= $booking['addon_amount'] ?>;
+
+
                    $.ajax({
                         url: '<?php echo base_url("admin/Bookings/CalculatePrice"); ?>',
                         type: 'POST',
-                        data: { room_id: room_id,no_of_rooms:no_of_rooms,check_in:check_in_date,check_out:check_out_date},
+                        data: {booking_source:booking_source,room_id: room_id,no_of_rooms:no_of_rooms,check_in:check_in_date,check_out:check_out_date,discounts:discounts,children:children,room_total:room_total,addons:addons,addon_total:addon_total},
                         success: function(response) {
                            var data = JSON.parse(response)
                            if(data.status==1)
                            {
-                           $('#room_total').html(data.subtotal);
+                           $('#room_total').html(data.base_price);
+                           $('#room_total_val').val(data.base_price);
+                           $('#addon_total').html(data.addon_total);
+                           $('#addon_total_val').val(data.addon_total);
                            $('#tax').html(data.tax_amount);
+                           $('#tax_amount_val').val(data.tax_amount);
+
+                           if(data.extra_price>0)
+                           {
+                            $('#extra_sec').show();
+                           }
+                           else
+                           {
+                            $('#extra_sec').hide();
+                           }
+
+                           $('#extra_price').html(data.extra_price);
+                           $('#extra_price_val').val(data.extra_price);
+                           $('#extra_desc_val').val(data.extra_desc);
+
                            $('#total_amount').html(data.total);
                            $('#total_amount_val').val(data.total);
                            }
@@ -482,7 +662,14 @@
                            {
                            $('#room_total').html('');
                            $('#tax').html('');
+                           $('#tax_amount_val').val(0);
                            $('#total_amount').html('');
+                           $('#addon_total').html('');
+                           $('#addon_total_val').val(0);
+                           $('#extra_sec').hide();
+                           $('#extra_price').html('');
+                           $('#extra_price_val').val(0);
+                           $('#extra_desc_val').val('');
                            $('#total_amount_val').val(0);
                            }
                         }
@@ -492,12 +679,6 @@
 
                   
                 });
-
-
-
-                $('.room_check').trigger('change');
-
-                */
 
 
             });
@@ -533,7 +714,53 @@
           </script>
 
  
-   
+     
+ <script>
+        function addFileInput() {
+            const container = document.getElementById('fileInputsContainer');
+            
+            // Remove plus button from current last input and add delete button
+            const lastInput = container.lastElementChild;
+            const lastButton = lastInput.querySelector('.btn-action');
+            lastButton.className = 'btn-action btn-delete';
+            lastButton.innerHTML = '<i class="fa fa-trash"></i>';
+            lastButton.setAttribute('onclick', 'removeFileInput(this)');
+            
+            // Create new input container with plus button
+            const newInputContainer = document.createElement('div');
+            newInputContainer.className = 'file-input-container';
+            newInputContainer.innerHTML = `
+                <div class="input-with-button">
+                    <input class="form-control" type="file" name="id_proof[]">
+                    <button type="button" class="btn-action btn-add" onclick="addFileInput()">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(newInputContainer);
+        }
+        
+        function removeFileInput(button) {
+            const inputContainer = button.closest('.file-input-container');
+            const container = document.getElementById('fileInputsContainer');
+            
+            // Don't remove if it's the only input left
+            if (container.children.length > 1) {
+                inputContainer.remove();
+                
+                // Make sure the last remaining input has the plus button
+                const lastInput = container.lastElementChild;
+                const lastButton = lastInput.querySelector('.btn-action');
+                if (!lastButton.classList.contains('btn-add')) {
+                    lastButton.className = 'btn-action btn-add';
+                    lastButton.innerHTML = '<i class="fas fa-plus"></i>';
+                    lastButton.setAttribute('onclick', 'addFileInput()');
+                }
+            }
+        }
+    </script>
+
  
  
  

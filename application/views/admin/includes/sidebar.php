@@ -76,6 +76,22 @@
 
     ?>
 
+
+      <li class="treeview <?php if($this->uri->segment(2)=="AddOns")  :echo 'active'; endif; ?>"> <a href="#"> <i class="fa fa-plus" aria-hidden="true"></i> <span>Add Ons</span> </a>
+      
+      <ul class="treeview-menu">
+         
+      <li class="<?php if($this->uri->segment(3)=="Add"):echo 'active'; endif; ?>" > <a href="<?php echo base_url();?>admin/AddOns/Add"> <i class="fa fa-plus-square"></i><span>New Add On</span></a> </li>
+         
+      <li class="<?php if( ($this->uri->segment(2)=="AddOns" && $this->uri->segment(3)=="") || $this->uri->segment(3)=="EditBooking"):echo 'active'; endif; ?>" > <a href="<?php echo base_url();?>admin/AddOns"> <i class="fa fa-plus-square"></i><span>All Add Ons</span></a> </li>   
+          
+      </ul>
+      </li>
+
+
+
+
+
     <li class="treeview <?php if($this->uri->segment(2)=="Bookings")  :echo 'active'; endif; ?>"> <a href="#"> <i class="fa fa-eye" aria-hidden="true"></i> <span>Bookings</span> </a>
       
       <ul class="treeview-menu">

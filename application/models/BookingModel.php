@@ -161,7 +161,7 @@ class BookingModel extends CI_model {
     // Subquery to calculate total booked rooms for each room in the date range
     $booking_subquery = "(SELECT booking_room_id, SUM(no_of_rooms) as booked_rooms
                           FROM {$this->db->dbprefix('bookings')}
-                          WHERE booking_status != 'cancelled'
+                          WHERE booking_status NOT IN ('cancelled','checked_out')
                           AND (
                               ('$check_in' < check_out_date AND '$check_out' > check_in_date)
                           )
@@ -245,8 +245,7 @@ class BookingModel extends CI_model {
     // Subquery: Sum no_of_rooms booked on the given date
     $subquery = "(SELECT booking_room_id, SUM(no_of_rooms) as booked_rooms
                   FROM {$this->db->dbprefix('bookings')}
-                  WHERE booking_status != 'cancelled'
-                  AND booking_status != 'pending'
+                  WHERE booking_status NOT IN ('cancelled', 'pending', 'checked_out')
                   AND '$date' >= check_in_date
                   AND '$date' < check_out_date
                   GROUP BY booking_room_id
@@ -312,6 +311,8 @@ class BookingModel extends CI_model {
     $this->db->join('customers','customers.cus_id=bookings.booking_customer_id','left');
 
     $this->db->join('room','room.roomid=bookings.booking_room_id','left');
+
+    $this->db->join('sources','sources.source_id=bookings.booking_source','left');
 
  if($date_from!="")
     {
@@ -617,6 +618,99 @@ class BookingModel extends CI_model {
             return $price_list;
         }
 
+
+
+        public function get_single_booking_addons($booking_id)
+        {
+
+            $this->db->select('
+                a.ao_id,
+                a.ao_name,
+                a.ao_description,
+                a.ao_price,
+                a.charge_type,
+                a.status,
+                ba.bao_id,
+                ba.quantity,
+                ba.unit_price,
+                ba.total_price,
+                ba.add_on_remarks
+            ');
+
+        $this->db->from('booking_addons ba');
+        $this->db->join(
+        'addons a',
+        'a.ao_id = ba.addon_id AND ba.booking_main_id = '.$this->db->escape($booking_id),
+        'left'
+        );
+        $this->db->where('a.status', 1);
+        $this->db->order_by('a.ao_name', 'ASC');
+
+        return $this->db->get()->result();
+
+        }
+
+
+
+
+      public function get_booking_addons($booking_id)
+        {
+             $this->db->select('
+            a.ao_id,
+            a.ao_name,
+            a.ao_description,
+            a.ao_price,
+            a.charge_type,
+            a.status,
+            ba.bao_id,
+            ba.quantity,
+            ba.unit_price,
+            ba.total_price,
+            ba.add_on_remarks
+            ');
+            $this->db->from('addons a');
+
+            // LEFT JOIN: get booking_addons if exists
+            $this->db->join(
+                'booking_addons ba',
+                'ba.addon_id = a.ao_id AND ba.booking_main_id = '.$this->db->escape($booking_id),
+                'left'
+            );
+
+            // Only active addons
+            $this->db->where('a.status', 1);
+
+            // Optional: order by name
+            $this->db->order_by('a.ao_name', 'ASC');
+
+            $query = $this->db->get();
+            return $query->result();
+        }
+
+
+
+
+         public function get_all_addons()
+        {
+             $this->db->select('
+            a.ao_id,
+            a.ao_name,
+            a.ao_description,
+            a.ao_price,
+            a.charge_type,
+            a.status,
+            ');
+            $this->db->from('addons a');
+
+            // Only active addons
+            $this->db->where('a.status', 1);
+
+            // Optional: order by name
+            $this->db->order_by('a.ao_name', 'ASC');
+
+            $query = $this->db->get();
+            return $query->result();
+        }
     
 
 
