@@ -583,6 +583,9 @@ class BookingModel extends CI_model {
             $start = new DateTime($checkin_date);
             $end = new DateTime($checkout_date);
 
+            $interval = $start->diff($end);
+            $nights = max(1, $interval->days);
+
             // Load default room rate
             $this->db->select('rate,category');
 
@@ -591,7 +594,8 @@ class BookingModel extends CI_model {
             $default_rate = $row->rate;
             $category_id = $row->category;
 
-            while ($start < $end) {
+            $price_list = [];
+            for ($i = 0; $i < $nights; $i++) {
                 $current_date = $start->format('Y-m-d');
 
                 // Check for special rate

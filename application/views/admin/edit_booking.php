@@ -118,14 +118,14 @@
 						                     
                  <div class="col-xs-12 col-sm-6 row-seperate">
                  <label>Check In<strong style="color:#F00;">*</strong></label>
-	               <input id="checkin" class="form-control date_select" name="check_in"  type="date" min="<?= date('Y-m-d') ?>" value="<?= date('Y-m-d',strtotime($booking['check_in_date'])) ?>" onclick="this.showPicker()" required>	
+	               <input id="checkin" class="form-control date_select" name="check_in"  type="date" min="" value="<?= date('Y-m-d',strtotime($booking['check_in_date'])) ?>" onclick="this.showPicker()" required>	
 							    
                  </div>
 
 
                  <div class="col-xs-12 col-sm-6 row-seperate">
                  <label>Check Out<strong style="color:#F00;">*</strong></label>
-	               <input id="checkout" class="form-control date_select" name="check_out" min="<?= date('Y-m-d') ?>" value="<?= date('Y-m-d',strtotime($booking['check_out_date'])) ?>"  type="date" onclick="this.showPicker()" required>	
+	               <input id="checkout" class="form-control date_select" name="check_out" min="<?= date('Y-m-d',strtotime($booking['check_in_date'])) ?>" value="<?= date('Y-m-d',strtotime($booking['check_out_date'])) ?>"  type="date" onclick="this.showPicker()" required>	
 							    
                  </div>
 

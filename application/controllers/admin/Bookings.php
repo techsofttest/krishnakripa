@@ -533,6 +533,8 @@ class Bookings extends MY_Controller {
 		$interval = $check_in_date->diff($check_out_date);
 		$nights = $interval->days;
 
+		$nights = max(1, $nights);
+
 		$data['price_breakdown'] = $this->BookingModel->get_price_per_day($room_id,$check_in,$check_out);
 
 		$room_total = 0;
