@@ -339,7 +339,7 @@
 
                   <div class="col-xs-12 col-sm-6 row-seperate">
                   <label> Address <strong style="color:#F00;"></strong></label>
-							    <textarea class="form-control address_input" name="address" value="<?= $booking['customer_address']; ?>" autocomplete="off"></textarea>
+							    <textarea class="form-control address_input" name="address" autocomplete="off"><?= $booking['customer_address']; ?></textarea>
 
 							    </div>
 

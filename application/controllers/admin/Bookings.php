@@ -264,6 +264,8 @@ class Bookings extends MY_Controller {
 
 			'customer_phone_number' => trim($this->input->post('phone')),
 
+			'customer_phone_number_alt' => trim($this->input->post('phone_alt')),
+
 			'customer_address' => $this->input->post('address'),
 		
 		 	);
