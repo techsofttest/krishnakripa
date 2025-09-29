@@ -737,6 +737,8 @@
                    <div class="col-xs-12 col-sm-6 row-seperate">
                         <label> ID Proof <strong style="color:#F00;"></strong></label>
 
+                        <div id="existingProofs" class="mb-2"></div>
+
 							          <div id="fileInputsContainer">
                         <div class="file-input-container">
                             <div class="input-with-button">
@@ -1191,18 +1193,35 @@
                         data: { phone: phone_val},
                         success: function(response) {
                            var data = JSON.parse(response)
-                           if(data.status==1)
-                           {
-                           //console.log(data);
-                           $('.email_input').val(data.data.email_address);
-                           $('.f_name_input').val(data.data.first_name);
-                           $('.l_name_input').val(data.data.last_name);
-                           $('.address_input').val(data.data.address);
-                           $('#phone_status_icon').removeClass();
-                           $('#phone_status_icon').addClass('fa fa-check text-success');
-                           }
-                           else
-                           {
+                          if (data.status == 1) {
+                          $('.email_input').val(data.data.email_address);
+                          $('.f_name_input').val(data.data.first_name);
+                          $('.l_name_input').val(data.data.last_name);
+                          $('.address_input').val(data.data.address);
+
+                          $('#phone_status_icon').addClass('fa fa-check text-success');
+
+                          // Handle ID proof autofill
+                          var container = $('#fileInputsContainer');
+
+                          if (data.data.id_proofs.length > 0) {
+                              data.data.id_proofs.forEach(function(file, index) {
+                                  var html = `
+                                      <div class="file-input-container">
+                                          <div class="input-with-button old-id-proofs">
+                                              <input type="text" name="old_proofs[]" class="form-control" value="${file}" readonly>
+                                              <a href="<?= base_url(); ?>uploads/Booking/${file}" target="_blank" class="btn btn-sm btn-success">
+                                                  <i class="fa fa-eye"></i>
+                                              </a>
+                                              <button onclick="return confirm('Remove this proof from booking?')" type="button" class="btn btn-sm btn-danger remove-old-id">
+                                                  <i class="fa fa-times"></i>
+                                              </button>
+                                          </div>
+                                      </div>`;
+                                  container.prepend(html);
+                              });
+                            }
+                          } else {
                            //console.log(data);
                            $('.email_input').val('');
                            $('.f_name_input').val('');
@@ -1217,6 +1236,14 @@
                   }
 
                  });
+
+
+
+                 $(document).on('click', '.remove-old-id', function(){
+                    var div = $(this).closest('.old-id-proofs');
+                    div.remove(); // remove from UI
+                });
+
 
 
 

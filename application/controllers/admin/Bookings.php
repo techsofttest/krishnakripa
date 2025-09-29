@@ -379,16 +379,14 @@ class Bookings extends MY_Controller {
 
 			$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
 
+		$uploaded_files = array();
+
+		$copied_old_files = array();
 
 		if(isset($_FILES['id_proof']) && !empty($_FILES['id_proof']['tmp_name'][0])) {
     
-    	$uploaded_files = array();
+    	
     	$uploadfile = "uploads/Booking";
-    
-    	// Create directory if it doesn't exist
-    	if (!file_exists($uploadfile)) {
-        mkdir($uploadfile, 0777, true);
-    	}
     
     	// Loop through each uploaded file
     	for($i = 0; $i < count($_FILES['id_proof']['tmp_name']); $i++) {
@@ -414,23 +412,51 @@ class Bookings extends MY_Controller {
             	}
         	}
     	}
-    
-    	// Update database if files were uploaded
-    	if(!empty($uploaded_files)) {
-        
-        // Convert array to JSON string for storage
-        $id_proof_json = json_encode($uploaded_files);
-        
-        $update_id_proof_data = array(
-            'id_proof' => $id_proof_json,
-        );
 
-        $update_booking_cond = array('booking_id' => $bid);
-
-        $this->Admin_model->update_all($update_id_proof_data, $update_booking_cond, 'bookings');
-    	}
 
 		}
+
+
+			// Merge with old proofs that are still in hidden inputs
+			$old_proofs = $this->input->post('old_proofs') ?: [];
+
+
+			foreach ($old_proofs as $old_file) {
+				$old_path = "uploads/Booking/" . $old_file;
+				if (file_exists($old_path)) {
+					$ext = pathinfo($old_file, PATHINFO_EXTENSION);
+					$new_file = $bid . "id" . rand() . '_old_' . time() . '.' . strtolower($ext);
+					$new_path = "uploads/Booking/" . $new_file;
+
+					// Copy the file
+					if(copy($old_path, $new_path)) {
+						$copied_old_files[] = $new_file;
+					}
+				}
+			}
+
+			$all_proofs = array_merge($copied_old_files, $uploaded_files);
+		
+			// Update database if files were uploaded
+			if(!empty($all_proofs)) {
+			
+			// Convert array to JSON string for storage
+			$id_proof_json = json_encode($all_proofs);
+			
+			$update_id_proof_data = array(
+				'id_proof' => $id_proof_json,
+			);
+
+			$update_booking_cond = array('booking_id' => $bid);
+
+			$this->Admin_model->update_all($update_id_proof_data, $update_booking_cond, 'bookings');
+			}
+
+
+
+
+
+
 
 					
 			$this->session->set_flashdata('success', 'Booking Added Successfully.'); 
@@ -457,16 +483,34 @@ class Bookings extends MY_Controller {
 
     	$query = $this->db->get('customers');
 
-		 if ($query->num_rows() > 0) {
+		if ($query->num_rows() > 0) {
+        $customer = $query->row();
+
+		// Fetch last booking for this customer
+        $this->db->where('booking_customer_id', $customer->cus_id);
+        $this->db->order_by('created_at', 'DESC');
+        $this->db->limit(1);
+        $booking = $this->db->get('bookings')->row();
+
+        // Decode id_proof JSON into array
+         $id_proofs = [];
+        if (!empty($booking) && !empty($booking->id_proof)) {
+            $id_proofs = json_decode($booking->id_proof, true); // array of filenames
+        }
+
         echo json_encode([
             'status' => 1,
-            'data' => $query->row()
+            'data' => [
+                'first_name' => $customer->first_name,
+                'last_name' => $customer->last_name,
+                'email_address' => $customer->email_address,
+                'address' => $customer->address,
+                'id_proofs' => $id_proofs, // send as array
+            ]
         ]);
-    	} else {
-        echo json_encode([
-            'status' => 0
-        ]);
-    	}
+		} else {
+			echo json_encode(['status' => 0]);
+		}
 
 
 		}
