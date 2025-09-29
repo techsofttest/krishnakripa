@@ -689,7 +689,7 @@
                 
                 <label>Alternate Phone</label>
                
-							  <input class="form-control" name="phone_alt" autocomplete="off" required>	
+							  <input class="form-control" name="phone_alt" autocomplete="off">	
                 
 							  </div>
 
