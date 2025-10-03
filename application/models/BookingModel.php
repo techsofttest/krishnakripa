@@ -208,7 +208,8 @@ class BookingModel extends CI_model {
     $this->db->select_sum('no_of_rooms', 'booked_rooms');
     $this->db->from('bookings');
     $this->db->where('booking_room_id', $room_id);
-    $this->db->where('booking_status !=', 'cancelled');
+    //$this->db->where('booking_status !=', 'cancelled');
+    $this->db->where_not_in('booking_status', ['cancelled','checked_out']);
     $this->db->where('booking_id !=', $current_booking_id);
     //$this->db->where("('$check_in' < check_out_date AND '$check_out' > check_in_date)", null, false);
     $this->db->group_start();
