@@ -802,6 +802,8 @@ class Bookings extends MY_Controller {
 
 		'customer_phone_number' => trim($this->input->post('phone')),
 
+		'customer_phone_number_alt' => trim($this->input->post('phone_alt')),
+
 		'customer_address' => $this->input->post('address'),
 
 		);
@@ -810,6 +812,30 @@ class Bookings extends MY_Controller {
 		$update_booking_cond = array('booking_id' => $id);
 
 		$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
+
+
+
+		//Update Customer
+
+		$update_customer_data = array(
+
+		'first_name' => $this->input->post('f_name'),
+
+		'last_name' => $this->input->post('l_name'),
+
+		'last_name' => $this->input->post('email'),
+
+		'phone_number' => trim($this->input->post('phone')),
+
+		'phone_number_alt' => trim($this->input->post('phone_alt')),
+
+		'address' => $this->input->post('address'),
+
+		);
+
+		$update_customer_cond = array('cus_id' => $data['booking']['booking_customer_id']);
+
+		$this->Admin_model->update_all($update_customer_data,$update_customer_cond,'customers');
 
 
   			/**

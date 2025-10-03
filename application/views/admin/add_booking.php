@@ -689,7 +689,7 @@
                 
                 <label>Alternate Phone</label>
                
-							  <input class="form-control" name="phone_alt" autocomplete="off">	
+							  <input class="form-control alt_phone_input" name="phone_alt" autocomplete="off">	
                 
 							  </div>
 
@@ -1193,10 +1193,12 @@
                         data: { phone: phone_val},
                         success: function(response) {
                            var data = JSON.parse(response)
+                           $('.old-proof-container').remove();
                           if (data.status == 1) {
                           $('.email_input').val(data.data.email_address);
                           $('.f_name_input').val(data.data.first_name);
                           $('.l_name_input').val(data.data.last_name);
+                          $('.alt_phone_input').val(data.data.phone_number_alt);
                           $('.address_input').val(data.data.address);
 
                           $('#phone_status_icon').addClass('fa fa-check text-success');
@@ -1207,7 +1209,7 @@
                           if (data.data.id_proofs.length > 0) {
                               data.data.id_proofs.forEach(function(file, index) {
                                   var html = `
-                                      <div class="file-input-container">
+                                      <div class="file-input-container old-proof-container">
                                           <div class="input-with-button old-id-proofs">
                                               <input type="text" name="old_proofs[]" class="form-control" value="${file}" readonly>
                                               <a href="<?= base_url(); ?>uploads/Booking/${file}" target="_blank" class="btn btn-sm btn-success">
@@ -1227,6 +1229,7 @@
                            $('.f_name_input').val('');
                            $('.l_name_input').val('');
                            $('.address_input').val('');
+                           $('.alt_phone_input').val('');
                            //$('#phone_status_icon').removeClass();
                            //$('#phone_status_icon').addClass('fa fa-cross text-danger'); 
                            }

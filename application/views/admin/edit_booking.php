@@ -291,7 +291,7 @@
                 <div class="row">
 
 
-                 <div class="col-xs-12 col-sm-6 row-seperate">
+                <div class="col-xs-12 col-sm-4 row-seperate">
                 
                 <label> Phone <strong style="color:#F00;">*</strong></label>
                 <div class="input-group">
@@ -305,7 +305,16 @@
 							  </div>
 
 
-                <div class="col-xs-12 col-sm-6 row-seperate">
+                <div class="col-xs-12 col-sm-4 row-seperate">
+                
+                <label>Alternate Phone</label>
+               
+							  <input class="form-control" name="phone_alt" value="<?= $booking['customer_phone_number_alt']; ?>" autocomplete="off">	
+                
+							  </div>
+
+
+                <div class="col-xs-12 col-sm-4 row-seperate">
                               <label> Email <strong style="color:#F00;"></strong></label>
 							  <input class="form-control email_input" type="email" value="<?= $booking['customer_email']; ?>" name="email" autocomplete="off">	
 							        </div>
