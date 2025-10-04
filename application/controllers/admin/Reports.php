@@ -238,6 +238,23 @@ class Reports extends MY_Controller {
 				}
 
 
+				$numbers = "";
+
+				if(!empty($bookin->booking_room_no))
+				{
+
+					$numbers .= "<br>Room : ".$bookin->booking_room_no;
+
+				}
+
+
+				if(!empty($bookin->booking_register_no))
+				{
+
+					$numbers .= "<br>Reg No : ".$bookin->booking_register_no;
+
+				}
+
 
 				//Payments Table Rows
 				
@@ -264,7 +281,7 @@ class Reports extends MY_Controller {
 				
 				<tr>
 
-					<th>'.$bookin->name.'</th>
+					<th>'.$bookin->name.' '.$numbers.'</th>
 
 					<th>'.$bookin->first_name.' '.$bookin->last_name.' <br> '.$bookin->phone_number.'</th>
 
@@ -309,9 +326,9 @@ class Reports extends MY_Controller {
 
 					<tr style="background-color:white">
 
-						<th width="10%" style="text-align:center"><b>Room</b></th>
+						<th width="15%" style="text-align:center"><b>Room</b></th>
 
-						<th width="20%" style="text-align:center"><b>Customer</b></th>
+						<th width="15%" style="text-align:center"><b>Customer</b></th>
 
 						<th width="10%" style="text-align:center"><b>Check In</b></th>
 

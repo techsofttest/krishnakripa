@@ -306,6 +306,114 @@ class BookingModel extends CI_model {
 
 
 
+
+
+
+    /* Datatable Server Side */
+
+    public function countAllBookings()
+    {
+        $this->db->from('bookings');
+        $totalBookings = $this->db->count_all_results();
+        return $totalBookings;
+    }
+
+
+    public function countFilteredBookings($search,$date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type)
+    {
+        $this->db->from('bookings');
+        $totalBookings = $this->db->count_all_results();
+        return $totalBookings;
+
+    }
+
+
+    public function ViewBookingsPaginate($search,$date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type,$columnName,$columnSortOrder,$rowperpage,$start)
+    {
+
+    $this->db->select('*');
+
+    $this->db->from('bookings');
+
+    $this->db->join('customers','customers.cus_id=bookings.booking_customer_id','left');
+
+    $this->db->join('room','room.roomid=bookings.booking_room_id','left');
+
+    $this->db->join('sources','sources.source_id=bookings.booking_source','left');
+
+    if($date_from!="")
+    {
+        $this->db->where('check_in_date >=', $date_from);
+    }
+
+    if($date_to!="")
+    {
+        $this->db->where('check_in_date <=', $date_to);
+    }
+
+    if($payment_status!="")
+    {
+        $this->db->where('payment_status', $payment_status);
+    }
+
+    if($customer!="")
+    {
+        $this->db->where('booking_customer_id', $customer);
+
+    }
+
+    if($room!="")
+    {
+        $this->db->where('booking_room_id', $room);
+    }
+
+    if($room_no!="")
+    {
+
+        $this->db->where('booking_room_no',str_replace(" ","",$room_no));
+
+    }
+
+     if($register_no!="")
+    {
+
+        $this->db->where('booking_register_no',str_replace(" ","",$register_no));
+
+    }
+    
+    if($hotel_type!="")
+    {
+        $this->db->where('room.hotel',$hotel_type);
+    }
+
+
+    $this->db->order_by('bookings.created_at','desc');
+
+    if ($rowperpage != -1) {
+    $this->db->limit($rowperpage, $start);
+    }
+
+    $query = $this->db->get();
+
+    return $query->result();
+
+    }
+
+
+
+
+
+    /* ###### */
+
+
+
+
+
+
+
+
+
+
     public function ViewBookings($date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type)
     {
 
@@ -546,6 +654,7 @@ class BookingModel extends CI_model {
     $this->db->join('customers','customers.cus_id=bookings.booking_customer_id','left');
     $this->db->join('room','room.roomid=bookings.booking_room_id','left');
 
+    /*
     if($date_from!="")
     {
         $this->db->where('check_in_date >=', $date_from);
@@ -553,6 +662,16 @@ class BookingModel extends CI_model {
 
     if($date_to!="")
     {
+        $this->db->where('check_in_date <=', $date_to);
+    }
+    */
+
+    if($date_from != "" && $date_to != "") {
+    $this->db->where('check_in_date <=', $date_to);
+    $this->db->where('check_out_date >=', $date_from);
+    } elseif($date_from != "") {
+        $this->db->where('check_out_date >=', $date_from);
+    } elseif($date_to != "") {
         $this->db->where('check_in_date <=', $date_to);
     }
 
@@ -577,6 +696,8 @@ class BookingModel extends CI_model {
         $this->db->where('booking_room_no',str_replace(" ","",$room_no));
     }
 
+
+    $this->db->order_by('booking_id','desc');
 
     $query = $this->db->get();
 

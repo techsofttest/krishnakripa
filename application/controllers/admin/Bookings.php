@@ -27,85 +27,122 @@ class Bookings extends MY_Controller {
 
 
 		public function FetchData()
-    	{
+		{
 
-			/*pagination start*/
-			$request = service('request');
-			$postData = $request->getPost();
-			$dtpostData = $postData['data'];
-			$response = array();
-	
-			## Read value
-			$draw = $dtpostData['draw'];
-			$start = $dtpostData['start'];
-			$rowperpage = $dtpostData['length']; // Rows display per page
-			$columnIndex = $dtpostData['order'][0]['column']; // Column index
-			$columnName = $dtpostData['columns'][$columnIndex]['data']; // Column name
-			$columnSortOrder = $dtpostData['order'][0]['dir']; // asc or desc
-			$searchValue = $dtpostData['search']['value']; // Search value
+    	if ($this->input->post()) {
 
-			// Check if the current sort order is 'asc', then set it to 'desc'
-			if ($columnSortOrder === 'asc') {
-				$columnSortOrder = 'desc';
-			} 
+        
+        $postData   = $this->input->post();
 
-	
-			## Total number of records without filtering
-		
-			$totalRecords = $this->common_model->GetTotalRecords('hr_payrolls','pr_id','DESC');
-	
-			## Total number of records with filtering
-		
-			$searchColumns = array('pr_id');
+        $draw       = $postData['draw'];
+        $start      = $postData['start'];
+        $rowperpage = $postData['length'];
 
-			$totalRecordwithFilter = $this->common_model->GetTotalRecordwithFilter('hr_payrolls','pr_id',$searchValue,$searchColumns);
-		
-			##Joins if any //Pass Joins as Multi dim array
-			$joins = array();
-			## Fetch records
-			$records = $this->common_model->GetRecord('hr_payrolls','pr_id',$searchValue,$searchColumns,$columnName,$columnSortOrder,$joins,$rowperpage,$start);
-		
-			$data = array();
+        $columnIndex = $postData['order'][0]['column'];
+        $columnName = $postData['columns'][$columnIndex]['data'];
+        $columnSortOrder = $postData['order'][0]['dir'];
+        $searchValue = $postData['search']['value'];
 
-			$i=1;
+        // Filters from GET 8138983983
+        $date_from      = $this->input->get('date_from') ?? "";
+        $date_to        = $this->input->get('date_to') ?? "";
+        $payment_status = $this->input->get('payment_status') ?? "";
+        $customer       = $this->input->get('customer') ?? "";
+        $room           = $this->input->get('room') ?? "";
+        $room_no        = $this->input->get('room_no_search') ?? "";
+        $register_no    = $this->input->get('register_no_search') ?? "";
+        $hotel_type     = $this->input->get('hotel_type') ?? "";
 
-			foreach($records as $record ){
+        // Total records without filtering
+        $totalRecords = $this->BookingModel->countAllBookings();
 
-			//$action = '<a  href="javascript:void(0)" class="edit edit-color view_btn" data-toggle="tooltip" data-placement="top" title="edit"  data-id="'.$record->pr_id.'" data-original-title="Edit"><i class="ri-eye-fill"></i> View</a> <a  href="javascript:void(0)" class="edit edit-color edit_btn" data-toggle="tooltip" data-placement="top" title="edit"  data-id="'.$record->ts_id.'" data-original-title="Edit"><i class="ri-pencil-fill"></i> Edit</a> <a href="javascript:void(0)" class="delete delete-color delete_btn" data-toggle="tooltip" data-id="'.$record->ts_id.'"  data-placement="top" title="Delete"><i  class="ri-delete-bin-fill"></i> Delete</a>';
-			
-			$action='<a  href="javascript:void(0)" class="edit edit-color view_btn" data-toggle="tooltip" data-placement="top" title="edit"  data-id="'.$record->pr_id.'" data-original-title="Edit"><i class="ri-eye-fill"></i> </a> 
-			<a href="javascript:void(0);" data-id="'.$record->pr_id.'" class="print_color" title="Print"><i class="ri-file-pdf-2-line " aria-hidden="true"></i> </a>
-			<a href="javascript:void(0)" class="delete delete-color delete_btn" data-toggle="tooltip" data-id="'.$record->pr_id.'"  data-placement="top" title="Delete"><i  class="ri-delete-bin-fill"></i> </a>';
+        // Total records with filtering
+        $totalRecordwithFilter = $this->BookingModel->countFilteredBookings(
+            $searchValue,
+            $date_from, $date_to, $payment_status,
+            $customer, $room, $room_no, $register_no, $hotel_type
+        );
 
-			$data[] = array( 
-				"pr_id"=>$i,
-				"pr_month" => date('M Y',strtotime("1-{$record->pr_month}-{$record->pr_year}")),
-				"total_salary" => format_currency($record->pr_total_salary),
-				"action" =>$action,
-			);
+        // Fetch records
+        $records = $this->BookingModel->ViewBookingsPaginate(
+            $searchValue,
+            $date_from, $date_to, $payment_status,
+            $customer, $room, $room_no, $register_no, $hotel_type,
+            $columnName, $columnSortOrder,
+            $rowperpage, $start
+        );
 
-			$i++; 
+		//print_r($records);
 
-			}
-	
-			## Response
-			$response = array(
-			"draw" => intval($draw),
-			"iTotalRecords" => $totalRecords,
-			"iTotalDisplayRecords" => $totalRecordwithFilter,
-			"aaData" => $data,
-			"token" => csrf_hash() // New token hash
-			);
-	
-			//return $this->response->setJSON($response);
+        $data = [];
+        foreach ($records as $val) {
 
-			echo json_encode($response);
+            $actions = '<div class="row">
+                            <div class="col-sm-6">
+                                <a class="btn btn-primary" href="'.base_url('admin/Bookings/Invoice/'.$val->booking_id).'" target="_blank"><i class="fa fa-file-text"></i></a>
+                            </div>
+                            <div class="col-sm-6">
+                                <a class="btn btn-primary" href="'.base_url('admin/Bookings/View/'.$val->booking_id).'"><i class="fa fa-eye"></i></a>
+                            </div>
+                            <div class="col-sm-6">
+                                <a class="btn btn-warning" href="'.base_url('admin/Bookings/Edit/'.$val->booking_id).'"><i class="fa fa-pencil"></i></a>
+                            </div>
+                            <div class="col-sm-6">
+                                <a onclick="return confirm(\'Delete this booking?\')" class="btn btn-danger" href="'.base_url('admin/Bookings/Delete/'.$val->booking_id).'"><i class="fa fa-trash"></i></a>
+                            </div>
+                        </div>';
 
-			exit;
+            $data[] = [
+                "id"        => $val->uid . (!empty($val->source_name) ? "<br><br>".$val->source_name : ""),
+                "period"    => date('d M Y', strtotime($val->check_in_date))."<br>To<br>".date('d M Y', strtotime($val->check_out_date)),
+                "room"      => $val->name."<br><b>".(!empty($val->booking_room_no) ? "Room : ".$val->booking_room_no : "")."</b><br>".(!empty($val->booking_register_no) ? "Reg No : ".$val->booking_register_no : ""),
+                "customer"  => $val->first_name." ".$val->last_name."<br>".$val->phone_number,
+                "total"     => "<b style='font-size:20px'>".$val->total_amount."</b><br><a class='btn btn-primary add_addon_btn' data-id='".$val->booking_id."'><i class='fa fa-plus'></i> Add On</a>",
+                "paid"      => "<b style='color:green;font-size:20px'>".$val->paid_amount."</b>",
+                "pending"   => "<b style='color:red;font-size:20px'>".format_currency($val->total_amount-$val->paid_amount)."</b>",
+                "payments"  => ($val->booking_status=="cancelled")
+                                ? '<a class="btn btn-warning add_refund_btn" data-type="debit" data-id="'.$val->booking_id.'"><i class="fa fa-reply"></i> Refund</a>'
+                                : '<a class="btn btn-primary add_payment_btn" data-type="credit" data-id="'.$val->booking_id.'"><i class="fa fa-money"></i> Payment</a>',
+                "status"    => $this->renderBookingStatus($val),
+                "actions"   => $actions
+            ];
+        }
 
-			/*pagination end*/
-		} 
+        $response = [
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalRecordwithFilter,
+            "aaData" => $data
+        ];
 
+        // Output JSON
+        $this->output
+             ->set_content_type('application/json')
+             ->set_output(json_encode($response));
+    }
+}
+
+// Helper to format status
+private function renderBookingStatus($val)
+{
+    switch($val->booking_status) {
+        case "pending":
+            return '<span class="btn btn-warning status_btn" data-id="'.$val->booking_id.'"><i class="fa fa-clock-o"></i> Pending</span>';
+        case "confirmed":
+            return '<span class="btn btn-success status_btn" data-id="'.$val->booking_id.'"><i class="fa fa-check"></i> Confirmed</span>';
+        case "cancelled":
+            return '<span class="btn btn-danger status_btn" data-id="'.$val->booking_id.'"><i class="fa fa-times"></i> Cancelled</span>';
+        case "checked_in":
+            return '<span class="btn btn-success status_btn" data-id="'.$val->booking_id.'"><i class="fa fa-sign-in"></i> Checked In</span>'
+                 .'<br><b>'.(!empty($val->actual_check_in_date)?date('d-m-Y', strtotime($val->actual_check_in_date)):'').'</b>'
+                 .'<br><b>'.(!empty($val->actual_check_in_date)?date('h:i a', strtotime($val->actual_check_in_date)):'').'</b>';
+        case "checked_out":
+            return '<span class="btn btn-success status_btn" data-id="'.$val->booking_id.'"><i class="fa fa-sign-out"></i> Checked Out</span>'
+                 .'<br><b>'.(!empty($val->actual_check_out_date)?date('d-m-Y', strtotime($val->actual_check_out_date)):'').'</b>'
+                 .'<br><b>'.(!empty($val->actual_check_out_date)?date('h:i a', strtotime($val->actual_check_out_date)):'').'</b>';
+    }
+    return '';
+}
 
 
 
@@ -184,7 +221,7 @@ class Bookings extends MY_Controller {
 			$data['addons'] = $this->Admin_model->fetch_where_order('addons',array(),'ao_name','asc');
 			$data['rooms'] = $this->Admin_model->fetch_where_order('room',array(),'name','asc');			 
 			$data['seo_title'] 	= 	"View Bookings | ".$this->data['admin_title'].""; 			
-			$this->load->view('admin/view_bookings',$data);
+			$this->load->view('admin/view_bookings_static',$data);
 		
         }
 		

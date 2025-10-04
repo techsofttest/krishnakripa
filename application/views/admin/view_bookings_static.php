@@ -365,7 +365,7 @@
                         
                             <div class="loader">
                   			
-                        <table id="datatable" class="table table-bordered table-striped delTable">
+                            <table id="datatable" class="table table-bordered table-striped delTable" style="display:none;">
                     			<thead>
                                     <tr>
 
@@ -391,12 +391,122 @@
                                        
                                     </tr>
                     			</thead>
-
-
-                          <tbody>
-
-                          </tbody>
                     			
+                        
+                          <tbody>
+                                
+                    				<?php $i=1;?>
+                    				
+									      <?php 
+									
+									      foreach($bookings as $item=>$val):?>
+
+                        <tr>
+                                        
+                        <td><?= $val->uid; ?><br><br><?php if(!empty($val->source_name)) { echo $val->source_name; } ?></td>    
+                    
+                        <td>
+
+                        <?= date('d M Y',strtotime($val->check_in_date)) ?> <br>To<br> <?= date('d M Y',strtotime($val->check_out_date)) ?>
+                      
+                        </td>
+
+                        <td><?= $val->name ?><br><b><?php if(!empty($val->booking_room_no)){ echo "Room : ";} ?>  <?= $val->booking_room_no ?? "" ?></b> <br><?php if(!empty($val->booking_register_no)){ echo "Reg No : ";} ?><b><?= $val->booking_register_no ?? "" ?></td>
+
+                        <td>
+                        <?= $val->first_name ?> <?= $val->last_name ?><br>
+                        <?= $val->phone_number ?>
+                        </td>
+                      
+                        <td class="text-right">
+                        <b style="font-size:20px"><?= $val->total_amount; ?></b>
+                        <br>
+                        
+                        <a class="btn btn-primary add_addon_btn" data-id="<?= $val->booking_id;?>"  title="Add on to booking"><i class="fa fa-plus"></i> Add On</a>
+
+                        </td>
+
+
+
+                        <td class="text-right"><b style="color:green;font-size:20px"><?= $val->paid_amount; ?></b></td>
+
+
+                        <td class="text-right"><b style="color:red;font-size:20px"><?= format_currency($val->total_amount-$val->paid_amount); ?></b></td>
+
+                        <td>
+                        <?php 
+                        if($val->booking_status=="cancelled"){ ?>
+                        <a class="btn btn-warning add_refund_btn" data-type="debit" data-id="<?= $val->booking_id;?>" data-toggle="modal" data-target="#payModal" title="Refund To Customer"><i class="fa fa-reply"></i> Refund</a>
+                        <?php } else { ?>
+                        <a class="btn btn-primary add_payment_btn" data-type="credit" data-id="<?= $val->booking_id;?>" data-toggle="modal" data-target="#payModal" title="Add Payment To Booking"><i class="fa fa-money"></i> Payment</a>
+                        <?php } ?>
+                        </td>
+
+                        <td>
+                        <?php
+                        if($val->booking_status=="pending"){
+                        ?>
+                        <span class="btn btn-warning status_btn" data-id="<?= $val->booking_id ?>"><i class="fa fa-clock-o" ></i> Pending</span>
+                        <?php 
+                        }
+                        else if($val->booking_status=="confirmed"){
+                        ?>
+                        <span class="btn btn-success status_btn" data-id="<?= $val->booking_id ?>"><i class="fa fa-check" ></i> Confirmed</span>
+                        <?php 
+                        } else if($val->booking_status=="cancelled"){
+                        ?>
+                        <span class="btn btn-danger status_btn" data-id="<?= $val->booking_id ?>"><i class="fa fa-times" ></i> Cancelled</span>
+                        <?php
+                        }
+                        else if($val->booking_status=="checked_in"){
+                        ?>
+                        <span class="btn btn-success status_btn" data-id="<?= $val->booking_id ?>"><i class="fa fa-sign-in" ></i> Checked In</span>
+                        <br><b><?= !empty($val->actual_check_in_date) ? date('d-m-Y', strtotime($val->actual_check_in_date)) : '' ?></b>
+                        <br><b><?= !empty($val->actual_check_in_date) ? date('h:i a', strtotime($val->actual_check_in_date)) : '' ?></b>
+                        <?php } 
+                        else if($val->booking_status=="checked_out") { ?>
+                        <span class="btn btn-success status_btn" data-id="<?= $val->booking_id ?>"><i class="fa fa-sign-out" ></i> Checked Out</span>
+                        <br><b><?= !empty($val->actual_check_out_date) ? date('d-m-Y', strtotime($val->actual_check_out_date)) : '' ?></b>
+                        <br><b><?= !empty($val->actual_check_out_date) ? date('h:i a', strtotime($val->actual_check_out_date)) : '' ?></b>
+                        <?php } ?>
+
+                        </td>
+
+                        <td>
+
+                          <div class="row">
+
+                          <div class="col-sm-6">
+                          <a style="" class="btn btn-primary" href="<?= base_url(); ?>admin/Bookings/Invoice/<?= $val->booking_id; ?>" target="_blank" title="Print Invoice"><i class="fa fa-file-text"></i> </a>
+                          </div>
+
+                          <div class="col-sm-6">
+                          <a class="btn btn-primary" href="<?= base_url(); ?>admin/Bookings/View/<?= $val->booking_id; ?>" title="View Booking Details"><i class="fa fa-eye" ></i> </a>
+                          </div>
+
+                          </div>
+
+                          <div class="row">
+
+                          <div class="col-sm-6">
+                          <a class="btn btn-warning" href="<?= base_url(); ?>admin/Bookings/Edit/<?= $val->booking_id; ?>" title="Edit Booking Details"><i class="fa fa-pencil" ></i> </a>
+                          </div>
+                          <div class="col-sm-6">
+                          <a onclick="return confirm('Delete this booking?')" class="btn btn-danger" href="<?= base_url(); ?>admin/Bookings/Delete/<?= $val->booking_id; ?>" title="Delete Booking"><i class="fa fa-trash" ></i> </a>
+                          </div>
+                          </div>
+
+                        </td>
+
+                        </tr>
+                                    
+					  				    <?php 
+                        $i++; 
+                        endforeach;
+                        ?> 
+                                    
+                      </tbody> 
+                   				
                                 
                   	</table>
                             
@@ -670,42 +780,12 @@
  
  <script>
  
-<?php 
-$params = $this->input->get();   
-// Build query string
-$queryString = http_build_query($params);
-
-?>
-
-$(document).ready(function() {
-
-    if ($.fn.DataTable.isDataTable('#datatable')) {
-    $('#datatable').DataTable().clear().destroy();
-    }
-
-    $('#datatable').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: "<?= base_url(); ?>admin/Bookings/FetchData?<?= $queryString ?>",
-            type: "POST",
-        },
-        order: [[0, 'desc']],
-        columns: [
-            { data: "id" },
-            { data: "period" },
-            { data: "room" },
-            { data: "customer" },
-            { data: "total" },
-            { data: "paid" },
-            { data: "pending" },
-            { data: "payments" },
-            { data: "status" },
-            { data: "actions" }
-        ]
-    });
-});
-
+	$('#datatable').on( 'draw.dt', function () {
+    
+	$('#datatable').show();
+    $('.loader').removeClass("loader");
+   
+	});
 
 
     $('body').on('click', '.status_btn', function() {
@@ -940,7 +1020,7 @@ $(document).ready(function() {
     }
 
     });
-    $('#payModal').modal('show');
+    //$('#payModal').modal('show');
   });
 
 
