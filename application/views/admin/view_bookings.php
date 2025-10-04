@@ -280,6 +280,15 @@
                     </div>
 
 
+                    <div class="col-sm-3" style="">
+
+                    <label>Register Number</label>
+
+                     <input class="form-control" type="text" name="register_no_search" value="<?= $_GET['register_no_search'] ?? "" ?>">
+
+                    </div>
+
+
                   
                 </div>
 
@@ -402,7 +411,7 @@
                       
                         </td>
 
-                        <td><?= $val->name ?><br><b><?= $val->booking_room_no ?? "" ?></b></td>
+                        <td><?= $val->name ?><br><b><?php if(!empty($val->booking_room_no)){ echo "Room : ";} ?>  <?= $val->booking_room_no ?? "" ?></b> <br><?php if(!empty($val->booking_register_no)){ echo "Reg No : ";} ?><b><?= $val->booking_register_no ?? "" ?></td>
 
                         <td>
                         <?= $val->first_name ?> <?= $val->last_name ?><br>
@@ -674,8 +683,19 @@
 
 
           <div class="room_no" style="display:none;">
+          <div class="row">
+
+          <div class="col-lg-6">
           <label>Room No</label>
           <input class="form-control" name="room_no" value="">
+          </div>
+
+          <div class="col-lg-6">
+          <label>Register No</label>
+          <input class="form-control" name="reg_no" value="">
+          </div>
+
+          </div>
           </div>
 
             

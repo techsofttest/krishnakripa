@@ -128,6 +128,8 @@ class Bookings extends MY_Controller {
 
 			$room_no = "";
 
+			$register_no = "";
+
 			$hotel_type = "";
 
 			if(!empty($this->input->get('date_from')))
@@ -167,8 +169,16 @@ class Bookings extends MY_Controller {
 			}
 
 
+			if(!empty($this->input->get('register_no_search')))
+			{
+				$register_no = $this->input->get('register_no_search');
+			}
 
-		 	$data['bookings']	=	$this->BookingModel->ViewBookings($date_from,$date_to,$payment_status,$customer,$room,$room_no,$hotel_type);		   
+			
+
+
+
+		 	$data['bookings']	=	$this->BookingModel->ViewBookings($date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type);		   
 			$parent =  $this->uri->segment(4);	
 			$data['customers'] = $this->Admin_model->fetch_where_order('customers',array(),'first_name','asc');
 			$data['addons'] = $this->Admin_model->fetch_where_order('addons',array(),'ao_name','asc');
@@ -783,6 +793,10 @@ class Bookings extends MY_Controller {
 		
 		'check_out_date' => date('Y-m-d',strtotime($this->input->post('check_out'))),
 
+		'booking_room_no' => $this->input->post('room_no'),
+
+		'booking_register_no' => $this->input->post('reg_no'),
+
 		//'no_of_rooms'=> $room_count,
 		//'tax_excluded_total' => $subtotal,
 
@@ -1102,9 +1116,19 @@ class Bookings extends MY_Controller {
 				$room_no_update = NULL;
 			}
 
+			if(!empty($this->input->post('reg_no')))
+			{
+				$reg_no_update = $this->input->post('reg_no');
+			}
+			else
+			{
+				$reg_no_update = NULL;
+			}
+
 			$update_data = array(
 				'booking_status' => $booking_status = $this->input->post('booking_status'),
-				'booking_room_no' => $room_no_update
+				'booking_room_no' => $room_no_update,
+				'booking_register_no' => $reg_no_update
 			);
 
 			if($booking_status=="checked_in")

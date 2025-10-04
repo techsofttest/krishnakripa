@@ -291,6 +291,23 @@
                 <div class="row">
 
 
+                <div class="col-xs-12 col-sm-6 row-seperate">
+                
+                <label> Room No <strong style="color:#F00;"></strong></label>
+							  <input class="form-control" name="room_no" autocomplete="off" value="<?= $booking['booking_room_no'] ?>" required>	
+                
+
+                </div>
+
+                <div class="col-xs-12 col-sm-6 row-seperate">
+                
+                <label> Register No <strong style="color:#F00;"></strong></label>
+							  <input class="form-control" name="reg_no" autocomplete="off" value="<?= $booking['booking_register_no'] ?>" required>	
+                
+
+                </div>
+
+
                 <div class="col-xs-12 col-sm-4 row-seperate">
                 
                 <label> Phone <strong style="color:#F00;">*</strong></label>
