@@ -646,7 +646,7 @@ class BookingModel extends CI_model {
 
 
 
-    public function ViewBookingReport($date_from,$date_to,$payment_status,$customer,$room,$room_no,$room_type)
+    public function ViewBookingReport($date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$room_type)
     {
 
     $this->db->select('*');
@@ -694,6 +694,14 @@ class BookingModel extends CI_model {
     if($room_no!="")
     {
         $this->db->where('booking_room_no',str_replace(" ","",$room_no));
+    }
+
+
+     if($register_no!="")
+    {
+
+    $this->db->where('booking_register_no',str_replace(" ","",$register_no));
+
     }
 
 

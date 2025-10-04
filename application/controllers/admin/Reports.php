@@ -35,7 +35,10 @@ class Reports extends MY_Controller {
 
 		$room_no = "";
 
+		$register_no ="";
+
 		$hotel_type ="";
+
 
 		if(!empty($this->input->get('date_from')))
 		{
@@ -72,7 +75,12 @@ class Reports extends MY_Controller {
 			$hotel_type = $this->input->get('hotel_type');
 		}
 
-    	$data['bookings']	=	$this->BookingModel->ViewBookingReport($date_from,$date_to,$payment_status,$customer,$room,$room_no,$hotel_type);	
+		if(!empty($this->input->get('register_no_search')))
+		{
+			$register_no = $this->input->get('register_no_search');
+		}
+
+    	$data['bookings']	=	$this->BookingModel->ViewBookingReport($date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type);	
 
 		$data['customers'] = $this->Admin_model->fetch_where_order('customers',array(),'first_name','asc');
 
@@ -103,6 +111,8 @@ class Reports extends MY_Controller {
 		$room = "";
 
 		$room_no = "";
+
+		$register_no = "";
 
 		$hotel_type ="";
 		
@@ -142,7 +152,12 @@ class Reports extends MY_Controller {
 			$hotel_type = $this->input->get('hotel_type');
 		}
 
-    	$bookings	=	$this->BookingModel->ViewBookingReport($date_from,$date_to,$payment_status,$customer,$room,$room_no,$hotel_type);
+		if(!empty($this->input->get('register_no_search')))
+		{
+			$register_no = $this->input->get('register_no_search');
+		}
+
+    	$bookings	=	$this->BookingModel->ViewBookingReport($date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type);
 
 		
 				$this->load->library('Pdf');
