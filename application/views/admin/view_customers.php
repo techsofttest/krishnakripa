@@ -61,12 +61,14 @@
                                      
                                          <th>Phone</th>
 
+                                         <th>Alt Phone</th>
+
                                          <th>Email</th>
 
                                          <th>Address</th>
 
 
-                                         <th>Actions</th>
+                                         <!--<th>Actions</th>-->
                                        
                                     </tr>
                     			</thead>
@@ -88,13 +90,17 @@
                     
                         <td><?= $val->phone_number ?></td>
 
-                        <td><?= $val->email_address ?? "" ?></td>
+                        <td><?= $val->phone_number_alt ?? "-" ?></td>
+
+                        
+
+                        <td><?= !empty($val->email_address) ?? "-" ?></td>
 
                         <td><?= $val->address ?> </td>
 
-                        <td>
+                        <!--<td>
                           <a class="btn btn-danger"><i class="fa fa-ban"></i> Block</a>
-                        </td>
+                        </td>-->
 
                         </tr>
                                     

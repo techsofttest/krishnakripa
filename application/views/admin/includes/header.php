@@ -151,6 +151,11 @@
                 color: black !important;
             }
 
+
+            span.btn {
+            padding: 6px 6px;
+            font-size: 14px;
+            }
 	
 
 </style>

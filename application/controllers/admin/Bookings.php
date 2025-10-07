@@ -221,7 +221,7 @@ private function renderBookingStatus($val)
 			$data['addons'] = $this->Admin_model->fetch_where_order('addons',array(),'ao_name','asc');
 			$data['rooms'] = $this->Admin_model->fetch_where_order('room',array(),'name','asc');			 
 			$data['seo_title'] 	= 	"View Bookings | ".$this->data['admin_title'].""; 			
-			$this->load->view('admin/view_bookings_static',$data);
+			$this->load->view('admin/view_bookings',$data);
 		
         }
 		

@@ -106,6 +106,18 @@ class Payments extends MY_Controller {
 
     	$payments	=	$this->BookingModel->ViewPayments($date_from,$date_to,$customer,$hotel_type);
 
+						 $debit_total = array_sum(array_map(function($p) {
+                            return (isset($p->bp_type) && $p->bp_type === "debit") ? $p->bp_amount : 0;
+                          }, $payments));
+
+						  $debit_total = format_currency($debit_total);
+
+						  $credit_total = array_sum(array_map(function($p) {
+                            return (isset($p->bp_type) && $p->bp_type === "credit") ? $p->bp_amount : 0;
+                          }, $payments));
+
+						  $credit_total = format_currency($credit_total);
+
 		
 				$this->load->library('Pdf');
 				$pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
@@ -214,9 +226,9 @@ class Payments extends MY_Controller {
 
 					<th>'.$val->bp_notes.'</th>
 
-					<th>'.$debit.'</th>
+					<th align="right">'.$debit.'</th>
 
-					<th>'.$credit.'</th>
+					<th align="right">'.$credit.'</th>
 					
 				</tr>
 
@@ -258,6 +270,18 @@ class Payments extends MY_Controller {
 					
 
 					'.$payment_sec.'
+
+
+
+					<tr>
+
+					<th colspan="7" align="right"><b>Total</b></th>
+
+					<th align="right"><b>'.$debit_total.'</b></th>
+
+					<th align="right"><b>'.$credit_total.'</b></th>
+					
+				</tr>
 
 					
 

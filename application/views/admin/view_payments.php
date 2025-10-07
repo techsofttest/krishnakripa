@@ -148,9 +148,9 @@
                     <div class="col-sm-12" style="text-align:center">
                       <button type="submit" class="btn btn-success">Filter</button>
                       <?php if(!empty($payments)) { ?>
-                      <a class="btn btn-warning" href="<?= base_url(); ?>admin/Payments/Print<?= '?'.$_SERVER['QUERY_STRING']; ?>">Print</a>
+                      <a class="btn btn-warning" target="_blank" href="<?= base_url(); ?>admin/Payments/Print<?= '?'.$_SERVER['QUERY_STRING']; ?>">Print</a>
                       <?php } ?>
-                      <a href="<?= base_url(); ?>admin/Payments" class="btn btn-danger">Reset</a>
+                      <a href="<?= base_url(); ?>admin/Payments/Paid" class="btn btn-danger">Reset</a>
                     </div>
 
                 
@@ -324,6 +324,13 @@
  
  <script>
  
+
+   $('#datatable').on('init.dt', function() {
+      var table = $('#datatable').DataTable();
+      table.page.len(50).draw(false); // set 50 rows per page
+  });
+
+
 	$('#datatable').on( 'draw.dt', function () {
     
 	$('#datatable').show();

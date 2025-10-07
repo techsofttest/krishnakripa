@@ -281,6 +281,10 @@
 
                                          <th>Room</th>
 
+                                         <th>Room No</th>
+
+                                         <th>Reg No</th>
+
                                          <th>Customer</th>
 
                                          <th>Amount</th>
@@ -311,7 +315,11 @@
                       
                         </td>
 
-                        <td><?= $val->name ?> <br><b><?php if(!empty($val->booking_room_no)){ echo "Room : ";} ?>  <?= $val->booking_room_no ?? "" ?></b> <br><?php if(!empty($val->booking_register_no)){ echo "Reg No : ";} ?><b><?= $val->booking_register_no ?? "" ?></td>
+                        <td><?= $val->name ?></td>
+
+                        <td><b><?= $val->booking_room_no ? $val->booking_room_no : "-" ?></b></td>
+
+                        <td><b><?= $val->booking_register_no ? $val->booking_register_no : "-" ?></b></td>
 
                         <td>
                         <?= $val->first_name ?> <?= $val->last_name ?><br>
@@ -397,6 +405,8 @@
  
  <script>
  
+
+
 	$('#datatable').on( 'draw.dt', function () {
     
 	$('#datatable').show();
