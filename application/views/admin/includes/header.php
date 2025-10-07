@@ -239,6 +239,7 @@
       
 
       <ul class="nav navbar-nav">
+        <li class="btn-danger"> <a style="color:white !important;" href="<?php echo base_url();?>Backup/daily" ><i class="fa fa-floppy-o"></i>&nbsp; Backup</a> </li>
         <li> <a href="<?php echo base_url();?>admin/login/logout" ><i class="fa fa-sign-out"></i>&nbsp; Sign Out</a> </li>
       </ul>
 

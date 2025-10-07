@@ -17,5 +17,6 @@ application/logs/*
 !application/logs/.htaccess
 /.htaccess
 /uploads/
+/backups/
 # Local index file
 /index.php

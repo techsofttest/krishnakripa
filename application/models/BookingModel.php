@@ -370,7 +370,9 @@ class BookingModel extends CI_model {
     if($room_no!="")
     {
 
-        $this->db->where('booking_room_no',str_replace(" ","",$room_no));
+        //$this->db->where('booking_room_no',str_replace(" ","",$room_no));
+
+        $this->db->like('booking_room_no',str_replace(" ","",$room_no), 'both'); 
 
     }
 
@@ -456,7 +458,9 @@ class BookingModel extends CI_model {
     if($room_no!="")
     {
 
-        $this->db->where('booking_room_no',str_replace(" ","",$room_no));
+        //$this->db->where('booking_room_no',str_replace(" ","",$room_no));
+
+        $this->db->like('booking_room_no',str_replace(" ","",$room_no), 'both'); 
 
     }
 
@@ -693,7 +697,8 @@ class BookingModel extends CI_model {
 
     if($room_no!="")
     {
-        $this->db->where('booking_room_no',str_replace(" ","",$room_no));
+        //$this->db->where('booking_room_no',str_replace(" ","",$room_no));
+        $this->db->like('booking_room_no',str_replace(" ","",$room_no), 'both'); 
     }
 
 
