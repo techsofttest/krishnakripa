@@ -393,7 +393,7 @@ class BookingModel extends CI_model {
 
     $this->db->group_start();
 
-    $this->db->like('booking_id',str_replace(" ","",$search), 'both');
+    $this->db->like('uid',str_replace(" ","",$search), 'both');
     
     $this->db->or_like('customer_first_name',trim($search), 'both');
 
