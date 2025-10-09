@@ -401,6 +401,9 @@ class BookingModel extends CI_model {
 
     $this->db->or_like('customer_phone_number',str_replace(" ","",$search), 'both');
 
+    $this->db->or_like('booking_register_no',str_replace(" ","",$search), 'both');
+
+    $this->db->or_like('booking_room_no',str_replace(" ","",$search), 'both');
 
     $this->db->group_end();
 
