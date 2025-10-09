@@ -388,6 +388,24 @@ class BookingModel extends CI_model {
         $this->db->where('room.hotel',$hotel_type);
     }
 
+    if($search!="")
+    {
+
+    $this->db->group_start();
+
+    $this->db->like('booking_id',str_replace(" ","",$search), 'both');
+    
+    $this->db->or_like('customer_first_name',trim($search), 'both');
+
+    $this->db->or_like('customer_last_name',trim($search), 'both');
+
+    $this->db->or_like('customer_phone_number',str_replace(" ","",$search), 'both');
+
+
+    $this->db->group_end();
+
+    }
+
 
     $this->db->order_by('bookings.created_at','desc');
 
