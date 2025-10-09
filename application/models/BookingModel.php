@@ -321,9 +321,86 @@ class BookingModel extends CI_model {
 
     public function countFilteredBookings($search,$date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type)
     {
-        $this->db->from('bookings');
-        $totalBookings = $this->db->count_all_results();
-        return $totalBookings;
+    
+
+    $this->db->from('bookings');
+
+    $this->db->join('customers','customers.cus_id=bookings.booking_customer_id','left');
+
+    $this->db->join('room','room.roomid=bookings.booking_room_id','left');
+
+    $this->db->join('sources','sources.source_id=bookings.booking_source','left');
+
+    if($date_from!="")
+    {
+        $this->db->where('check_in_date >=', $date_from);
+    }
+
+    if($date_to!="")
+    {
+        $this->db->where('check_in_date <=', $date_to);
+    }
+
+    if($payment_status!="")
+    {
+        $this->db->where('payment_status', $payment_status);
+    }
+
+    if($customer!="")
+    {
+        $this->db->where('booking_customer_id', $customer);
+
+    }
+
+    if($room!="")
+    {
+        $this->db->where('booking_room_id', $room);
+    }
+
+    if($room_no!="")
+    {
+
+        //$this->db->where('booking_room_no',str_replace(" ","",$room_no));
+
+        $this->db->like('booking_room_no',str_replace(" ","",$room_no), 'both'); 
+
+    }
+
+     if($register_no!="")
+    {
+
+        $this->db->where('booking_register_no',str_replace(" ","",$register_no));
+
+    }
+    
+    if($hotel_type!="")
+    {
+        $this->db->where('room.hotel',$hotel_type);
+    }
+
+    if($search!="")
+    {
+
+    $this->db->group_start();
+
+    $this->db->like('uid',str_replace(" ","",$search), 'both');
+    
+    $this->db->or_like('customer_first_name',trim($search), 'both');
+
+    $this->db->or_like('customer_last_name',trim($search), 'both');
+
+    $this->db->or_like('customer_phone_number',str_replace(" ","",$search), 'both');
+
+    $this->db->or_like('booking_register_no',str_replace(" ","",$search), 'both');
+
+    $this->db->or_like('booking_room_no',str_replace(" ","",$search), 'both');
+
+    $this->db->group_end();
+
+    }
+
+    $totalBookings = $this->db->count_all_results();
+    return $totalBookings;
 
     }
 
