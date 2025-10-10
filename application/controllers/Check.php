@@ -397,9 +397,6 @@ function BookNow()
 
 	$grand_total = $total_price + $gst;
 
-	$grand_total = 1;
-
-
 	$booking_data  	= 	array(
 
 		    'check_in_date'  => date('Y-m-d',strtotime($this->input->post('check_in'))),
