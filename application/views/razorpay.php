@@ -46,7 +46,7 @@
             prefill: {
                 name:       "<?php echo $booking['customer_first_name']; ?>",
                 email:      "<?php echo $booking['customer_email'] ?? ""; ?>",
-                contact:    "<?php echo $booking['customer_email']; ?>"
+                contact:    "<?php echo $booking['customer_phone_number']; ?>"
             },
             notes: {
                 order_id: "<?php echo $booking['uid']; ?>",
