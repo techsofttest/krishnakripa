@@ -12,9 +12,11 @@ class Booking extends MY_Controller {
 				$this->load->library('session');	
 				
 				//$this->session->set_userdata('b_id',41);
-				if(empty($this->session->userdata('b_id')))
+				if(empty($this->session->flashdata('summary_id')))
 				{
+
 				redirect(base_url());
+				
 				}
 				
 				
@@ -25,7 +27,7 @@ class Booking extends MY_Controller {
 			public function Summary()
 			{
 			
-			$id = $this->session->userdata('b_id');
+			$id = $this->session->flashdata('summary_id');
 
 			$data['booking'] = $this->BookingModel->ViewBookingById($id);
 

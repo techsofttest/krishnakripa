@@ -339,6 +339,49 @@ Toast.fire({
 
 <?php } ?>
 
+
+
+<?php if($this->session->flashdata('error')){?>
+
+<script>
+
+const Toast = Swal.mixin({
+
+  toast: true,
+
+  position: 'center',
+
+  showConfirmButton: false,
+
+  timer: 3000,
+
+  timerProgressBar: true,
+
+  didOpen: (toast) => {
+
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+
+  }
+
+})
+
+
+Toast.fire({
+
+  icon: 'error',
+
+  title: '<?= $this->session->flashdata('error') ?>'
+
+})
+
+</script>
+
+<?php } ?>
+
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 

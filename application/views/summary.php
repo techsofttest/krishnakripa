@@ -55,15 +55,26 @@
 
 	      <div class="col-lg-8">
 
-        <?php if($booking['payment_status']==2 || 1==1) { ?>
+                    <?php if($booking['payment_status']==2) { ?>
 
                     <div class="message-box _success ">
 
+                    <i class="fa fa-check text-success" aria-hidden="true"></i>
+
+                    <h2> Payment Successful </h2>
+
+                    <?php } else { ?>
+
+                    <div class="message-box _failed">
+
                     <i class="fa fa-clock text-warning" aria-hidden="true"></i>
 
-                    <h2> Make Payment To Confirm Booking! </h2>
+                    <h2> You payment is pending! </h2>
 
 
+                    <?php } ?>
+
+                    <!--
                     <table class="table table-striped">
 
                     <tr>
@@ -100,10 +111,10 @@
                     </tr>
 
                     </table>
+                    -->
 
 
-
-                    <h3>Booking Details</h3>
+                    <h5>Booking Details</h5>
 
 
                     <table class="table table-striped">
@@ -136,12 +147,10 @@
 
                     </table>
 
-                   <p> Thank you for choosing Krishnakripa</p>
+                   <p>Thank you for choosing Krishnakripa</p>
                    <p>Booking details has been sent to <?= $booking['email_address']; ?></p>   
 
         </div> 
-
-        <?php } ?>
       
 
 

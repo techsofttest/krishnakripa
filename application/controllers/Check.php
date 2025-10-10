@@ -397,6 +397,8 @@ function BookNow()
 
 	$grand_total = $total_price + $gst;
 
+	$grand_total = 1;
+
 
 	$booking_data  	= 	array(
 
@@ -423,6 +425,8 @@ function BookNow()
 			'tax_amount' => $gst,
 
 			'tax_excluded_total' => $total_price,
+
+			'payment_type' => 'online',
 
 			'payment_notes'=> "-",
 
@@ -541,10 +545,43 @@ function BookNow()
 					
 			//$this->session->set_flashdata('success', 'Booking added successfully.');
 
-			redirect(base_url().'Booking/Summary');	
+			//redirect(base_url().'Booking/Summary');
+			
+			redirect(base_url().'Check/Pay/'.$bid);
 
 		}
 
+
+}
+
+
+
+public function Pay($bid)
+{
+
+if(empty($bid))
+{
+
+$this->session->set_flashdata('error','Unauthorised Access');
+
+redirect(base_url());
+
+}
+
+$data['booking'] = $this->Admin_model->fetch_one_row('bookings',array('booking_id' => $bid));
+
+
+if(empty($data['booking']))
+{
+
+$this->session->set_flashdata('error','Something went wrong, Please try again later');
+
+redirect(base_url());
+
+}
+
+
+$this->load->view('razorpay',$data);
 
 }
 
