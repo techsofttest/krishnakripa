@@ -768,7 +768,7 @@ class BookingModel extends CI_model {
     }
     */
 
-    $this->db->where_not_in('booking_status', ['cancelled','checked_out']);
+    $this->db->where_not_in('booking_status', ['cancelled']);
 
     if($date_from != "" && $date_to != "") {
     $this->db->where('check_in_date <=', $date_to);
