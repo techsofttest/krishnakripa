@@ -748,7 +748,7 @@ class BookingModel extends CI_model {
 
 
 
-    public function ViewBookingReport($date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$room_type)
+    public function ViewBookingReport($date_from,$date_to,$time_from,$time_to,$payment_status,$customer,$room,$room_no,$register_no,$room_type)
     {
 
     $this->db->select('*');
@@ -772,12 +772,41 @@ class BookingModel extends CI_model {
 
     if($date_from != "" && $date_to != "") {
     $this->db->where('check_in_date <=', $date_to);
+       
     $this->db->where('check_out_date >=', $date_from);
+       
+        if ($time_from != "") {
+        $this->db->group_start(); // open bracket
+        $this->db->where('TIME(actual_check_in_date) >=', $time_from);
+        $this->db->or_where('actual_check_in_date IS NULL');
+        $this->db->group_end(); // close bracket
+        }
+
+        if ($time_to != "") {
+        $this->db->group_start();
+        $this->db->where('TIME(actual_check_out_date) <=', $time_to);
+        $this->db->or_where('actual_check_out_date IS NULL');
+        $this->db->group_end();
+        }
+
     } elseif($date_from != "") {
         $this->db->where('check_out_date >=', $date_from);
+         if ($time_from != "") {
+        $this->db->group_start();
+        $this->db->where('TIME(actual_check_in_date) >=', $time_from);
+        $this->db->or_where('actual_check_in_date IS NULL');
+        $this->db->group_end();
+        }
     } elseif($date_to != "") {
         $this->db->where('check_in_date <=', $date_to);
+        if ($time_to != "") {
+        $this->db->group_start();
+        $this->db->where('TIME(actual_check_out_date) <=', $time_to);
+        $this->db->or_where('actual_check_out_date IS NULL');
+        $this->db->group_end();
+        }
     }
+    
 
     if($payment_status!="")
     {

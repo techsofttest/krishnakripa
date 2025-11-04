@@ -27,6 +27,10 @@ class Reports extends MY_Controller {
 
 		$date_to = "";
 
+		$time_from = "";
+
+		$time_to = "";
+
 		$payment_status = "";
 
 		$customer = "";
@@ -48,6 +52,16 @@ class Reports extends MY_Controller {
 		if(!empty($this->input->get('date_to')))
 		{
 			$date_to = $this->input->get('date_to');
+		}
+
+		if(!empty($this->input->get('time_from')))
+		{
+			$time_from = $this->input->get('time_from');
+		}
+
+		if(!empty($this->input->get('time_to')))
+		{
+			$time_to = $this->input->get('time_to');
 		}
 
 		if(!empty($this->input->get('payment_status')))
@@ -80,7 +94,7 @@ class Reports extends MY_Controller {
 			$register_no = $this->input->get('register_no_search');
 		}
 
-    	$data['bookings']	=	$this->BookingModel->ViewBookingReport($date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type);	
+    	$data['bookings']	=	$this->BookingModel->ViewBookingReport($date_from,$date_to,$time_from,$time_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type);	
 
 		$data['customers'] = $this->Admin_model->fetch_where_order('customers',array(),'first_name','asc');
 
@@ -103,6 +117,10 @@ class Reports extends MY_Controller {
 		$date_from = "";
 
 		$date_to = "";
+
+		$time_from = "";
+
+		$time_to = "";
 
 		$payment_status = "";
 
@@ -127,6 +145,17 @@ class Reports extends MY_Controller {
 			$date_to = $this->input->get('date_to');
 		}
 
+		if(!empty($this->input->get('time_from')))
+		{
+			$time_from = $this->input->get('time_from');
+		}
+
+		if(!empty($this->input->get('time_to')))
+		{
+			$time_to = $this->input->get('time_to');
+		}
+
+
 		if(!empty($this->input->get('payment_status')))
 		{
 			$payment_status = $this->input->get('payment_status');
@@ -144,7 +173,7 @@ class Reports extends MY_Controller {
 
 		if(!empty($this->input->get('room_no_search')))
 		{
-				$room_no = $this->input->get('room_no_search');
+			$room_no = $this->input->get('room_no_search');
 		}
 
 		if(!empty($this->input->get('hotel_type')))
@@ -157,7 +186,7 @@ class Reports extends MY_Controller {
 			$register_no = $this->input->get('register_no_search');
 		}
 
-    	$bookings	=	$this->BookingModel->ViewBookingReport($date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type);
+    	$bookings	=	$this->BookingModel->ViewBookingReport($date_from,$date_to,$time_from,$time_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type);
 
 		
 				$this->load->library('Pdf');

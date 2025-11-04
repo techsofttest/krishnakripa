@@ -75,11 +75,13 @@
                     <div class="col-sm-3">
                       <label>Date From</label>
                       <input class="form-control" type="date" value="<?php if(!empty($this->input->get('date_from'))) { echo $this->input->get('date_from'); } ?>" name="date_from" id="dateFrom" onclick="this.showPicker()">
+                      <input class="form-control" type="time" value="<?php if(!empty($this->input->get('time_from'))) { echo $this->input->get('time_from'); } ?>" name="time_from" onclick="this.showPicker()">
                     </div>
 
                     <div class="col-sm-3">
                       <label>Date To</label>
-                      <input class="form-control" type="date" value="<?php if(!empty($this->input->get('date_from'))) { echo $this->input->get('date_to'); } ?>" name="date_to" id="dateTo" onclick="this.showPicker()">
+                      <input class="form-control" type="date" value="<?php if(!empty($this->input->get('date_to'))) { echo $this->input->get('date_to'); } ?>" name="date_to" id="dateTo" onclick="this.showPicker()">
+                      <input class="form-control" type="time" value="<?php if(!empty($this->input->get('time_to'))) { echo $this->input->get('time_to'); } ?>" name="time_to" onclick="this.showPicker()">
                     </div>
 
                     <script>
