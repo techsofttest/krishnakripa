@@ -43,6 +43,8 @@ class Reports extends MY_Controller {
 
 		$hotel_type ="";
 
+		$overlapping = "";
+
 
 		if(!empty($this->input->get('date_from')))
 		{
@@ -94,7 +96,12 @@ class Reports extends MY_Controller {
 			$register_no = $this->input->get('register_no_search');
 		}
 
-    	$data['bookings']	=	$this->BookingModel->ViewBookingReport($date_from,$date_to,$time_from,$time_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type);	
+		if(!empty($this->input->get('overlapping')))
+		{
+			$overlapping = $this->input->get('overlapping');
+		}
+
+    	$data['bookings']	=	$this->BookingModel->ViewBookingReport($date_from,$date_to,$time_from,$time_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type,$overlapping);	
 
 		$data['customers'] = $this->Admin_model->fetch_where_order('customers',array(),'first_name','asc');
 
@@ -133,6 +140,8 @@ class Reports extends MY_Controller {
 		$register_no = "";
 
 		$hotel_type ="";
+
+		$overlapping = "";
 		
 
 		if(!empty($this->input->get('date_from')))
@@ -186,7 +195,12 @@ class Reports extends MY_Controller {
 			$register_no = $this->input->get('register_no_search');
 		}
 
-    	$bookings	=	$this->BookingModel->ViewBookingReport($date_from,$date_to,$time_from,$time_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type);
+		if(!empty($this->input->get('overlapping')))
+		{
+			$overlapping = $this->input->get('overlapping');
+		}
+
+    	$bookings	=	$this->BookingModel->ViewBookingReport($date_from,$date_to,$time_from,$time_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type,$overlapping);
 
 		
 				$this->load->library('Pdf');

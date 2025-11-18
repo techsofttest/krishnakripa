@@ -140,6 +140,10 @@
                     </script>
 
 
+         
+
+
+
                     <div class="col-sm-3">
 
                       <label>Payment</label>
@@ -218,7 +222,16 @@
                 </div>
 
 
+                <div class="row" style="margin:10px 0px;">  
 
+                    <div class="col-sm-12" style="text-align:center;">
+                      
+                      <input type="checkbox" name="overlapping" value="1" <?php if ($this->input->get('overlapping') == 1) { echo "checked"; } ?> >
+                      <label>Include overlapping bookings</label>
+
+                    </div>
+
+                    </div>
 
                 <div class="row" style="margin:10px 0px;">  
               
