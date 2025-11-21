@@ -132,7 +132,21 @@
 
                                     <div class="info-box-content">
                                       <span class="info-box-text">Check In</span>
-                                      <span class="info-box-number"><?= date('d M Y',strtotime($booking['check_in_date'])) ?></span>
+                                      <span class="info-box-number">
+
+                                        <?php if(!empty($booking['actual_check_in_date'])){ ?>
+
+                                        <?php echo date('d M Y',strtotime($booking['actual_check_in_date'])); ?><br>
+
+                                        <?php echo date('h:i a',strtotime($booking['actual_check_in_date'])); ?><br>
+                                      
+                                        <?php } else { ?>
+
+                                        <?php echo date('d M Y',strtotime($booking['check_in_date'])); ?>
+
+                                        <?php } ?>
+
+                                      </span>
                                     </div>
                                     <!-- /.info-box-content -->
                                   </div>
@@ -146,7 +160,23 @@
 
                                     <div class="info-box-content">
                                       <span class="info-box-text">Check Out</span>
-                                      <span class="info-box-number"><?= date('d M Y',strtotime($booking['check_out_date'])) ?></span>
+                                      <span class="info-box-number">
+
+                                       
+
+                                         <?php if(!empty($booking['actual_check_out_date'])){ ?>
+
+                                        <?php echo date('d M Y',strtotime($booking['actual_check_out_date'])); ?><br>
+
+                                        <?php echo date('h:i a',strtotime($booking['actual_check_out_date'])); ?><br>
+                                      
+                                        <?php } else { ?>
+
+                                        <?php echo date('d M Y',strtotime($booking['check_out_date'])); ?>
+
+                                        <?php } ?>
+                                      
+                                      </span>
                                     </div>
                                    
                                   </div>

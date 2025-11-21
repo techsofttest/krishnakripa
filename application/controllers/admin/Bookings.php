@@ -92,9 +92,28 @@ class Bookings extends MY_Controller {
                             </div>
                         </div>';
 
+				
+				$checkIn = 
+					(!empty($val->actual_check_in_date) 
+						? date('d M Y', strtotime($val->actual_check_in_date)) . "<br>" .
+						date('h:i a', strtotime($val->actual_check_in_date)) 
+						: date('d M Y', strtotime($val->check_in_date))
+					);
+
+				$checkOut = 
+					(!empty($val->actual_check_out_date) 
+						? date('d M Y', strtotime($val->actual_check_out_date)) . "<br>" .
+						date('h:i a', strtotime($val->actual_check_out_date)) 
+						: date('d M Y', strtotime($val->check_out_date))
+					);
+
+				
+					$period = $checkIn.'<br>To<br>'.$checkOut;
+
+
             $data[] = [
                 "id"        => $val->uid . (!empty($val->source_name) ? "<br><br>".$val->source_name : ""),
-                "period"    => date('d M Y', strtotime($val->check_in_date))."<br>To<br>".date('d M Y', strtotime($val->check_out_date)),
+                "period"    => $period,
                 "room"      => $val->name."<br><b>".(!empty($val->booking_room_no) ? "Room : ".$val->booking_room_no : "")."</b><br>".(!empty($val->booking_register_no) ? "Reg No : ".$val->booking_register_no : ""),
                 "customer"  => $val->first_name." ".$val->last_name."<br>".$val->phone_number,
                 "total"     => "<b style='font-size:20px'>".$val->total_amount."</b><br><a class='btn btn-primary add_addon_btn' data-id='".$val->booking_id."'><i class='fa fa-plus'></i> Add On</a>",
