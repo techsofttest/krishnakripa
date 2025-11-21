@@ -771,6 +771,9 @@ class BookingModel extends CI_model {
     $this->db->where_not_in('booking_status', ['cancelled']);
 
     if($date_from != "" && $date_to != "") {
+
+    $date_from = $date_from . ' 00:00:00';
+    $date_to   = $date_to   . ' 23:59:59';
     //$this->db->where('check_in_date <=', $date_to);
        
     //$this->db->where('check_out_date >=', $date_from);
@@ -789,12 +792,20 @@ class BookingModel extends CI_model {
     else
     {
 
+    $from = $this->db->escape($date_from . ' 00:00:00'); // escaped string
+    $to   = $this->db->escape($date_to   . ' 23:59:59');
+
+// Build a single overlap condition using COALESCE:
+// start = COALESCE(actual_check_in_date, CONCAT(check_in_date,' 00:00:00'))
+// end   = COALESCE(actual_check_out_date, CONCAT(check_out_date,' 23:59:59'))
+    
+
     $this->db->group_start();
 
     // Case 1: actual_check_in_date is NOT NULL → compare actual date
     $this->db->group_start();
         $this->db->where('actual_check_in_date IS NOT NULL', null, false);
-        $this->db->where('actual_check_in_date >=', $date_from . ' 00:00:00');
+        $this->db->where('actual_check_in_date >=', $date_from);
     $this->db->group_end();
 
     // Case 2: actual_check_in_date is NULL → fallback to check_in_date
@@ -811,7 +822,7 @@ class BookingModel extends CI_model {
     // Case 1: actual_check_out_date is NOT NULL → compare actual date
     $this->db->group_start();
         $this->db->where('actual_check_out_date IS NOT NULL', null, false);
-        $this->db->where('actual_check_out_date <=', $date_to . ' 23:59:59');
+        $this->db->where('actual_check_out_date <=', $date_to);
     $this->db->group_end();
 
     // Case 2: actual_check_out_date is NULL → fallback to check_out_date
@@ -821,6 +832,7 @@ class BookingModel extends CI_model {
     $this->db->group_end();
 
     $this->db->group_end();
+
 
     }
 
@@ -893,6 +905,8 @@ class BookingModel extends CI_model {
     $this->db->order_by('booking_id','desc');
 
     $query = $this->db->get();
+
+    //echo $this->db->last_query(); exit;
 
     return $query->result();
 
