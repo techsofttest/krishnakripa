@@ -75,13 +75,13 @@
                     <div class="col-sm-3">
                       <label>Date From</label>
                       <input class="form-control" type="date" value="<?php if(!empty($this->input->get('date_from'))) { echo $this->input->get('date_from'); } ?>" name="date_from" id="dateFrom" onclick="this.showPicker()">
-                      <input class="form-control" type="time" value="<?php if(!empty($this->input->get('time_from'))) { echo $this->input->get('time_from'); } ?>" name="time_from" onclick="this.showPicker()">
+                      <!--<input class="form-control" type="time" value="<?php if(!empty($this->input->get('time_from'))) { echo $this->input->get('time_from'); } ?>" name="time_from" onclick="this.showPicker()">-->
                     </div>
 
                     <div class="col-sm-3">
                       <label>Date To</label>
                       <input class="form-control" type="date" value="<?php if(!empty($this->input->get('date_to'))) { echo $this->input->get('date_to'); } ?>" name="date_to" id="dateTo" onclick="this.showPicker()">
-                      <input class="form-control" type="time" value="<?php if(!empty($this->input->get('time_to'))) { echo $this->input->get('time_to'); } ?>" name="time_to" onclick="this.showPicker()">
+                      <!--<input class="form-control" type="time" value="<?php if(!empty($this->input->get('time_to'))) { echo $this->input->get('time_to'); } ?>" name="time_to" onclick="this.showPicker()">-->
                     </div>
 
                     <script>
@@ -221,7 +221,7 @@
                   
                 </div>
 
-
+ 
                 <div class="row" style="margin:10px 0px;">  
 
                     <div class="col-sm-12" style="text-align:center;">
@@ -326,7 +326,34 @@
                     
                         <td>
 
-                        <?= date('d M Y',strtotime($val->check_in_date)) ?> <br>To<br> <?= date('d M Y',strtotime($val->check_out_date)) ?>
+                        <?php
+                        if(!empty($val->actual_check_in_date))
+                        {  
+                        echo date('d M Y',strtotime($val->actual_check_in_date)); echo "<br>";
+                        echo date('h:i a',strtotime($val->actual_check_in_date));
+                        }
+                        else
+                        {
+                        echo date('d M Y',strtotime($val->check_in_date));
+                        }
+                        
+                        ?> 
+                        
+                        <br>
+                        To<br> 
+
+                        <?php
+                        if(!empty($val->actual_check_out_date))
+                        {  
+                        echo date('d M Y',strtotime($val->actual_check_out_date)); echo "<br>";
+                        echo date('h:i a',strtotime($val->actual_check_out_date));
+                        }
+                        else
+                        {
+                        echo date('d M Y',strtotime($val->check_out_date));
+                        }
+                        
+                        ?> 
                       
                         </td>
 
