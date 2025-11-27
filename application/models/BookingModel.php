@@ -854,6 +854,8 @@ class BookingModel extends CI_model {
 
     } elseif($date_from != "") {
 
+        $date_from = $date_from . ' 00:00:00';
+
         $this->db->group_start();
         $this->db->where('actual_check_in_date IS NOT NULL', null, false);
         $this->db->where('actual_check_in_date <=', $date_to);
@@ -873,6 +875,8 @@ class BookingModel extends CI_model {
         }
     } elseif($date_to != "") {
         
+        $date_to   = $date_to   . ' 23:59:59';
+
         $this->db->group_start();
         $this->db->where('actual_check_out_date IS NOT NULL', null, false);
         $this->db->where('actual_check_out_date <=', $date_to);
