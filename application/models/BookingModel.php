@@ -853,7 +853,18 @@ class BookingModel extends CI_model {
         }
 
     } elseif($date_from != "") {
-        $this->db->where('check_out_date >=', $date_from);
+
+        $this->db->group_start();
+        $this->db->where('actual_check_in_date IS NOT NULL', null, false);
+        $this->db->where('actual_check_in_date <=', $date_to);
+        $this->db->group_end();
+
+        // Case 2: actual_check_out_date is NULL → fallback to check_out_date
+        $this->db->or_group_start();
+        $this->db->where('actual_check_in_date IS NULL', null, false);
+        $this->db->where('check_in_date <=', $date_to);
+        $this->db->group_end();
+
          if ($time_from != "") {
         $this->db->group_start();
         $this->db->where('TIME(actual_check_in_date) >=', $time_from);
@@ -861,7 +872,18 @@ class BookingModel extends CI_model {
         $this->db->group_end();
         }
     } elseif($date_to != "") {
-        $this->db->where('check_in_date <=', $date_to);
+        
+        $this->db->group_start();
+        $this->db->where('actual_check_out_date IS NOT NULL', null, false);
+        $this->db->where('actual_check_out_date <=', $date_to);
+        $this->db->group_end();
+
+        // Case 2: actual_check_out_date is NULL → fallback to check_out_date
+        $this->db->or_group_start();
+        $this->db->where('actual_check_out_date IS NULL', null, false);
+        $this->db->where('check_out_date <=', $date_to);
+        $this->db->group_end();
+
         if ($time_to != "") {
         $this->db->group_start();
         $this->db->where('TIME(actual_check_out_date) <=', $time_to);
