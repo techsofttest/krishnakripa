@@ -783,9 +783,48 @@ class BookingModel extends CI_model {
     if($overlapping != "")
     {
 
-    $this->db->where('check_in_date <=', $date_to);
+    //$this->db->where('check_in_date <=', $date_to);
+
+    // --------------------
+    // CHECK-IN CONDITION
+    // --------------------
+    
+    
+    $this->db->group_start()
+
+        ->group_start()  // actual_check_in exists
+            ->where('actual_check_in_date IS NOT NULL', null, false)
+            ->where('actual_check_in_date <=', $date_to)
+        ->group_end()
+
+        ->or_group_start() // fallback
+            ->where('actual_check_in_date IS NULL', null, false)
+            ->where('check_in_date <=', $date_to)
+        ->group_end()
+
+    ->group_end();
+
+
+    // --------------------
+    // CHECK-OUT CONDITION
+    // --------------------
+    $this->db->group_start()
+
+        ->group_start() // actual_check_out exists
+            ->where('actual_check_out_date IS NOT NULL', null, false)
+            ->where('actual_check_out_date >=', $date_from)
+        ->group_end()
+
+        ->or_group_start() // fallback
+            ->where('actual_check_out_date IS NULL', null, false)
+            ->where('check_out_date >=', $date_from)
+        ->group_end()
+
+    ->group_end();
+
+
        
-    $this->db->where('check_out_date >=', $date_from);
+    //$this->db->where('check_out_date >=', $date_from);
 
     }
 
@@ -854,32 +893,53 @@ class BookingModel extends CI_model {
 
     } elseif($date_from != "") {
 
-        $date_from = $date_from . ' 00:00:00';
+    $date_from_full = $date_from . ' 00:00:00';
 
-        $this->db->group_start();
-        $this->db->where('actual_check_in_date IS NOT NULL', null, false);
-        $this->db->where('actual_check_in_date <=', $date_to);
-        $this->db->group_end();
+    // ----------- DATE FILTER -----------
+    $this->db->group_start()
 
-        // Case 2: actual_check_out_date is NULL → fallback to check_out_date
-        $this->db->or_group_start();
-        $this->db->where('actual_check_in_date IS NULL', null, false);
-        $this->db->where('check_in_date <=', $date_to);
-        $this->db->group_end();
+        // actual exists
+        ->group_start()
+            ->where('actual_check_in_date IS NOT NULL', null, false)
+            ->where('DATE(actual_check_in_date) =', $date_from)
+        ->group_end()
 
-         if ($time_from != "") {
-        $this->db->group_start();
-        $this->db->where('TIME(actual_check_in_date) >=', $time_from);
-        $this->db->or_where('actual_check_in_date IS NULL');
-        $this->db->group_end();
-        }
+        // fallback to normal
+        ->or_group_start()
+            ->where('actual_check_in_date IS NULL', null, false)
+            ->where('DATE(check_in_date) =', $date_from)
+        ->group_end()
+
+    ->group_end();
+
+
+    // ----------- TIME FILTER -----------
+    if ($time_from != "") {
+
+        $this->db->group_start()
+
+            // actual exists
+            ->group_start()
+                ->where('actual_check_in_date IS NOT NULL', null, false)
+                ->where('TIME(actual_check_in_date) >=', $time_from)
+            ->group_end()
+
+            // fallback to normal
+            ->or_group_start()
+                ->where('actual_check_in_date IS NULL', null, false)
+                ->where('TIME(check_in_date) >=', $time_from)
+            ->group_end()
+
+        ->group_end();
+    }
+
     } elseif($date_to != "") {
         
-        $date_to   = $date_to   . ' 23:59:59';
+        $date_to_full   = $date_to   . ' 23:59:59';
 
         $this->db->group_start();
         $this->db->where('actual_check_out_date IS NOT NULL', null, false);
-        $this->db->where('actual_check_out_date <=', $date_to);
+        $this->db->where('DATE(actual_check_out_date) <=', $date_to);
         $this->db->group_end();
 
         // Case 2: actual_check_out_date is NULL → fallback to check_out_date
