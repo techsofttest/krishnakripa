@@ -102,7 +102,11 @@
             <div class="col-xs-12">  
 
 
-             <div class="row" style="margin:10px 0px;">
+
+            <?php if(empty($hide_filters)) { ?>
+
+              <div class="row" style="margin:10px 0px;">
+            <div class="row" style="margin:10px 0px;">
 
                     <div class="col-lg-3"></div>
                        
@@ -255,6 +259,24 @@
                     </div>
 
                     <div class="col-sm-3" style="">
+                    <label>Source</label>
+                    
+                      <select class="form-control" name="source">
+                        <option value="" selected>Select Source</option>
+
+                        <?php foreach($sources as $source){ ?>
+
+                          <?php if(strtolower(trim($source->source_name)) !== 'direct guest') { ?>
+                          <option value="<?= $source->source_id ?>" <?php if((!empty($_GET['source'])) && $source->source_id==$_GET['source']) { echo "selected"; } ?>><?= $source->source_name ?></option>
+                          <?php } ?>
+
+                        <?php } ?>
+
+                      </select>
+                  
+                    </div>
+
+                    <div class="col-sm-3" style="">
                     <label>Room</label>
                       <select class="form-control" id="" name="room">
                          <option value="" selected>Select Room</option>
@@ -328,6 +350,7 @@
                        
                        <label class="text-center" style="width:100%;">Enter Search Keyword</label>
                        
+            <?php } ?>
                        <input id="custom_search" type="text" class="form-control" value="" placeholder="Booking ID,Phone,Customer Name etc"/>
                        
                        </div>
@@ -369,7 +392,9 @@
                     			<thead>
                                     <tr>
 
-                                         <th>Id</th>    
+                                        <th>Id</th>    
+                                     
+                                         <th>Source</th>
                                      
                                          <th>Period</th>
 
@@ -670,40 +695,44 @@
  
  <script>
  
-<?php 
-$params = $this->input->get();   
-// Build query string
-$queryString = http_build_query($params);
-
+<?php
+if (isset($queryString) && $queryString !== '') {
+  // use provided queryString from controller (e.g. Direct bookings)
+} else {
+  $params = $this->input->get();
+  // Build query string from current GET params
+  $queryString = http_build_query($params);
+}
 ?>
 
 $(document).ready(function() {
 
-    if ($.fn.DataTable.isDataTable('#datatable')) {
+  if ($.fn.DataTable.isDataTable('#datatable')) {
     $('#datatable').DataTable().clear().destroy();
-    }
+  }
 
-    $('#datatable').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: "<?= base_url(); ?>admin/Bookings/FetchData?<?= $queryString ?>",
-            type: "POST",
-        },
-        order: [[0, 'desc']],
-        columns: [
-            { data: "id" },
-            { data: "period" },
-            { data: "room" },
-            { data: "customer" },
-            { data: "total" },
-            { data: "paid" },
-            { data: "pending" },
-            { data: "payments" },
-            { data: "status" },
-            { data: "actions" }
-        ]
-    });
+  $('#datatable').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+      url: "<?= base_url(); ?>admin/Bookings/FetchData?<?= $queryString ?>",
+      type: "POST",
+    },
+    order: [[0, 'desc']],
+    columns: [
+      { data: "id" },
+      { data: "source" },
+      { data: "period" },
+      { data: "room" },
+      { data: "customer" },
+      { data: "total" },
+      { data: "paid" },
+      { data: "pending" },
+      { data: "payments" },
+      { data: "status" },
+      { data: "actions" }
+    ]
+  });
 });
 
 

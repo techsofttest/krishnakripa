@@ -151,7 +151,7 @@ public function get_profile_details($id)
 		{
 			return $this->db->update($table, $fields, $cond);
 		}
-		public function fetch_one_row($table,$cond)
+	public function fetch_one_row($table,$cond)
 		{
 			$this->db->select('*');
 			$this->db->from($table);
@@ -159,6 +159,21 @@ public function get_profile_details($id)
 			$query  = $this->db->get();
 			$row    = $query->row_array();		
 			return $row;
+		}
+
+		public function getHotelBySlug($slug)
+		{
+			$this->db->select('*');
+			$this->db->from('hotels');
+			$this->db->group_start();
+			$this->db->where('hotel_slug', $slug);
+			$this->db->or_where('hotel_slug', urldecode($slug));
+			$this->db->group_end();
+			$query = $this->db->get();
+			if ($query->num_rows() > 0) {
+				return $query->row_array();
+			}
+			return false;
 		}
 		
 		

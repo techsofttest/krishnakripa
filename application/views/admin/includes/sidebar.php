@@ -99,6 +99,7 @@
       <li class="<?php if($this->uri->segment(3)=="Add"):echo 'active'; endif; ?>" > <a href="<?php echo base_url();?>admin/Bookings/Add"> <i class="fa fa-plus-square"></i><span>New Booking</span></a> </li>
          
       <li class="<?php if( ($this->uri->segment(2)=="Bookings" && $this->uri->segment(3)=="") || $this->uri->segment(3)=="EditBooking"):echo 'active'; endif; ?>" > <a href="<?php echo base_url();?>admin/Bookings"> <i class="fa fa-plus-square"></i><span>All Bookings</span></a> </li>   
+    <li class="<?php if($this->uri->segment(3)=="Direct"):echo 'active'; endif; ?>" > <a href="<?php echo base_url();?>admin/Bookings/Direct"> <i class="fa fa-external-link"></i><span>Direct Bookings</span></a> </li>
           
       </ul>
       </li>

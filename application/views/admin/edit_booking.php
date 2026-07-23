@@ -416,6 +416,23 @@
                 </div>
 
 
+              <?php if (!empty($direct_guest_source_id) && isset($booking['booking_source']) && (int) $booking['booking_source'] === $direct_guest_source_id): ?>
+              <div class="row">
+                  <div class="col-xs-12 col-sm-4 row-seperate">
+                        <label>Vehicle Number</label>
+                        <input type="text" class="form-control" name="vehicle_number" value="<?= html_escape($booking['vehicle_number'] ?? ''); ?>">
+                  </div>
+                  <div class="col-xs-12 col-sm-4 row-seperate">
+                        <label>No of Guests</label>
+                        <input type="number" class="form-control" name="no_of_guests" min="1" value="<?= !empty($booking['no_of_guests']) ? (int) $booking['no_of_guests'] : ''; ?>">
+                  </div>
+                  <div class="col-xs-12 col-sm-4 row-seperate">
+                        <label>No of Nights</label>
+                        <input type="number" class="form-control" name="no_of_nights" min="1" value="<?= !empty($booking['no_of_nights']) ? (int) $booking['no_of_nights'] : ''; ?>">
+                  </div>
+              </div>
+              <?php endif; ?>
+
               <div class="row">
 
                   <div class="col-xs-12 col-sm-12 row-seperate">

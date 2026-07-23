@@ -48,6 +48,7 @@ class Bookings extends MY_Controller {
         $date_to        = $this->input->get('date_to') ?? "";
         $payment_status = $this->input->get('payment_status') ?? "";
         $customer       = $this->input->get('customer') ?? "";
+        $source         = $this->input->get('source') ?? "";
         $room           = $this->input->get('room') ?? "";
         $room_no        = $this->input->get('room_no_search') ?? "";
         $register_no    = $this->input->get('register_no_search') ?? "";
@@ -60,7 +61,7 @@ class Bookings extends MY_Controller {
         $totalRecordwithFilter = $this->BookingModel->countFilteredBookings(
             $searchValue,
             $date_from, $date_to, $payment_status,
-            $customer, $room, $room_no, $register_no, $hotel_type
+            $customer, $room, $room_no, $register_no, $hotel_type, $source
         );
 
         // Fetch records
@@ -69,23 +70,54 @@ class Bookings extends MY_Controller {
             $date_from, $date_to, $payment_status,
             $customer, $room, $room_no, $register_no, $hotel_type,
             $columnName, $columnSortOrder,
-            $rowperpage, $start
+            $rowperpage, $start, $source
         );
 
 		//print_r($records);
 
         $data = [];
         foreach ($records as $val) {
+            
+            
+            $isDraft = ($val->booking_status === 'draft');
+
+            $invoiceAction = $isDraft
+                ? ''
+                : '<a class="btn btn-primary" href="'.base_url('admin/Bookings/Invoice/'.$val->booking_id).'" target="_blank"><i class="fa fa-file-text"></i></a>';
+
+            $viewAction = $isDraft
+                ? ''
+                : '<a class="btn btn-primary" href="'.base_url('admin/Bookings/View/'.$val->booking_id).'"><i class="fa fa-eye"></i></a>';
+
+            $addOnAction = $isDraft
+                ? '<span class="text-muted">-</span>'
+                : '<a class="btn btn-primary add_addon_btn" data-id="'.$val->booking_id.'"><i class="fa fa-plus"></i> Add On</a>';
+
+            $paidAmount = $isDraft
+                ? '-'
+                : '<b style="color:green;font-size:20px">'.$val->paid_amount.'</b>';
+
+            $pendingAmount = $isDraft
+                ? '-'
+                : '<b style="color:red;font-size:20px">'.format_currency($val->total_amount-$val->paid_amount).'</b>';
+
+            $paymentsAction = $isDraft
+                ? '<span class="text-muted">-</span>'
+                : (
+                    ($val->booking_status=="cancelled")
+                        ? '<a class="btn btn-warning add_refund_btn" data-type="debit" data-id="'.$val->booking_id.'"><i class="fa fa-reply"></i> Refund</a>'
+                        : '<a class="btn btn-primary add_payment_btn" data-type="credit" data-id="'.$val->booking_id.'"><i class="fa fa-money"></i> Payment</a>'
+                );
 
             $actions = '<div class="row">
                             <div class="col-sm-6">
-                                <a class="btn btn-primary" href="'.base_url('admin/Bookings/Invoice/'.$val->booking_id).'" target="_blank"><i class="fa fa-file-text"></i></a>
+                                '.$invoiceAction.'
                             </div>
                             <div class="col-sm-6">
-                                <a class="btn btn-primary" href="'.base_url('admin/Bookings/View/'.$val->booking_id).'"><i class="fa fa-eye"></i></a>
+                                '.$viewAction.'
                             </div>
                             <div class="col-sm-6">
-                                <a class="btn btn-warning" href="'.base_url('admin/Bookings/Edit/'.$val->booking_id).'"><i class="fa fa-pencil"></i></a>
+                                <a class="btn btn-warning" href="'.base_url('admin/Bookings/'.($val->booking_status=="draft" ? 'Add/'.$val->booking_id : 'Edit/'.$val->booking_id)).'"><i class="fa fa-pencil"></i></a>
                             </div>
                             <div class="col-sm-6">
                                 <a onclick="return confirm(\'Delete this booking?\')" class="btn btn-danger" href="'.base_url('admin/Bookings/Delete/'.$val->booking_id).'"><i class="fa fa-trash"></i></a>
@@ -93,14 +125,18 @@ class Bookings extends MY_Controller {
                         </div>';
 
 				
-				$checkIn = 
+				$checkIn = $isDraft
+					? '-'
+					: 
 					(!empty($val->actual_check_in_date) 
 						? date('d M Y', strtotime($val->actual_check_in_date)) . "<br>" .
 						date('h:i a', strtotime($val->actual_check_in_date)) 
 						: date('d M Y', strtotime($val->check_in_date))
 					);
 
-				$checkOut = 
+				$checkOut = $isDraft
+					? '-'
+					: 
 					(!empty($val->actual_check_out_date) 
 						? date('d M Y', strtotime($val->actual_check_out_date)) . "<br>" .
 						date('h:i a', strtotime($val->actual_check_out_date)) 
@@ -108,20 +144,19 @@ class Bookings extends MY_Controller {
 					);
 
 				
-					$period = $checkIn.'<br>To<br>'.$checkOut;
+					$period = $isDraft ? '-' : $checkIn.'<br>To<br>'.$checkOut;
 
 
             $data[] = [
-                "id"        => $val->uid . (!empty($val->source_name) ? "<br><br>".$val->source_name : ""),
+                "id"        => $val->uid,
+                "source"    => !empty($val->source_name) ? $val->source_name : "-",
                 "period"    => $period,
-                "room"      => $val->name."<br><b>".(!empty($val->booking_room_no) ? "Room : ".$val->booking_room_no : "")."</b><br>".(!empty($val->booking_register_no) ? "Reg No : ".$val->booking_register_no : ""),
+                "room"      => $isDraft ? '-' : $val->name."<br><b>".(!empty($val->booking_room_no) ? "Room : ".$val->booking_room_no : "")."</b><br>".(!empty($val->booking_register_no) ? "Reg No : ".$val->booking_register_no : ""),
                 "customer"  => $val->first_name." ".$val->last_name."<br>".$val->phone_number,
-                "total"     => "<b style='font-size:20px'>".$val->total_amount."</b><br><a class='btn btn-primary add_addon_btn' data-id='".$val->booking_id."'><i class='fa fa-plus'></i> Add On</a>",
-                "paid"      => "<b style='color:green;font-size:20px'>".$val->paid_amount."</b>",
-                "pending"   => "<b style='color:red;font-size:20px'>".format_currency($val->total_amount-$val->paid_amount)."</b>",
-                "payments"  => ($val->booking_status=="cancelled")
-                                ? '<a class="btn btn-warning add_refund_btn" data-type="debit" data-id="'.$val->booking_id.'"><i class="fa fa-reply"></i> Refund</a>'
-                                : '<a class="btn btn-primary add_payment_btn" data-type="credit" data-id="'.$val->booking_id.'"><i class="fa fa-money"></i> Payment</a>',
+                "total"     => $isDraft ? '-' : "<b style='font-size:20px'>".$val->total_amount."</b><br>".$addOnAction,
+                "paid"      => $paidAmount,
+                "pending"   => $pendingAmount,
+                "payments"  => $paymentsAction,
                 "status"    => $this->renderBookingStatus($val),
                 "actions"   => $actions
             ];
@@ -145,6 +180,8 @@ class Bookings extends MY_Controller {
 private function renderBookingStatus($val)
 {
     switch($val->booking_status) {
+        case "draft":
+            return '<a href="'.base_url().'admin/Bookings/Add/'.$val->booking_id.'"><span class="btn btn-danger"><i class="fa fa-file-o"></i> Draft</span>';
         case "pending":
             return '<span class="btn btn-warning status_btn" data-id="'.$val->booking_id.'"><i class="fa fa-clock-o"></i> Pending</span>';
         case "confirmed":
@@ -234,19 +271,53 @@ private function renderBookingStatus($val)
 
 
 
-		 	$data['bookings']	=	$this->BookingModel->ViewBookings($date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type);		   
+		 	$data['bookings']	=	$this->BookingModel->ViewBookings($date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type,$this->input->get('source') ?? "");		   
 			$parent =  $this->uri->segment(4);	
 			$data['customers'] = $this->Admin_model->fetch_where_order('customers',array(),'first_name','asc');
 			$data['addons'] = $this->Admin_model->fetch_where_order('addons',array(),'ao_name','asc');
 			$data['rooms'] = $this->Admin_model->fetch_where_order('room',array(),'name','asc');			 
 			$data['seo_title'] 	= 	"View Bookings | ".$this->data['admin_title'].""; 			
+			$data['sources'] = $this->Admin_model->fetch_where_order('sources',array(),'source_name','asc');
 			$this->load->view('admin/view_bookings',$data);
 		
         }
+
+
+			public function Direct()
+
+			{
+
+				// Load same data as index but hide filters for Direct Bookings
+
+				$data = array();
+				$data['seo_title'] = "Direct Bookings | ". $this->data['admin_title'];
+				$data['bookings'] = $this->BookingModel->ViewBookings();
+				$data['customers'] = $this->Admin_model->fetch_where_order('customers',array(),'first_name','asc');
+				$data['addons'] = $this->Admin_model->fetch_where_order('addons',array(),'ao_name','asc');
+				$data['rooms'] = $this->Admin_model->fetch_where_order('room',array(),'name','asc');
+				$data['sources'] = $this->Admin_model->fetch_where_order('sources',array(),'source_name','asc');
+
+				// Find the source id for "Direct Guest" (case-insensitive)
+				$direct_source_id = null;
+				foreach ($data['sources'] as $s) {
+					if (isset($s->source_name) && strtolower(trim($s->source_name)) === 'direct guest') {
+						$direct_source_id = (int) $s->source_id;
+						break;
+					}
+				}
+
+				// Flag to tell view to hide filters
+				$data['hide_filters'] = true;
+				// Pre-set the GET query string used by the DataTable AJAX
+				$data['queryString'] = $direct_source_id ? http_build_query(array('source' => $direct_source_id)) : '';
+
+				$this->load->view('admin/view_bookings',$data);
+
+			}
 		
 		
 	
-		public function Add()
+		public function Add($draft_booking_id = 0)
 		
 		{
 			
@@ -260,9 +331,22 @@ private function renderBookingStatus($val)
 			$data['hotels']	=	$this->Admin_model->fetch_all_order('hotels','hotel_name','asc');
 
 			$data['addons']	=	$this->BookingModel->get_all_addons();
+			$data['booking'] = array();
+			$data['draft_booking_id'] = (int) $draft_booking_id;
+			$data['draft_booking'] = array();
+
+			if (!empty($draft_booking_id)) {
+				$draft_booking = $this->BookingModel->ViewBookingById($draft_booking_id);
+				if (!empty($draft_booking) && isset($draft_booking['booking_status']) && $draft_booking['booking_status'] === 'draft') {
+					$data['booking'] = $draft_booking;
+					$data['draft_booking'] = $draft_booking;
+				}
+			}
 			
 			
 			if($_POST):
+
+			$existing_booking_id = (int) $this->input->post('draft_booking_id');
 
 			$tax = (float) $this->input->post('tax_amount');
 
@@ -287,6 +371,8 @@ private function renderBookingStatus($val)
 		    'check_out_date' => date('Y-m-d',strtotime($this->input->post('check_out'))),
 
 			'booking_source' => $this->input->post('booking_source'),
+
+			'hotel_id' => $this->input->post('hotel_type') ?: null,
 
 			'booking_room_id' => $this->input->post('room_select'),
 
@@ -333,16 +419,20 @@ private function renderBookingStatus($val)
 			'customer_phone_number_alt' => trim($this->input->post('phone_alt')),
 
 			'customer_address' => $this->input->post('address'),
-		
-		 	);
-		
+		);
 
-			//Customer Data 
+		if ($this->input->post('vehicle_number') !== null) {
+			$booking_data['vehicle_number'] = trim($this->input->post('vehicle_number'));
+		}
+		if ($this->input->post('no_of_guests') !== null) {
+			$booking_data['no_of_guests'] = $this->input->post('no_of_guests') !== '' ? (int) $this->input->post('no_of_guests') : null;
+		}
+		if ($this->input->post('no_of_nights') !== null) {
+			$booking_data['no_of_nights'] = $this->input->post('no_of_nights') !== '' ? (int) $this->input->post('no_of_nights') : null;
+		}
 
-			$phone_number = trim($this->input->post('phone'));
 
-			$check_customer = $this->Admin_model->fetch_one_row('customers',array('phone_number' => $phone_number));
-
+		//Customer Data
 			if(empty($check_customer))
 			{
 
@@ -361,7 +451,12 @@ private function renderBookingStatus($val)
 
 			$cus_id = $this->Admin_model->insertsection('customers',$cus_data);
 
-			$bid =  $this->Admin_model->insertsection('bookings',$booking_data);
+			if (!empty($existing_booking_id)) {
+				$bid = $existing_booking_id;
+				$this->Admin_model->update_all($booking_data,array('booking_id' => $bid),'bookings');
+			} else {
+				$bid =  $this->Admin_model->insertsection('bookings',$booking_data);
+			}
 
 			$update_booking_data = array(
 				'booking_customer_id' => $cus_id,
@@ -376,7 +471,12 @@ private function renderBookingStatus($val)
 			else
 			{
 
-			$bid =  $this->Admin_model->insertsection('bookings',$booking_data);
+			if (!empty($existing_booking_id)) {
+				$bid = $existing_booking_id;
+				$this->Admin_model->update_all($booking_data,array('booking_id' => $bid),'bookings');
+			} else {
+				$bid =  $this->Admin_model->insertsection('bookings',$booking_data);
+			}
 
 			$update_booking_data = array(
 				'booking_customer_id' => $check_customer['cus_id'],
@@ -436,14 +536,22 @@ private function renderBookingStatus($val)
 
 
 
-			$booking_uid = 'KK' . str_pad($bid, 5, '0', STR_PAD_LEFT);
+			if (empty($existing_booking_id)) {
+				$booking_uid = 'KK' . str_pad($bid, 5, '0', STR_PAD_LEFT);
 
-			$update_booking_data = array(
-				'uid' => $booking_uid,
-			);
-			$update_booking_cond = array('booking_id' => $bid);
+				$update_booking_data = array(
+					'uid' => $booking_uid,
+				);
+				$update_booking_cond = array('booking_id' => $bid);
 
-			$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
+				$this->Admin_model->update_all($update_booking_data,$update_booking_cond,'bookings');
+			} else {
+				$this->Admin_model->update_all(
+					array('booking_status' => 'confirmed'),
+					array('booking_id' => $bid),
+					'bookings'
+				);
+			}
 
 		$uploaded_files = array();
 
@@ -655,13 +763,14 @@ private function renderBookingStatus($val)
 			$room_total += $item['rate'];
 		}
 
-		if($this->input->post('booking_source')==0)
+		$posted_room_total = (float) $this->input->post('room_total');
+		if($this->input->post('booking_source')==0 || $posted_room_total <= 0)
 		{
 		$room_total = $room_total*$no_of_room;
 		}
 		else
 		{
-		$room_total = $this->input->post('room_total');
+		$room_total = $posted_room_total;
 		}
 
 
@@ -795,6 +904,9 @@ private function renderBookingStatus($val)
 		{
 
 		$data['booking'] = $this->BookingModel->ViewBookingById($id);
+
+		$direct_guest_source = $this->db->select('source_id')->from('sources')->where('LOWER(source_name)', 'direct guest')->get()->row_array();
+		$data['direct_guest_source_id'] = !empty($direct_guest_source['source_id']) ? (int) $direct_guest_source['source_id'] : null;
 
 		$room_det = $this->Admin_model->fetch_one_row('room',['roomid' => $data['booking']['booking_room_id']]);
 
@@ -1382,6 +1494,20 @@ private function renderBookingStatus($val)
 
 				// add a page
 				$pdf->AddPage();
+				
+				$checkin_time_html = "";
+
+				if($booking['actual_check_in_date'])
+				{
+				$checkin_time_html = "Check In Time : <b>".date('h:i a',strtotime($booking['actual_check_in_date']))."</b> <br>";
+				}
+
+				$checkout_time_html = "";
+
+				if($booking['actual_check_out_date'])
+				{
+				$checkout_time_html = "<br>Check Out Time : <b>".date('h:i a',strtotime($booking['actual_check_out_date']))."</b>";
+				}
 
 
 				$html = '
@@ -1448,7 +1574,22 @@ private function renderBookingStatus($val)
 				<b>'.$booking['first_name'].' '.$booking['last_name'].'<br>
 				'.nl2br($booking['address']).'<br>
 				'.$booking['phone_number'].'<br>
-				'.$booking['email_address'].'
+				'.$booking['email_address'].'';
+
+
+				if (!empty($booking['vehicle_number'])) {
+					$html .= '<br>Vehicle No: '.$booking['vehicle_number'];
+				}
+
+				if (!empty($booking['no_of_guests'])) {
+					$html .= '<br>No. of Guests: '.$booking['no_of_guests'];
+				}
+
+				if (!empty($booking['no_of_nights'])) {
+					$html .= '<br>No. of Nights: '.$booking['no_of_nights'];
+				}
+
+				$html .= '
 				</b>
 				</td>
 				
@@ -1456,7 +1597,9 @@ private function renderBookingStatus($val)
 				Booking ID : <b>'.$booking['uid'].'</b><br>
 				Invoice Date : <b>'.date('d-M-Y',strtotime($booking['created_at'])).'</b><br>
 				Check In : <b>'.date('d-M-Y',strtotime($booking['check_in_date'])).'</b><br>
+				'.$checkin_time_html.'
 				Check Out : <b>'.date('d-M-Y',strtotime($booking['check_out_date'])) .'</b>
+				'.$checkout_time_html.'
 				</td>
 
 				
@@ -1654,6 +1797,48 @@ private function renderBookingStatus($val)
 			// output the HTML content
 			$pdf->writeHTML($html, true, false, true, false, '');
 
+			// Attach image ID proofs (one per page) if available
+			if (!empty($booking['id_proof'])) {
+				$id_proofs = json_decode($booking['id_proof'], true);
+				if (!empty($id_proofs) && is_array($id_proofs)) {
+					foreach ($id_proofs as $proof_file) {
+						$proof_path = FCPATH . 'uploads/Booking/' . $proof_file;
+						if (!file_exists($proof_path)) continue;
+						$ext = strtolower(pathinfo($proof_path, PATHINFO_EXTENSION));
+						// Only include image proofs
+						if (in_array($ext, ['jpg','jpeg','png','gif','webp','bmp'])) {
+							// Disable header/footer for proof pages
+							$pdf->setPrintHeader(false);
+							$pdf->setPrintFooter(false);
+							
+							// Move to a new page for the image
+							$pdf->AddPage();
+							
+							// Fit image to page while preserving aspect
+							list($w, $h) = getimagesize($proof_path);
+							// Calculate dimensions in mm (assuming 96 DPI)
+							$dpi = 96;
+							$pxWidth = $w;
+							$pxHeight = $h;
+							// Full page dimensions for image proof
+							$pageW = $pdf->getPageWidth() - 10;
+							$pageH = $pdf->getPageHeight() - 10;
+							// convert px to mm: mm = px * 25.4 / dpi
+							$imgWmm = ($pxWidth * 25.4) / $dpi;
+							$imgHmm = ($pxHeight * 25.4) / $dpi;
+							$scale = min($pageW / $imgWmm, $pageH / $imgHmm, 1);
+							$finalW = $imgWmm * $scale;
+							$finalH = $imgHmm * $scale;
+							// center on page
+							$x = (($pdf->getPageWidth() - $finalW) / 2);
+							$y = (($pdf->getPageHeight() - $finalH) / 2);
+							$pdf->Image($proof_path, $x, $y, $finalW, $finalH, '', '', '', false, 300);
+						}
+					}
+				}
+			}
+
+			// Output final PDF (inline)
 			$pdf->Output("{$booking['uid']}.pdf", "I");
 
 

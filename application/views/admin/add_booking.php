@@ -277,6 +277,17 @@
 </style>
 
       <?php $this->load->view('admin/includes/header');?>
+      <?php
+        $draft_booking = isset($booking) && is_array($booking) ? $booking : array();
+        $draft_id_proofs = array();
+        if (!empty($draft_booking['id_proof'])) {
+            $decoded_proofs = json_decode($draft_booking['id_proof'], true);
+            if (is_array($decoded_proofs)) {
+                $draft_id_proofs = $decoded_proofs;
+            }
+        }
+        $show_guest_fields_on_load = (!empty($draft_booking_id) && !empty($draft_booking['booking_status']) && $draft_booking['booking_status'] === 'draft') || empty($draft_booking['booking_source']);
+      ?>
       <!-- Left side column. contains the logo and sidebar -->
       <aside class="main-sidebar">
         <!-- sidebar: style can be found in sidebar.less -->
@@ -316,7 +327,8 @@
             
             
 						<?php echo form_open(base_url().'admin/Bookings/Add',array('method'=>"POST",'enctype'=>"multipart/form-data",'id'=>"add_gallery"))?>
-			
+            <input type="hidden" id="draft_booking_id" name="draft_booking_id" value="<?= !empty($draft_booking_id) ? (int) $draft_booking_id : 0; ?>">
+            <input type="hidden" id="show_guest_fields_on_draft" value="<?= $show_guest_fields_on_load ? '1' : '0'; ?>">
 				    <!-- Form Element sizes -->
 				    <div class="box box-success">				
 					  <div class="box-body">
@@ -343,10 +355,10 @@
 
                 <select class="form-control" name="booking_source" id="booking_source_select"> 
 
-                <option value="0" selected>Direct</option>
+                <option value="0" <?= empty($draft_booking['booking_source']) ? 'selected' : ''; ?>>Direct</option>
 
                 <?php foreach($sources as $source){ ?>
-                <option value="<?= $source->source_id ?>"><?= $source->source_name ?></option>
+                <option value="<?= $source->source_id ?>" <?= (!empty($draft_booking['booking_source']) && $draft_booking['booking_source'] == $source->source_id) ? 'selected' : ''; ?>><?= $source->source_name ?></option>
                 <?php } ?>
 
                 </select>
@@ -356,7 +368,7 @@
                  <!--
                  <div class="col-xs-12 col-sm-6 row-seperate">
                  <label>Check In<strong style="color:#F00;">*</strong></label>
-	               <input id="checkin" class="form-control" name="check_in"   type="date" min="<?= date('Y-m-d'); ?>" onclick="this.showPicker()" required>	
+	               <input id="checkin" class="form-control" name="check_in"   type="date" min="<?= date('Y-m-d'); ?>" value="<?= !empty($draft_booking['check_in_date']) ? date('Y-m-d', strtotime($draft_booking['check_in_date'])) : ''; ?>" onclick="this.showPicker()" required>	
 							    
                  </div>
 
@@ -372,8 +384,8 @@
 
                 <input type="text" id="daterangepikr" placeholder="Check In - Check Out" class="form-control" value="" autocomplete="off" readonly/>
 				        <i class="fas fa-calendar-alt"></i>
-                <input type="hidden" class="room_check" name="check_in" id="checkin" autocomplete="off" required>
-                <input type="hidden" class="room_check" name="check_out" id="checkout" autocomplete="off" required>
+                <input type="hidden" class="room_check" name="check_in" id="checkin" value="" autocomplete="off" required>
+                <input type="hidden" class="room_check" name="check_out" id="checkout" value="" autocomplete="off" required>
 
                 </div>
                 
@@ -423,7 +435,7 @@
 
                   <?php foreach($hotels as $hotel){ ?>
 
-                     <option value="<?= $hotel->hotel_id ?>"><?= $hotel->hotel_name ?></option>
+                     <option value="<?= $hotel->hotel_id ?>" <?= ((!empty($draft_booking['hotel_id']) && $draft_booking['hotel_id'] == $hotel->hotel_id) || (!empty($draft_booking['booking_hotel_id']) && $draft_booking['booking_hotel_id'] == $hotel->hotel_id) || (!empty($draft_booking['hotel_type']) && $draft_booking['hotel_type'] == $hotel->hotel_id)) ? 'selected' : ''; ?>><?= $hotel->hotel_name ?></option>
 
                   <?php } ?>
 
@@ -438,11 +450,11 @@
 
                 <select class="form-control room_check type_select" name="room_type" required>
 
-                <option value="0">All</option>
+                <option value="0" <?= empty($draft_booking['booking_room_id']) ? 'selected' : ''; ?>>All</option>
 
                 <?php foreach($room_types as $rt){ ?>
 
-                <option value="<?= $rt->cat_id ?>"><?= $rt->cat_title; ?></option>
+                <option value="<?= $rt->cat_id ?>" <?= ((!empty($draft_booking['room_type']) && $draft_booking['room_type'] == $rt->cat_id) || (!empty($draft_booking['booking_room_type']) && $draft_booking['booking_room_type'] == $rt->cat_id)) ? 'selected' : ''; ?>><?= $rt->cat_title; ?></option>
 
                 <?php } ?>
 
@@ -675,7 +687,7 @@
                 
                 <label> Phone <strong style="color:#F00;">*</strong></label>
                 <div class="input-group">
-							  <input class="form-control phone_input" name="phone" autocomplete="off" required>	
+							  <input class="form-control phone_input" name="phone" autocomplete="off" value="<?= !empty($draft_booking['customer_phone_number']) ? html_escape($draft_booking['customer_phone_number']) : ''; ?>" required>	
                 
                 <span class="input-group-addon transparent">
                 <i id="phone_status_icon" class='fa fa-question' aria-hidden='true'></i>
@@ -689,14 +701,14 @@
                 
                 <label>Alternate Phone</label>
                
-							  <input class="form-control alt_phone_input" name="phone_alt" autocomplete="off">	
+							  <input class="form-control alt_phone_input" name="phone_alt" value="<?= !empty($draft_booking['customer_phone_number_alt']) ? html_escape($draft_booking['customer_phone_number_alt']) : ''; ?>" autocomplete="off">	
                 
 							  </div>
 
 
                 <div class="col-xs-12 col-sm-4 row-seperate">
                 <label> Email <strong style="color:#F00;"></strong></label>
-							  <input class="form-control email_input" type="email" name="email" autocomplete="off">	
+							  <input class="form-control email_input" type="email" name="email" value="<?= !empty($draft_booking['customer_email']) ? html_escape($draft_booking['customer_email']) : ''; ?>" autocomplete="off">	
 							  </div>
 
 
@@ -710,14 +722,14 @@
 
                   <div class="col-xs-12 col-sm-6 row-seperate">
                   <label> First Name <strong style="color:#F00;">*</strong></label>
-							    <input class="form-control f_name_input" type="text" name="f_name" autocomplete="off" required>
+							    <input class="form-control f_name_input" type="text" name="f_name" value="<?= !empty($draft_booking['customer_first_name']) ? html_escape($draft_booking['customer_first_name']) : ''; ?>" autocomplete="off" required>
 
 							    </div>
 
 
                   <div class="col-xs-12 col-sm-6 row-seperate">
                     <label> Last Name <strong style="color:#F00;"></strong></label>
-							    <input class="form-control l_name_input" type="text" name="l_name" autocomplete="off">	
+							    <input class="form-control l_name_input" type="text" name="l_name" value="<?= !empty($draft_booking['customer_last_name']) ? html_escape($draft_booking['customer_last_name']) : ''; ?>" autocomplete="off">	
 							    </div>
 
 
@@ -730,16 +742,16 @@
 
                   <div class="col-xs-12 col-sm-6 row-seperate">
                   <label> Address <strong style="color:#F00;"></strong></label>
-							    <textarea class="form-control address_input" name="address" autocomplete="off"></textarea>
+							    <textarea class="form-control address_input" name="address" autocomplete="off"><?= !empty($draft_booking['customer_address']) ? html_escape($draft_booking['customer_address']) : ''; ?></textarea>
 
 							    </div>
 
                    <div class="col-xs-12 col-sm-6 row-seperate">
                         <label> ID Proof <strong style="color:#F00;"></strong></label>
 
-                        <div id="existingProofs" class="mb-2"></div>
+                        <div class="mb-2"></div>
 
-							          <div id="fileInputsContainer">
+                        <div id="fileInputsContainer">
                         <div class="file-input-container">
                             <div class="input-with-button">
                                 <input class="form-control" type="file" name="id_proof[]">
@@ -749,6 +761,19 @@
                             </div>
                         </div>
                         </div>
+
+                        <?php if (!empty($draft_id_proofs)) { ?>
+                          <div id="existingProofs" class="mb-2">
+                            <?php foreach ($draft_id_proofs as $proof) { ?>
+                              <div class="old-proof-container">
+                                <input type="hidden" name="old_proofs[]" value="<?= html_escape($proof); ?>">
+                                <a download href="<?= base_url(); ?>uploads/Booking/<?= html_escape($proof); ?>" class="btn btn-warning btn-sm">
+                                  <i class="fa fa-print"></i> Existing Proof
+                                </a>
+                              </div>
+                            <?php } ?>
+                          </div>
+                        <?php } ?>
 
 							     </div>
 
@@ -1012,13 +1037,31 @@
 
 
 
+                  
+
+
+                    <div id="guest_booking_extra_fields" class="row" style="<?= $show_guest_fields_on_load ? '' : 'display:none;'; ?>">
+                      <div class="col-xs-12 col-sm-4 row-seperate">
+                            <label>Vehicle Number</label>
+                            <input class="form-control" name="vehicle_number" value="<?= !empty($draft_booking['vehicle_number']) ? html_escape($draft_booking['vehicle_number']) : ''; ?>">
+                      </div>
+                      <div class="col-xs-12 col-sm-4 row-seperate">
+                            <label>No of Guests <span class="text-danger">*</span></label>
+                            <input type="text" min="1" class="form-control" name="no_of_guests" value="<?= !empty($draft_booking['no_of_guests']) ? (int) $draft_booking['no_of_guests'] : ''; ?>" >
+                      </div>
+                      <div class="col-xs-12 col-sm-4 row-seperate">
+                            <label>No of Nights <span class="text-danger">*</span></label>
+                            <input type="text" min="1" class="form-control" name="no_of_nights" value="<?= !empty($draft_booking['no_of_nights']) ? (int) $draft_booking['no_of_nights'] : ''; ?>" >
+                      </div>
+                  </div>
+
+                  
+
 
                   <div class="row">
-
-
-                      <div class="col-xs-12 col-sm-12 row-seperate">
+                  <div class="col-xs-12 col-sm-12 row-seperate">
                               <label> Special Requirements / Notes <strong style="color:#F00;"></strong></label>
-							                <textarea class="form-control" name="booking_notes"></textarea>	
+                        <textarea class="form-control" name="booking_notes"><?= !empty($draft_booking['booking_notes']) ? html_escape($draft_booking['booking_notes']) : ''; ?></textarea>	
 							        </div>
 
                    </div>
@@ -1038,7 +1081,7 @@
                     <th>Room Total</th>
                     <td  class="totals" id="room_total0">
 
-                    <input class="text-right numeric-only" type="text" id="room_total_val" name="room_total" readonly>
+                    <input class="text-right numeric-only" type="text" id="room_total_val" name="room_total" value="<?= !empty($draft_booking['room_total']) ? html_escape($draft_booking['room_total']) : ''; ?>" readonly>
 
                     </td>
 
@@ -1079,7 +1122,7 @@
 
                     <th>Discounts</th>
 
-                    <td class="totals text-right" ><input class="text-right" value="0" name="discount" id="discount_amount"></td>
+                    <td class="totals text-right" ><input class="text-right" value="<?= !empty($draft_booking['total_discounts']) ? html_escape($draft_booking['total_discounts']) : '0'; ?>" name="discount" id="discount_amount"></td>
 
                   </tr>
 
@@ -1092,12 +1135,12 @@
                     <td class="totals" id="total_amount">
 
                     </td>
-                    <input type="hidden" id="total_amount_val" name="total_amount">
-                    <input type="hidden" id="tax_amount_val" name="tax_amount">
+                    <input type="hidden" id="total_amount_val" name="total_amount" value="<?= !empty($draft_booking['total_amount']) ? html_escape($draft_booking['total_amount']) : ''; ?>">
+                    <input type="hidden" id="tax_amount_val" name="tax_amount" value="<?= !empty($draft_booking['tax_amount']) ? html_escape($draft_booking['tax_amount']) : ''; ?>">
                     <!--<input type="hidden" id="room_total_val" name="room_total">-->
-                    <input type="hidden" id="addon_total_val" name="addon_amount">
-                    <input type="hidden" id="extra_price_val" name="extra_price">
-                    <input type="hidden" id="extra_desc_val" name="extra_desc">
+                    <input type="hidden" id="addon_total_val" name="addon_amount" value="<?= !empty($draft_booking['addon_amount']) ? html_escape($draft_booking['addon_amount']) : ''; ?>">
+                    <input type="hidden" id="extra_price_val" name="extra_price" value="<?= !empty($draft_booking['extra_amount']) ? html_escape($draft_booking['extra_amount']) : ''; ?>">
+                    <input type="hidden" id="extra_desc_val" name="extra_desc" value="<?= !empty($draft_booking['extra_desc']) ? html_escape($draft_booking['extra_desc']) : ''; ?>">
 
                   </tr>
 
@@ -1105,7 +1148,7 @@
                   <tr>
 
                     <th>Advance Payment</th>
-                    <td class="totals" ><input class="totals" value="0" name="current_payment"></td>
+                    <td class="totals" ><input class="totals" value="<?= !empty($draft_booking['paid_amount']) ? html_escape($draft_booking['paid_amount']) : '0'; ?>" name="current_payment"></td>
 
                   </tr>
 
@@ -1119,7 +1162,7 @@
 
                           
                   <div class="box-footer">
-                    <button type="submit" class="btn btn-primary" id="submitbutton">Add</button>
+                    <button type="submit" class="btn btn-primary" id="submitbutton"><?= !empty($draft_booking_id) ? 'Update Draft' : 'Add'; ?></button>
                     <a href="javascript:history.go(-1)" class="btn btn-primary">Cancel</a>
                     	
                   </div>
@@ -1144,8 +1187,82 @@
 
 
           <script>
-            $(document).ready(function() {
 
+            $(document).ready(function() {
+                var draftRoomId = <?= !empty($draft_booking['booking_room_id']) ? (int) $draft_booking['booking_room_id'] : 0; ?>;
+                var draftHotelId = <?= !empty($draft_booking['hotel_id']) ? (int) $draft_booking['hotel_id'] : 0; ?>;
+                var draftRoomApplied = false;
+                if (draftHotelId) {
+                    $('#hotel_type').val(draftHotelId);
+                    $('#hotel_type').trigger('change');
+                }
+                
+
+                function recalculateBookingPrice() {
+                    var booking_source = $('#booking_source_select').val() ?? 0;
+                    var room_total = $('#room_total_val').val() ?? 0;
+                    var room_id = $('input.room_select:checked').val();
+                    var no_of_rooms = $('#no_of_rooms').val();
+                    var check_in_date = $('input[name="check_in"]').val();
+                    var check_out_date = $('input[name="check_out"]').val();
+                    var discounts = $('#discount_amount').val();
+                    var children = $('#childrens_input').val();
+
+                    var addons = [];
+                    $('.addon_row:visible').each(function(){
+                        var ao_id = $(this).data('id');
+                        var qty = parseInt($(this).find('.ao_quantity').val()) || 0;
+                        var price = parseInt($(this).find('.ao_total_price').val()) || 0;
+                        if(qty > 0){
+                            addons.push({id: ao_id, quantity: qty,price:price});
+                        }
+                    });
+
+                    $.ajax({
+                        url: '<?php echo base_url("admin/Bookings/CalculatePrice"); ?>',
+                        type: 'POST',
+                        data: {booking_source:booking_source,room_id: room_id,no_of_rooms:no_of_rooms,check_in:check_in_date,check_out:check_out_date,discounts:discounts,children:children,room_total:room_total,addons:addons},
+                        success: function(response) {
+                           var data = JSON.parse(response)
+                           if(data.status==1)
+                           {
+                           $('#room_total').html(data.base_price);
+                           $('#room_total_val').val(data.base_price);
+                           $('#addon_total').html(data.addon_total);
+                           $('#addon_total_val').val(data.addon_total);
+                           $('#tax').html(data.tax_amount);
+                           $('#tax_amount_val').val(data.tax_amount);
+                           $('#total_amount').html(data.total);
+
+                           if(data.extra_price>0)
+                           {
+                            $('#extra_sec').show();
+                           }
+                           else
+                           {
+                            $('#extra_sec').hide();
+                           }
+
+                           $('#extra_price').html(data.extra_price);
+                           $('#extra_price_val').val(data.extra_price);
+                           $('#extra_desc_val').val(data.extra_desc);
+                           $('#total_amount_val').val(data.total);
+                           }
+                           else
+                           {
+                            $('#room_total').html('-');
+                            $('#tax').html('-');
+                            $('#tax_amount_val').val(0);
+                            $('#total_amount').html('-');
+                            $('#addon_total').html('');
+                            $('#addon_total_val').val(0);
+                            $('#extra_sec').hide();
+                            $('#extra_desc_val').val(0);
+                            $('#total_amount_val').val(0);
+                           }
+                          }
+                         });
+                }
 
                 $('.room_check').on('change input', function() {
                     var selectedType = $('.type_select').val();
@@ -1166,6 +1283,14 @@
                            {
                             $('#room-sec').html(data.html);
                             $('.room_details').show();
+                            if (draftRoomId && !draftRoomApplied) {
+                                var draftRoom = $('input.room_select[value="' + draftRoomId + '"]');
+                                if (draftRoom.length) {
+                                    draftRoom.prop('checked', true);
+                                    draftRoom.trigger('change');
+                                    draftRoomApplied = true;
+                                }
+                            }
                            }
                            else
                            {
@@ -1250,169 +1375,16 @@
 
 
 
-                  $(document).on('change input', '#discount_amount, .ao_quantity,.ao_total_price, #room_total_val', function() {
-
-                  var booking_source = $('#booking_source_select').val() ?? 0;
-
-                  var room_total = $('#room_total_val').val() ?? 0;
-
-                  var discount = $('#discount_amount').val();
-
-                  var room_id = $('input.room_select:checked').val();      
-                  
-                  var no_of_rooms = $('#no_of_rooms').val();
-
-                  var check_in_date = $('input[name="check_in"]').val();
-                 
-                  var check_out_date = $('input[name="check_out"]').val();
-
-                  var discounts = $('#discount_amount').val();
-
-                  var children = $('#childrens_input').val();
-
-                   var addons = [];
-
-                  $('.addon_row:visible').each(function(){
-                      var ao_id = $(this).data('id'); // from data-id
-                      var qty = parseInt($(this).find('.ao_quantity').val()) || 0;
-                      var price = parseInt($(this).find('.ao_total_price').val()) || 0;
-                      if(qty > 0){
-                          addons.push({id: ao_id, quantity: qty,price:price});
-                      }
+                  $(document).on('change input', '#discount_amount, .ao_quantity, .ao_total_price, #room_total_val, .date_select', function() {
+                    recalculateBookingPrice();
                   });
 
-
-                   $.ajax({
-                        url: '<?php echo base_url("admin/Bookings/CalculatePrice"); ?>',
-                        type: 'POST',
-                        data: {booking_source:booking_source,room_id: room_id,no_of_rooms:no_of_rooms,check_in:check_in_date,check_out:check_out_date,discounts:discounts,children:children,room_total:room_total,addons:addons},
-                        success: function(response) {
-                           var data = JSON.parse(response)
-                           if(data.status==1)
-                           {
-                           $('#room_total').html(data.base_price);
-                           $('#room_total_val').val(data.base_price);
-                           $('#addon_total').html(data.addon_total);
-                           $('#addon_total_val').val(data.addon_total);
-                           $('#tax').html(data.tax_amount);
-                           $('#tax_amount_val').val(data.tax_amount);
-                           $('#total_amount').html(data.total);
-
-                           if(data.extra_price>0)
-                           {
-                            $('#extra_sec').show();
-                           }
-                           else
-                           {
-                            $('#extra_sec').hide();
-                           }
-
-                           $('#extra_price').html(data.extra_price);
-                           $('#extra_price_val').val(data.extra_price);
-                           $('#extra_desc_val').val(data.extra_desc);
-                           $('#total_amount_val').val(data.total);
-                           }
-                           else
-                           {
-                            $('#room_total').html('-');
-                            $('#tax').html('-');
-                            $('#tax_amount_val').val(0);
-                            $('#total_amount').html('-');
-                            $('#addon_total').html('');
-                            $('#addon_total_val').val(0);
-                            $('#extra_sec').hide();
-                            $('#extra_desc_val').val(0);
-                            $('#total_amount_val').val(0);
-                           }
-                          }
-                         })
-
-                  })
-
-
-
-                  // Use event delegation for dynamically added elements
-                  $(document).on('change', '.room_select', function() {
-
-                  var room_id = $(this).val();
-
-                  var booking_source = $('#booking_source_select').val() ?? 0;
-
-                  var room_total = $('#room_total_val').val() ?? 0;
-
-                  var no_of_rooms = $('#no_of_rooms').val();
-
-                  var check_in_date = $('input[name="check_in"]').val();
-                 
-                  var check_out_date = $('input[name="check_out"]').val();
-
-                  var discounts = $('#discount_amount').val();
-
-                   var children = $('#childrens_input').val();
-
-                  var addons = [];
-
-                  $('.addon_row:visible').each(function(){
-                      var ao_id = $(this).data('id'); // from data-id
-                      var qty = parseInt($(this).find('.ao_quantity').val()) || 0;
-                      if(qty > 0){
-                          addons.push({id: ao_id, quantity: qty});
-                      }
+                  $(document).on('click change', '.room_select', function() {
+                    $('#room_total_val').val(0);
+                    draftRoomApplied = true;
+                    recalculateBookingPrice();
                   });
 
-
-                   $.ajax({
-                        url: '<?php echo base_url("admin/Bookings/CalculatePrice"); ?>',
-                        type: 'POST',
-                        data: {booking_source:booking_source,room_id: room_id,no_of_rooms:no_of_rooms,check_in:check_in_date,check_out:check_out_date,discounts:discounts,children:children,room_total:room_total,addons:addons},
-                        success: function(response) {
-                           var data = JSON.parse(response)
-                           if(data.status==1)
-                           {
-                           $('#room_total').html(data.base_price);
-                           $('#room_total_val').val(data.base_price);
-                           $('#addon_total').html(data.addon_total);
-                           $('#addon_total_val').val(data.addon_total);
-                           $('#tax').html(data.tax_amount);
-                           $('#tax_amount_val').val(data.tax_amount);
-
-                           if(data.extra_price>0)
-                           {
-                            $('#extra_sec').show();
-                           }
-                           else
-                           {
-                            $('#extra_sec').hide();
-                           }
-
-                           $('#extra_price').html(data.extra_price);
-                           $('#extra_price_val').val(data.extra_price);
-                           $('#extra_desc_val').val(data.extra_desc);
-
-                           $('#total_amount').html(data.total);
-                           $('#total_amount_val').val(data.total);
-                           }
-                           else
-                           {
-                           $('#room_total').html('');
-                           $('#tax').html('');
-                           $('#tax_amount_val').val(0);
-                           $('#total_amount').html('');
-                           $('#addon_total').html('');
-                           $('#addon_total_val').val(0);
-                           $('#extra_sec').hide();
-                           $('#extra_price').html('');
-                           $('#extra_price_val').val(0);
-                           $('#extra_desc_val').val('');
-                           $('#total_amount_val').val(0);
-                           }
-                        }
-                    });
-
-
-
-                  
-                });
 
 
             });
@@ -1463,9 +1435,9 @@
   roomCountEl = document.querySelector("#room-count");
   let maxNumGuests = 15,
 	isGuestInputOpen = false,
-	adultsCount = 1,
-	childrenCount = 0;
-  roomCount = 1;
+	adultsCount = <?= !empty($draft_booking['adults']) ? (int) $draft_booking['adults'] : 1; ?>,
+	childrenCount = <?= !empty($draft_booking['children']) ? (int) $draft_booking['children'] : 0; ?>;
+  roomCount = <?= !empty($draft_booking['no_of_rooms']) ? (int) $draft_booking['no_of_rooms'] : 1; ?>;
 updateValues();
 guestBtn.addEventListener('click', function (e) {
 	if (isGuestInputOpen) {
@@ -1592,15 +1564,27 @@ function updateValues() {
             },function(start, end) {
               j('#checkin').val(start.format('YYYY-MM-DD'));
               j('#checkout').val(end.format('YYYY-MM-DD'));
+              
+                <?php if(!empty($draft_booking_id)){ ?>
+                $('#hotel_type').trigger('change');
+                <?php } ?>
+              
               });
 
             j('#daterangepikr').on('apply.daterangepicker', function(ev, picker) {
                 j(this).val(picker.startDate.format('ddd DD MMM YYYY') + ' - ' + picker.endDate.format('ddd DD MMM YYYY'));
+                if (draftHotelId) {
+                  $('#hotel_type').trigger('change');
+                }
             });
 
             j('#daterangepikr').on('cancel.daterangepicker', function(ev, picker) {
                 j(this).val('');
             });
+
+            <?php /* if (!empty($draft_booking['check_in_date']) && !empty($draft_booking['check_out_date'])) { ?>
+              j('#daterangepikr').val('<?= date('D d M Y', strtotime($draft_booking['check_in_date'])) ?> - <?= date('D d M Y', strtotime($draft_booking['check_out_date'])) ?>');
+            <?php } */ ?>
 
 
         </script>
@@ -1657,20 +1641,34 @@ function updateValues() {
 
 <script>
 
-        $('#booking_source_select').change(function(){
+        $('#booking_source_select').change(function () {
 
-          var selected = $(this).val();
+        var selected = $(this).val();
+        var isDraft = parseInt($('#draft_booking_id').val()) > 0;
+        var isDirect = selected == 0;
 
-          if(selected==0)
-            {
-              $('#room_total_val').attr('readonly',true);
-            }
-            else
-            {
-              $('#room_total_val').removeAttr('readonly');
-            }
+        if (isDirect) {
+            $('#room_total_val').attr('readonly', true);
+        } else {
+            $('#room_total_val').removeAttr('readonly');
+        }
 
-        })
+        if (isDirect || isDraft) {
+            $('#guest_booking_extra_fields').show();
+        } else {
+            $('#guest_booking_extra_fields').hide();
+        }
+
+        // Required only for Direct Guest Booking Draft
+        if (isDirect && isDraft) {
+            $('input[name="no_of_guests"]').prop('required', true);
+            $('input[name="no_of_nights"]').prop('required', true);
+        } else {
+            $('input[name="no_of_guests"]').prop('required', false);
+            $('input[name="no_of_nights"]').prop('required', false);
+        }
+
+    }).trigger('change');
 
 
         $(document).ready(function() {

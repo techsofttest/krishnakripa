@@ -54,7 +54,7 @@ class BookingModel extends CI_model {
         $subquery = "(SELECT booking_room_id, 
                       SUM(no_of_rooms) as booked_rooms
                       FROM {$this->db->dbprefix('bookings')}
-                      WHERE booking_status != 'cancelled'
+                      WHERE booking_status NOT IN ('cancelled','draft')
                       AND (
                           ('$check_in' BETWEEN check_in_date AND DATE_SUB(check_out_date, INTERVAL 1 DAY)) OR
                           ('$check_out' BETWEEN check_in_date AND DATE_SUB(check_out_date, INTERVAL 1 DAY)) OR
@@ -108,7 +108,7 @@ class BookingModel extends CI_model {
     // Subquery to calculate total booked rooms for each room in the date range
     $subquery = "(SELECT booking_room_id, SUM(no_of_rooms) as booked_rooms
                   FROM {$this->db->dbprefix('bookings')}
-                  WHERE booking_status != 'cancelled'
+                  WHERE booking_status NOT IN ('cancelled','draft')
                   AND (
                       ('$check_in' < check_out_date AND '$check_out' > check_in_date)
                   )
@@ -209,7 +209,7 @@ class BookingModel extends CI_model {
     $this->db->from('bookings');
     $this->db->where('booking_room_id', $room_id);
     //$this->db->where('booking_status !=', 'cancelled');
-    $this->db->where_not_in('booking_status', ['cancelled','checked_out']);
+    $this->db->where_not_in('booking_status', ['cancelled','checked_out','draft']);
     $this->db->where('booking_id !=', $current_booking_id);
     //$this->db->where("('$check_in' < check_out_date AND '$check_out' > check_in_date)", null, false);
     $this->db->group_start();
@@ -250,7 +250,7 @@ class BookingModel extends CI_model {
     // Subquery: Sum no_of_rooms booked on the given date
     $subquery = "(SELECT booking_room_id, SUM(no_of_rooms) as booked_rooms
                   FROM {$this->db->dbprefix('bookings')}
-                  WHERE booking_status NOT IN ('cancelled', 'pending', 'checked_out')
+            WHERE booking_status NOT IN ('cancelled', 'pending', 'checked_out', 'draft')
                   AND '$date' >= check_in_date
                   AND '$date' < check_out_date
                   GROUP BY booking_room_id
@@ -286,7 +286,7 @@ class BookingModel extends CI_model {
         // Subquery to count overlapping bookings for each room
         $subquery = "(SELECT booking_room_id, COUNT(*) as booked_count
             FROM {$this->db->dbprefix('bookings')}
-            WHERE booking_status != 'cancelled'
+            WHERE booking_status NOT IN ('cancelled','draft')
             AND booking_status != 'pending'
             AND (
             ('$check_in' BETWEEN check_in_date AND DATE_SUB(check_out_date, INTERVAL 1 DAY)) OR
@@ -319,7 +319,7 @@ class BookingModel extends CI_model {
     }
 
 
-    public function countFilteredBookings($search,$date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type)
+    public function countFilteredBookings($search,$date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type,$source="")
     {
     
 
@@ -350,6 +350,11 @@ class BookingModel extends CI_model {
     {
         $this->db->where('booking_customer_id', $customer);
 
+    }
+
+    if($source!="")
+    {
+        $this->db->where('booking_source', $source);
     }
 
     if($room!="")
@@ -405,7 +410,7 @@ class BookingModel extends CI_model {
     }
 
 
-    public function ViewBookingsPaginate($search,$date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type,$columnName,$columnSortOrder,$rowperpage,$start)
+    public function ViewBookingsPaginate($search,$date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type,$columnName,$columnSortOrder,$rowperpage,$start,$source="")
     {
 
     $this->db->select('*');
@@ -417,6 +422,11 @@ class BookingModel extends CI_model {
     $this->db->join('room','room.roomid=bookings.booking_room_id','left');
 
     $this->db->join('sources','sources.source_id=bookings.booking_source','left');
+    
+    if(empty($source)) {
+        $this->db->where('bookings.booking_source !=', 9);  // Change 9 to the actual Direct Guest source ID
+    }
+    
 
     if($date_from!="")
     {
@@ -437,6 +447,11 @@ class BookingModel extends CI_model {
     {
         $this->db->where('booking_customer_id', $customer);
 
+    }
+
+    if($source!="")
+    {
+        $this->db->where('booking_source', $source);
     }
 
     if($room!="")
@@ -514,9 +529,9 @@ class BookingModel extends CI_model {
 
 
 
-    public function ViewBookings($date_from,$date_to,$payment_status,$customer,$room,$room_no,$register_no,$hotel_type)
+    public function ViewBookings($date_from="",$date_to="",$payment_status="",$customer="",$room="",$room_no="",$register_no="",$hotel_type="",$source="")
     {
-
+    
     $this->db->select('*');
 
     $this->db->from('bookings');
@@ -526,6 +541,8 @@ class BookingModel extends CI_model {
     $this->db->join('room','room.roomid=bookings.booking_room_id','left');
 
     $this->db->join('sources','sources.source_id=bookings.booking_source','left');
+    
+    $this->db->where('bookings.booking_source !=', 9);
 
  if($date_from!="")
     {
@@ -547,6 +564,12 @@ class BookingModel extends CI_model {
         $this->db->where('booking_customer_id', $customer);
 
     }
+
+    if($source!="")
+    {
+        $this->db->where('booking_source', $source);
+    }
+    
 
     if($room!="")
     {
@@ -573,8 +596,8 @@ class BookingModel extends CI_model {
     {
         $this->db->where('room.hotel',$hotel_type);
     }
-
-
+    
+    
     $this->db->order_by('bookings.created_at','desc');
 
     $query = $this->db->get();
@@ -768,7 +791,7 @@ class BookingModel extends CI_model {
     }
     */
 
-    $this->db->where_not_in('booking_status', ['cancelled']);
+    $this->db->where_not_in('booking_status', ['cancelled','draft']);
 
     if($date_from != "" && $date_to != "") {
 

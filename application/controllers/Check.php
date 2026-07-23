@@ -397,11 +397,13 @@ function BookNow()
 
 	$grand_total = $total_price + $gst;
 
-	$booking_data  	= 	array(
+			$booking_data  	= 	array(
 
 		    'check_in_date'  => date('Y-m-d',strtotime($this->input->post('check_in'))),
 		
 		    'check_out_date' => date('Y-m-d',strtotime($this->input->post('check_out'))),
+
+			'hotel_id' => !empty($hotel_type) ? $hotel_type : ($this->input->post('hotel_type') ?: null),
 
 			'booking_room_id' => $this->input->post('room_id'),
 

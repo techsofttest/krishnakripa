@@ -70,5 +70,8 @@ $route['check'] = 'Check';
 $route['blog/(:any)'] = 'Blog/index/$1';
 $route['contact'] = 'Contact';
 $route['book-online'] = 'Check/Book';
+$route['user-booking/save'] = 'GuestBooking/save';
+$route['user-booking/(:any)/success'] = 'GuestBooking/success/$1';
+$route['user-booking/(:any)'] = 'GuestBooking/index/$1';
 $route['404_override'] = 'custom404';
 
