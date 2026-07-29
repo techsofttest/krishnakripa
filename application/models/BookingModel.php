@@ -162,6 +162,7 @@ class BookingModel extends CI_model {
     $booking_subquery = "(SELECT booking_room_id, SUM(no_of_rooms) as booked_rooms
                           FROM {$this->db->dbprefix('bookings')}
                           WHERE booking_status NOT IN ('cancelled','checked_out')
+						  AND booking_source <> 9
                           AND (
                               ('$check_in' < check_out_date AND '$check_out' > check_in_date)
                           )
@@ -249,10 +250,11 @@ class BookingModel extends CI_model {
 
     // Subquery: Sum no_of_rooms booked on the given date
     $subquery = "(SELECT booking_room_id, SUM(no_of_rooms) as booked_rooms
-                  FROM {$this->db->dbprefix('bookings')}
+                  FROM {$this->db->dbprefix('bookings')} b
             WHERE booking_status NOT IN ('cancelled', 'pending', 'checked_out', 'draft')
                   AND '$date' >= check_in_date
                   AND '$date' < check_out_date
+				  AND b.booking_source <> 9
                   GROUP BY booking_room_id
                 ) AS b";
 
@@ -285,9 +287,11 @@ class BookingModel extends CI_model {
 
         // Subquery to count overlapping bookings for each room
         $subquery = "(SELECT booking_room_id, COUNT(*) as booked_count
-            FROM {$this->db->dbprefix('bookings')}
+            FROM {$this->db->dbprefix('bookings')} b
+			ON s.source_id = b.booking_source
             WHERE booking_status NOT IN ('cancelled','draft')
             AND booking_status != 'pending'
+			AND b.booking_source <> 9
             AND (
             ('$check_in' BETWEEN check_in_date AND DATE_SUB(check_out_date, INTERVAL 1 DAY)) OR
             ('$check_out' BETWEEN check_in_date AND DATE_SUB(check_out_date, INTERVAL 1 DAY)) OR
